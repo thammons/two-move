@@ -1,0 +1,20 @@
+# Compiled output
+/dist
+/out
+
+# Dependencies
+/node_modules
+
+# Debugging
+/.vscode
+/.idea
+
+# Environment variables
+/.env
+
+# Build files
+*.tsbuildinfo
+*.tsbuildinfo.*
+
+# Logs
+*.log

@@ -1,0 +1,48 @@
+body {
+    background-color: #333;
+    color: #BBB;
+}
+
+h1 {
+    color: #FFF;
+}
+
+
+#title {
+    height: 14em;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+#title-text,
+#title-subtitle {
+    width: 100%;
+    margin: 0 2em;
+}
+
+.button {
+    border-radius: 25px;
+    background-color: #777;
+    color: #000;
+    border: none;
+    padding: 1em;
+    margin: 1em;
+    font-size: 1.5em;
+    font-family: "Lucida Console";
+    cursor: pointer;
+}
+
+.button:hover {
+    background-color: #999;
+}
+
+.button:active {
+    background-color: #555;
+}
+
+a {
+    text-decoration: none;
+}
