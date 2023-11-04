@@ -1,0 +1,20 @@
+{
+  "name": "twomove",
+  "version": "1.0.0",
+  "description": "A maze dungeon game",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "test": "npm run test --prefix ./two-move-ts/testsetup",
+    "test:watch": "npm run test:watch --prefix ./two-move-ts/testsetup"
+  },
+  "author": "TJ and Lucas Hammons",
+  "license": "ISC",
+  "dependencies": {
+    "blockly": "^10.2.2",
+    "typescript": "^5.2.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20.8.10"
+  }
+}

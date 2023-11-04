@@ -1,0 +1,1 @@
+{"version":3,"file":"keydown.d.ts","sourceRoot":"","sources":["../../two-move-ts/player-movers/keydown.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,MAAM,EAAE,KAAK,EAAE,MAAM,EAAE,OAAO,EAAE,MAAM,aAAa,CAAC;AAE7D,qBAAa,YAAa,YAAW,MAAM;IACvC,WAAW,CAAC,MAAM,EAAE,OAAO,EAAE,KAAK,EAAE,MAAM,GAAG,KAAK;CAIrD"}

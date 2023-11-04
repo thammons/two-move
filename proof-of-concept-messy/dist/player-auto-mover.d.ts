@@ -1,0 +1,1 @@
+//# sourceMappingURL=player-auto-mover.d.ts.map

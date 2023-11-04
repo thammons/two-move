@@ -1,0 +1,68 @@
+body {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+#title {
+    height: fit-content;
+}
+
+#scoreboard {
+    height: 3em;
+    display:flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+#scoreboard > div {
+    margin: 1em;
+}
+
+#status-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    height: 3em;
+    overflow-y: none;
+    font-size: 1.5em;
+}
+
+#success {
+    color: #0F0;
+    overflow-y: none;
+}
+
+#error {
+    color: #D00;
+    overflow-y: none;
+}
+
+#message-box {
+    width: 100vw;
+    /* width: 550px; */
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    max-height: 200px;
+}
+
+#message-box > div {
+    max-width: 50%;
+}
+
+#last-move {
+    /* height: 200px; */
+    padding: 0 2em;
+    margin: 1em;
+    overflow-y: auto;
+}
+
+#show-move-log {
+    height: fit-content;
+    font-size: 1em;
+    padding: 1em 2em;
+    margin: 1em;
+    overflow-y: auto;
+}

@@ -1,0 +1,1 @@
+{"version":3,"file":"save-map.d.ts","sourceRoot":"","sources":["../../two-move-ts/maps/save-map.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,IAAI,EAAE,MAAM,aAAa,CAAC;AAGnC,MAAM,WAAW,SAAS;IACtB,GAAG,EAAE,IAAI,CAAC;IACV,KAAK,EAAE,MAAM,CAAC;CACjB;AAID,wBAAgB,OAAO,CAAE,GAAG,EAAC,IAAI,GAAE,OAAO,CAmBzC;AAED,wBAAgB,UAAU,CAAC,KAAK,EAAE,MAAM,GAAG,SAAS,GAAG,SAAS,CAI/D"}
