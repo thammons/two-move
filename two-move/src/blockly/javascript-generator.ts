@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import * as Blockly from './../node_modules/blockly/core.js';
-import { Order } from './../node_modules/blockly/javascript.js';
+import * as Blockly from 'blockly/core.js';
+import { Order } from 'blockly/javascript.js';
 
 // Export all the code generators for our custom blocks,
 // but don't register them with Blockly yet.

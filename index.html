@@ -1,67 +1,15 @@
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html lang="en">
 
 <head>
-    <title>Two Move</title>
-    <link rel="stylesheet" href="./styles/site.css" />
-
-    <style>
-        #header {
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            align-items: center;
-            margin: 0 0 1em 0;
-        }
-        .buttons {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            grid-gap: 1em;
-            text-align: center;
-        }
-    </style>
-
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 </head>
 
 <body>
-    <div style="display:none" id="assets">
-    </div>
 
-    <div id="header">
-        <div id="title">
-            <h1 id="title-text">Two Move!</h1>
-            <h2 id="title-subtitle"><em>It's A-MAZE-ING!</em></h2>
-        </div>
-        <div id="rules">
-            <h3>Welcome to Two Move!</h3>
-            <p>In this game, you have two moves:</p>
-            <ul>
-                <li>
-                    <b>Move:</b> advance forward once squre in the direction of the indiciator.
-                    <ul>
-                        <li>Press the up or down arrow keys, or 'W' or 'S'</li>
-                    </ul>
-                </li>
-                <li><b>Turn:</b> turn right. Stay in the square you are in, but pivot right.
-                    <ul>
-                        <li>Press the left or right arrow keys, or 'A' or 'D'</li>
-                    </ul>
-                </li>
-            </ul>
-            <p>Good luck solving the puzzles!</p>
-        </div>
-        <div class="buttons">
-            <a href="./game.html">
-                <div class="button" id="start-button">Lets Go!</div>
-            </a>
-            <a href="./blockly-builder.html">
-                <div class="button" id="blockly-button" style="background-color:green">Blockly!</div>
-            </a>
-            <a href="./_lucas/highscore.html">
-                <div class="button" id="highscore-button">High Scores!</div>
-            </a>
-        </div>
-    </div>
+    <script type="module" src="/src/main.ts"></script>
+
 </body>
 
 </html>

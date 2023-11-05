@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import * as Blockly from './../node_modules/blockly/core.js';
+import * as Blockly from 'blockly/core.js';
 
 // Create a custom block called 'add_text' that adds
 // text to the output div on the sample app.

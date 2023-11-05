@@ -1,16 +1,16 @@
-import { MapSimple, MapBigSimple, MapWalledPlayerBox, MapWalledPlayerUnEvenBox } from './_proof-of-concept-messy/two-move-ts/maps/openMap.js';
-import { MapFromJson } from './_proof-of-concept-messy/two-move-ts/maps/map-from-json.js';
+import { MapSimple, MapBigSimple, MapWalledPlayerBox, MapWalledPlayerUnEvenBox } from './maps/openMap.js';
+import { MapFromJson } from './maps/map-from-json.js';
 // import Maps1 from './maps/maps.json' assert {type: "json"};
-import Maps1 from "./_proof-of-concept-messy/two-move-ts/maps/maps.json" assert { type: "json" };
-import MapGenerated from './_proof-of-concept-messy/two-move-ts/maps/generate-map1.js';
-import Board from './_proof-of-concept-messy/two-move-ts/board.js';
-import Player from './_proof-of-concept-messy/two-move-ts/player.js';
-import BoardHooksHtml from './_proof-of-concept-messy/two-move-ts/board-hooks-html.js';
-import { Direction, IBoard, IBoardBuilderOption, IBoardHooks, IMap, IMover, IPlayer, ItemLocation } from './_proof-of-concept-messy/two-move-ts/types.js';
-import { InitializeMap, LightsOut } from './_proof-of-concept-messy/two-move-ts/board-logic/board-builders/index.js';
-import { PaceMover } from './_proof-of-concept-messy/two-move-ts/player-movers/pace.js';
-import * as utils from "./_proof-of-concept-messy/two-move-ts/ui-utils-html.js";
-import { saveMap, getNextMap } from './_proof-of-concept-messy/two-move-ts/maps/save-map.js';
+import Maps1 from "./maps/maps.json" assert { type: "json" };
+import MapGenerated from './maps/generate-map1.js';
+import Board from './board.js';
+import Player from './player.js';
+import BoardHooksHtml from './board-hooks-html.js';
+import { Direction, IBoard, IBoardBuilderOption, IBoardHooks, IMap, IMover, IPlayer, ItemLocation } from './types.js';
+import { InitializeMap, LightsOut } from './board-logic/board-builders/index.js';
+import { PaceMover } from './player-movers/pace.js';
+import * as utils from "./ui-utils-html.js";
+import { saveMap, getNextMap } from './maps/save-map.js';
 
 let MAP: IMap;
 let MAP_FROM_JSON: MapFromJson;

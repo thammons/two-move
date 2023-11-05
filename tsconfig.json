@@ -107,11 +107,10 @@
     "skipLibCheck": true                                 /* Skip type checking all .d.ts files. */
   },
   "include": [
-    "./**/*"
+    "./two-move/src/**/*",
   ],
   "exclude": [
     "./_proof-of-concept-messy/**/*",
-    "node_modules",
     "**/*.spec.ts",
     "./dist/**/*"
   ]

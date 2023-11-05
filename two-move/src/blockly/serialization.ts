@@ -1,5 +1,5 @@
 
-import * as Blockly from './../node_modules/blockly/core.js';
+import * as Blockly from 'blockly/core.js';
 
 const storageKey = 'mainWorkspace';
 
