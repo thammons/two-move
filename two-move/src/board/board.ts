@@ -1,6 +1,6 @@
 import { ItemLocation, Direction, IBoard, ICell, IPlayer, IMap, IMapItem, CellType } from "../types.js";
 import { BoardValidation } from "./validation.js";
-import BoardEvents from "./events.js";
+import { BoardEvents } from "./events.js";
 
 
 class Board implements IBoard {
@@ -139,10 +139,10 @@ class Board implements IBoard {
         };
 
         player.setNextLocation();
-        
+
         this.update(player);
 
-        if(BoardValidation.isAtGoal(desiredLocation, this)){
+        if (BoardValidation.isAtGoal(desiredLocation, this)) {
             this._events.triggerGoalReached();
         }
 

@@ -1,17 +1,17 @@
 import { Direction, IPlayer, ICell } from "../types";
 import { ISimpleEventHandler, ISignalHandler } from "../types";
 
-interface IBoardUpdateEvent {
+export interface IBoardUpdateEvent {
     board: ICell[],
 }
 
-interface ICellUpdateEvent {
+export interface ICellUpdateEvent {
     cell: ICell,
     index: number,
     isTemporary: boolean
 }
 
-interface IInvalidStepEvent {
+export interface IInvalidStepEvent {
     direction: Direction,
     player: IPlayer,
     newLocation: ICell
@@ -19,7 +19,7 @@ interface IInvalidStepEvent {
 
 
 
-class BoardEvents {
+export class BoardEvents {
     boardUpdateHandlers: ISimpleEventHandler<IBoardUpdateEvent>[] = [];
     cellUpdateHandlers: ISimpleEventHandler<ICellUpdateEvent>[] = [];
     invalidStepHandlers: ISimpleEventHandler<IInvalidStepEvent>[] = [];
@@ -35,19 +35,6 @@ class BoardEvents {
 
     subscribeToCellUpdate(handler: ISimpleEventHandler<ICellUpdateEvent>) {
         this.cellUpdateHandlers.push(handler);
-        /*
-        indicateInvalidMove
-
-        //TODO Play Negative Sound
-        utils.paintBoard(this);
-        
-
-        setTimeout(() => {
-            this._board[position].classes =
-                this._board[position].classes.filter(c => c !== invalidClassName);
-            utils.paintBoard(this);
-        }, 1_000);
-        */
     }
     triggerCellUpdate(eventArgs: ICellUpdateEvent) {
         this.cellUpdateHandlers.forEach(h => h(eventArgs));
@@ -67,6 +54,3 @@ class BoardEvents {
         this.goalReachedHandlers.forEach(h => h());
     }
 }
-
-
-export default BoardEvents;

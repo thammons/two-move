@@ -73,14 +73,23 @@ function updateBoard(board: IBoard) {
         }
     });
 
-    changedCells.forEach((cell, index) => {
-        const element = utils.getElementById(`cell-${index}`);
-        setCellAttributes(cell, index, element);
-    });
+    changedCells.forEach((cell, index) => updateCell(cell, index));
 
 };
 
-// console.log('paintBoard', board);
+export function updateCell(cell: ICell, index: number, isTemporary: boolean = false) {
+    const previousVersion = lastBoardVersion.getCell(index);
+    lastBoardVersion.setCell(index, JSON.parse(JSON.stringify(cell)));
+
+    const element = utils.getElementById(`cell-${index}`);
+    setCellAttributes(cell, index, element);
+
+    if (isTemporary) {
+        setTimeout(() => {
+            updateCell(previousVersion, index);
+        }, 1000);
+    }
+}
 
 
 function setCellAttributes(cell: ICell, index: number, element: HTMLElement) {
