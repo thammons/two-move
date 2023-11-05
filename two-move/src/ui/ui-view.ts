@@ -6,8 +6,6 @@ let lastBoardVersion: IBoard;
 let showCollisionMessageTimeout: NodeJS.Timeout | undefined = undefined;
 
 export function paintBoard(board: IBoard, loadTimer: number = 0) {
-
-
     if (lastBoardVersion === undefined) {
         paintWholeBoard(board, loadTimer);
         return;
