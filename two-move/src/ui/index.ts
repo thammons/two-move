@@ -1,3 +1,10 @@
-import * as UI from './ui';
+import * as UI from './ui-view';
+import UIUserEvents from './ui-user-events';
+import UIUserInteractions from './ui-user-interactions';
 
-export default UI;
+
+export {
+    UI,
+    UIUserEvents,
+    UIUserInteractions,
+}

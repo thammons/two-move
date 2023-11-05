@@ -111,19 +111,14 @@ class Board implements IBoard {
         this._events.triggerCellUpdate({ cell: this._board[position], index: position, isTemporary: true });
     };
 
-    updatePlayer(player: IPlayer) {
-        this.update(player);
-        this._events.triggerBoardUpdate({ board: this._board });
-    }
-
-    update(item: IMapItem) {
+    updateItem(item: IMapItem) {
         this._board[item.location] = {
             indicator: item.indicator,
             classes: [...this._board[item.location].classes, item.cellType],
             mapItems: [...this._board[item.location].mapItems, item],
         };
         //utils.paintBoard(this);
-        this._events.triggerBoardUpdate({ board: this._board });
+        this._events.triggerBoardUpdate({ board: this });
     }
 
     move(player: IPlayer, startLocation: ItemLocation, desiredLocation?: ItemLocation): boolean {
@@ -140,7 +135,7 @@ class Board implements IBoard {
 
         player.setNextLocation();
 
-        this.update(player);
+        this.updateItem(player);
 
         if (BoardValidation.isAtGoal(desiredLocation, this)) {
             this._events.triggerGoalReached();

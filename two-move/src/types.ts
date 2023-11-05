@@ -31,7 +31,7 @@ export interface IBoard {
     getCell(position: ItemLocation): ICell;
     setCells(cells: ICell[]): void;
     setCell(position: ItemLocation, cell: ICell): void;
-    update(item: IMapItem): void;
+    updateItem(item: IMapItem): void;
     isAtGoal(desiredLocation: ItemLocation): boolean;
     isValidMove(startLocation: ItemLocation, desiredLocation: ItemLocation): boolean;
     move(player: IPlayer, startLocation: ItemLocation, endLocation: ItemLocation): boolean;
@@ -89,6 +89,7 @@ export interface IPlayer extends IMapItem {
     direction: Direction;
     setNextLocation(): void;
     turnRight(): void;
+    getPlayerLocation(): ItemLocation;
 }
 
 export interface IMove {

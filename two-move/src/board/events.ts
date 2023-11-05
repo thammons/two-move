@@ -1,8 +1,8 @@
-import { Direction, IPlayer, ICell } from "../types";
+import { Direction, IPlayer, ICell, IBoard } from "../types";
 import { ISimpleEventHandler, ISignalHandler } from "../types";
 
 export interface IBoardUpdateEvent {
-    board: ICell[],
+    board: IBoard,
 }
 
 export interface ICellUpdateEvent {
