@@ -16,12 +16,15 @@ let BOARD: Board;
 
 let UI_INTERACTIONS: UIUserInteractions;
 
+init();
 
-window.onload = () => {
-    setupBoard();
-    setupUI();
-    // console.log(Maps1);
-    // MAP_FROM_JSON = new MapFromJson(Maps1);
+export function init() {
+    window.onload = () => {
+        setupBoard();
+        setupUI();
+        // console.log(Maps1);
+        // MAP_FROM_JSON = new MapFromJson(Maps1);
+    }
 }
 
 function nextMap() {
