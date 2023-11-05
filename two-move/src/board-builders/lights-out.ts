@@ -1,5 +1,5 @@
-import { CellType, IBoard, IBoardBuilderOption, ICell, IMapItem, IPlayer, ItemLocation } from "../../types.js";
-import { BoardValidation } from "../validation.js";
+import { CellType, IBoard, IBoardBuilderOption, IMapItem, ItemLocation } from "../types.js";
+import { BoardValidation } from "../board/validation.js";
 
 export class LightsOut<T extends IBoard> implements IBoardBuilderOption<T> {
 

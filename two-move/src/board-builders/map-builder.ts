@@ -1,4 +1,4 @@
-import { ItemLocation, CellType, ICell, IMap, IBoardBuilderOption, IBoard } from "../../types.js";
+import { ItemLocation, ICell, IMap, IBoardBuilderOption, IBoard } from "../types.js";
 
 
 export class InitializeMap<T extends IBoard> implements IBoardBuilderOption<T> {
@@ -14,6 +14,9 @@ export class InitializeMap<T extends IBoard> implements IBoardBuilderOption<T> {
         return board;
     }
     update(board: T, targetLocation: ItemLocation): T {
+        //need the arg for the interface, but not using it
+        targetLocation;
+
         board.setCells(this.updateCells(this.map, board));
         return board;
     }
@@ -24,7 +27,7 @@ export class InitializeMap<T extends IBoard> implements IBoardBuilderOption<T> {
         //THIS CREATES A REFERENCE TO THE SAME OBJECT IN EACH CELL
         // const cells: ICell[] = Array(board.height * board.width).fill({ indicator: ' ', classes: [], mapItems: [] });
 
-        const cells: ICell[] = [...Array(board.height * board.width)].map(i => {
+        const cells: ICell[] = [...Array(board.height * board.width)].map(() => {
             return {
                 indicator: ' ',
                 classes: ['unseen'],
