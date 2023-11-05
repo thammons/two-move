@@ -101,3 +101,15 @@ export interface IMove {
 export interface IMover {
     getNextMove(player: IPlayer, board: IBoard): IMove;
 }
+
+export interface IEventHandler<TSender, TArgs> {
+    (sender: TSender, args: TArgs): void
+}
+
+export interface ISimpleEventHandler<TArgs> {
+    (args: TArgs): void
+}
+
+export interface ISignalHandler {
+    (): void;
+}

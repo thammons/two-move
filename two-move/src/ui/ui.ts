@@ -56,9 +56,7 @@ export function showLastMove(direction: Direction, isMove: boolean) {
     lastMoveElement.innerHTML = '';
     lastMoveElement.appendChild(lastMoveText);
 
-
-
-    //moveLogElement.appendChild(lastMoveText);
+    moveLogElement.appendChild(lastMoveText);
 }
 
 function updateBoard(board: IBoard) {
