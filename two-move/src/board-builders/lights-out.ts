@@ -22,7 +22,7 @@ export class LightsOut<T extends IBoard> implements IBoardBuilderOption<T> {
         return board;
     }
     update(board: T, targetLocation: ItemLocation): T {
-        this.getUpdatedBoard(board, targetLocation, this.lightPower, this.updateSeen);
+        this.getUpdatedBoard(board, targetLocation, this.lightPower || this.lightRadius, this.updateSeen);
         return board;
     }
 
@@ -30,7 +30,7 @@ export class LightsOut<T extends IBoard> implements IBoardBuilderOption<T> {
         if (!this.isOn) {
             this.isOn = true;
             this.lightPower = lightPower;
-            this.updateSeen = false;
+            this.updateSeen = lightPower > 0;
             return this.getUpdatedBoard(board, item.location, lightPower, false);
         }
         else
