@@ -7,12 +7,12 @@ export default class UIUserInteractions {
         ['ArrowUp', () => this._events.triggerMove()],
         ['ArrowDown', () => this._events.triggerMove()],
         ['w', () => this._events.triggerMove()],
-        ['a', () => this._events.triggerMove()],
+        ['s', () => this._events.triggerMove()],
 
         ['ArrowLeft', () => this._events.triggerTurn()],
         ['ArrowRight', () => this._events.triggerTurn()],
         ['d', () => this._events.triggerTurn()],
-        ['s', () => this._events.triggerTurn()],
+        ['a', () => this._events.triggerTurn()],
 
         ['f', () => this._events.triggerLight({ lightsOn: true, showWholeBoard: false })],
         ['e', () => this._events.triggerLight({ lightsOn: true, showWholeBoard: true })],

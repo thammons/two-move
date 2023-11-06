@@ -9,14 +9,14 @@
     <link rel="stylesheet" href="../styles/game-display.css" />
     <link rel="stylesheet" href="../styles/board.css" />
 
-    <script src="./dist/"></script>
-
-    <script src="../src/game.ts" type="module"></script>
-    <script src="../src/blockly-builder.ts" type="module"></script>
 </head>
 
 <body>
     <div style="display:none" id="assets">
+        <div id="move-btn"></div>
+        <div id="turn-btn"></div>
+        <div id="restart-btn"></div>
+        <div id="move-log" style="display:none"></div>
     </div>
     <div id="header">
         <div id="title">
@@ -30,30 +30,25 @@
         <div><em>this page is broken until a bundler is added</em></div>
         <div id="message-box">
             <div class="button" id="show-move-log">Show Move Log <em>this button isn't setup</em> </div>
-    
+
             <div id="last-move"></div>
         </div>
     </div>
-    <div class=".d-flex .flex-row" style="width:100vw">
+    <div class="d-flex flex-row" style="width:100vw">
         <div id="board">
             <div id="grid-container-items">
             </div>
         </div>
-
         <div id="blockly">
-
-            <div id="pageContainer">
-                <div id="outputPane" style="display: none;">
-                    <pre id="generatedCode"><code></code></pre>
-                    <div id="output"></div>
-                </div>
-                <div id="blocklyDiv"></div>
-            </div>
+            <div id="run-btn" class="button">Run</div>
+            <div id="blocklyDiv"></div>
         </div>
-</body>
-</div>
 
-<div id="move-log" style="display:none"></div>
+
+    </div>
+
+    <script src="../src/blockly-builder.ts" type="module"></script>
+    <script src="../src/game.ts" type="module"></script>
 
 </body>
 

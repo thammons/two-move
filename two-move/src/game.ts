@@ -9,22 +9,73 @@ import { InitializeMap, LightsOut } from './board-builders/index.js';
 import { saveMap, getNextMap } from './maps/save-map.js';
 
 
-let MAP: IMap;
-let PLAYER: Player;
-let LIGHTSOUT: LightsOut<Board>;
-let BOARD: Board;
+var MAP: IMap;
+var PLAYER: Player;
+var LIGHTSOUT: LightsOut<Board>;
+var BOARD: Board;
 
 let UI_INTERACTIONS: UIUserInteractions;
 
-init();
+
+window.onload = () => {
+    init();
+}
 
 export function init() {
-    window.onload = () => {
-        setupBoard();
-        setupUI();
-        // console.log(Maps1);
-        // MAP_FROM_JSON = new MapFromJson(Maps1);
+    setupBoard();
+    setupUI();
+    // console.log(Maps1);
+    // MAP_FROM_JSON = new MapFromJson(Maps1);
+
+    const moveBtn = document.getElementById('move-btn');
+    if (!moveBtn) throw new Error('move-btn not found');
+    moveBtn.onclick = move;
+
+    const turnBtn = document.getElementById('turn-btn');
+    if (!turnBtn) throw new Error('turn-btn not found');
+    turnBtn.onclick = turnRight;
+
+    const restartBtn = document.getElementById('restart-btn');
+    if (!restartBtn) throw new Error('restart-btn not found');
+    restartBtn.onclick = restart;
+}
+
+let moveQueue: (() => void)[] = [];
+let isRunningQueue = false;
+const runQueue = (forceRun: boolean = false) => {
+    if (!forceRun && isRunningQueue) return;
+    isRunningQueue = true;
+    if (moveQueue.length > 0) {
+        setTimeout(() => {
+            moveQueue[0]();
+            moveQueue.shift();
+            UI.paintBoard(BOARD);
+            console.log('queue', moveQueue.length)
+            runQueue(true);
+        }, 200);
     }
+    else {
+        isRunningQueue = false;
+    }
+}
+
+//playerControls:
+const move = () => {
+    moveQueue.push(() => BOARD.move(PLAYER, PLAYER.getPlayerLocation(), PLAYER.getNextMove()));
+    runQueue();
+}
+
+const turnRight = () => {
+    moveQueue.push(() => {
+        PLAYER.turnRight();
+        BOARD.updateItem(PLAYER);
+    });
+    runQueue();
+}
+
+const restart = () => {
+    moveQueue = [];
+    setupBoard();
 }
 
 function nextMap() {
@@ -40,7 +91,7 @@ function setupBoard() {
     });
 
     boardEvents.subscribeToCellUpdate((eventArgs) => {
-         //UI.paintBoard(BOARD);
+        //UI.paintBoard(BOARD);
         //  console.log('cell update', JSON.stringify(eventArgs))
         UI.updateCell(eventArgs.cell, eventArgs.index, eventArgs.isTemporary);
     });
@@ -66,10 +117,12 @@ function setupBoard() {
 
     BOARD = create.init(BOARD);
 
-    PLAYER = new Player(MAP.player, MAP.width, PLAYER?.direction ?? 'east');
+    //BLOCKLY needs a slightly different game mode...
+    // PLAYER = new Player(MAP.player, MAP.width, PLAYER?.direction ?? 'east');
+    PLAYER = new Player(MAP.player, MAP.width, 'east');
     BOARD.updateItem(PLAYER);
 
-    BOARD = LIGHTSOUT.init(BOARD);
+    //BOARD = LIGHTSOUT.init(BOARD);
 
     UI.paintBoard(BOARD, 100);
 }
@@ -79,7 +132,7 @@ function setupUI() {
 
     uiEvents.subscribeToMove(() => {
         BOARD.move(PLAYER, PLAYER.getPlayerLocation(), PLAYER.getNextMove());
-        BOARD = LIGHTSOUT.update(BOARD, BOARD.getItemLocations('player')[0]);
+        // BOARD = LIGHTSOUT.update(BOARD, BOARD.getItemLocations('player')[0]);
     });
 
     uiEvents.subscribeToTurn(() => {

@@ -1,8 +1,8 @@
 import { IMap, ItemLocation } from '../types.js';
 
 //delete this
-const deletethisHW = 25;
-const deletethisCW = 25;
+const deletethisHW = 10;
+const deletethisCW = 50;
 const deletethisDifficulty = .0001;
 
 export default class MapGenerated implements IMap {

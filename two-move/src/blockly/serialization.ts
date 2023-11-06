@@ -1,5 +1,5 @@
 
-import * as Blockly from 'blockly/core.js';
+import * as Blockly from 'blockly/core';
 
 const storageKey = 'mainWorkspace';
 
@@ -18,10 +18,11 @@ export const save = function(workspace: Blockly.Workspace) {
  */
 export const load = function(workspace: Blockly.Workspace) {
   const data = window.localStorage?.getItem(storageKey);
-  if (!data) return;
+  if (!data) return false;
 
   // Don't emit events during loading.
   Blockly.Events.disable();
   Blockly.serialization.workspaces.load(JSON.parse(data), workspace, undefined);
   Blockly.Events.enable();
+  return true;
 };

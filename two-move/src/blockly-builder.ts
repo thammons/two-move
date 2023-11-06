@@ -1,46 +1,58 @@
-import * as Blockly from 'blockly/index.js';
+import * as Blockly from 'blockly/index';
 
-import {blocks} from './blockly/blocks.js';
-import {javascriptGenerator} from 'blockly/javascript.js';
-import {save, load} from './blockly/serialization.js';
-import {toolbox} from './blockly/toolbox.js';
-import {forBlock} from './blockly/javascript-generator.js';
+import { blocks } from './blockly/blocks';
+import { javascriptGenerator } from 'blockly/javascript';
+import { save, load } from './blockly/serialization';
+import { toolbox } from './blockly/toolbox-small';
+import { forBlock } from './blockly/javascript-generator';
 // import './index.css';
-
 
 // Register the blocks and generator with Blockly
 Blockly.common.defineBlocks(blocks);
 Object.assign(javascriptGenerator.forBlock, forBlock);
+let ws: Blockly.WorkspaceSvg | null = null;
 
-// Set up UI elements and inject Blockly
-const codeDiv = document.getElementById('generatedCode')?.firstChild;
-const outputDiv = document.getElementById('output');
-const blocklyDiv = document.getElementById('blocklyDiv');
-const ws = blocklyDiv && Blockly.inject(blocklyDiv, {toolbox});
-
-// This function resets the code and output divs, shows the
-// generated code from the workspace, and evals the code.
-// In a real application, you probably shouldn't use `eval`.
 const runCode = () => {
+  resetBtn?.click();
   const code = javascriptGenerator.workspaceToCode(ws);
-  if (codeDiv) codeDiv.textContent = code;
+  // if (codeDiv) codeDiv.textContent = code;
 
-  if (outputDiv) outputDiv.innerHTML = '';
+  // if (outputDiv) outputDiv.innerHTML = '';
 
   eval(code);
 };
 
+// window.onload = () => {
+
+// Set up UI elements and inject Blockly
+// const codeDiv = document.getElementById('generatedCode')?.firstChild;
+// const outputDiv = document.getElementById('output');
+const blocklyDiv = document.getElementById('blocklyDiv');
+ws = blocklyDiv && Blockly.inject(blocklyDiv, { toolbox });
+
+
+const runBtn = document.getElementById('run-btn');
+if (runBtn) {
+  runBtn.onclick = runCode;
+}
+const resetBtn = document.getElementById('restart-btn');
+// This function resets the code and output divs, shows the
+// generated code from the workspace, and evals the code.
+// In a real application, you probably shouldn't use `eval`.
+
+
 if (ws) {
-    // Load the initial state from storage and run the code.
-  load(ws);
-  runCode();
+  // Load the initial state from storage and run the code.
+  if (load(ws)) {
+    runCode();
+  }
 
   // Every time the workspace changes state, save the changes to storage.
   ws.addChangeListener((e: Blockly.Events.Abstract) => {
     // UI events are things like scrolling, zooming, etc.
     // No need to save after one of these.
     if (e.isUiEvent) return;
-    save(ws);
+    save(ws!);
   });
 
 
@@ -50,9 +62,10 @@ if (ws) {
     // already running it once when the application starts.
     // Don't run the code during drags; we might have invalid state.
     if (e.isUiEvent || e.type == Blockly.Events.FINISHED_LOADING ||
-      ws.isDragging()) {
+      ws!.isDragging()) {
       return;
     }
     runCode();
   });
 }
+// }
