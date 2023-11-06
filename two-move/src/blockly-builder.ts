@@ -6,7 +6,24 @@ import { save, load } from './blockly/serialization';
 import { toolbox } from './blockly/toolbox-small';
 import { forBlock } from './blockly/javascript-generator';
 // import './index.css';
-
+const darktheme = Blockly.Theme.defineTheme('dark', {
+  'base': Blockly.Themes.Classic,
+  'name': 'Dark',
+  'componentStyles': {
+    'workspaceBackgroundColour': '#1e1e1e',
+    'toolboxBackgroundColour': 'blackBackground',
+    'toolboxForegroundColour': '#fff',
+    'flyoutBackgroundColour': '#252526',
+    'flyoutForegroundColour': '#ccc',
+    'flyoutOpacity': 1,
+    'scrollbarColour': '#797979',
+    'insertionMarkerColour': '#fff',
+    'insertionMarkerOpacity': 0.3,
+    'scrollbarOpacity': 0.4,
+    'cursorColour': '#d0d0d0',
+    // 'blackBackground': '#333',
+  },
+});
 // Register the blocks and generator with Blockly
 Blockly.common.defineBlocks(blocks);
 Object.assign(javascriptGenerator.forBlock, forBlock);
@@ -28,7 +45,7 @@ const runCode = () => {
 // const codeDiv = document.getElementById('generatedCode')?.firstChild;
 // const outputDiv = document.getElementById('output');
 const blocklyDiv = document.getElementById('blocklyDiv');
-ws = blocklyDiv && Blockly.inject(blocklyDiv, { toolbox });
+ws = blocklyDiv && Blockly.inject(blocklyDiv, { toolbox, theme: darktheme });
 
 
 const runBtn = document.getElementById('run-btn');
