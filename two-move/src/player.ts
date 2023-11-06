@@ -11,7 +11,7 @@ class Player implements IPlayer {
         this.location = startLocation;
         this.boardWidth = boardWidth;
         this.direction = direction || 'east';
-        this.indicator = this.getIndicator(this.direction);
+        this.indicator = this._getIndicator(this.direction);
     }
 
     getPlayerLocation(): ItemLocation {
@@ -41,7 +41,10 @@ class Player implements IPlayer {
         }
     }
 
-    getIndicator(direction: Direction): PlayerIndicator {
+    getIndicator(): PlayerIndicator {
+        return this._getIndicator(this.direction);
+    }
+    _getIndicator(direction: Direction): PlayerIndicator {
         switch (direction) {
             case 'east':
                 return '>';
@@ -61,8 +64,6 @@ class Player implements IPlayer {
 
     getNextMove(): ItemLocation {
         const playerIndex = this.getPlayerLocation();
-
-
         let nextMove = playerIndex;
 
         switch (this.direction) {

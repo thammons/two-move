@@ -91,6 +91,8 @@ export interface IPlayer extends IMapItem {
     setNextLocation(): void;
     turnRight(): void;
     getPlayerLocation(): ItemLocation;
+    getIndicator(): PlayerIndicator;
+    getNextMove(): ItemLocation;
 }
 
 export interface IMove {
