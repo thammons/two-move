@@ -1,121 +1,181 @@
 import { Direction, IBoard, IMap, IMove, IMover, IPlayer, ItemLocation } from "../types";
-
-
-// function randomTurns() {
-//     let moves: (() => void)[] = [];
-//     const randomTurns = Math.floor(Math.random() * 10 % 6);
-//     console.log('randomTurns', randomTurns);
-//     for (let i = 0; i < randomTurns; i++) {
-//         moves.push(() => turnRight(PLAYER, BOARD));
-//     }
-//     return moves;
-// }
-
-// function randomSteps() {
-//     let moves: (() => boolean)[] = [];
-//     const randomSteps = Math.floor(Math.random() * 100 % (BOARD.width / 4));
-//     console.log('randomSteps', randomSteps);
-//     for (let i = 0; i < randomSteps; i++) {
-//         moves.push(() => {
-//             const isValid = move(PLAYER, BOARD);
-//             if (!isValid)
-//                 randomTurns().forEach(t => t());
-//             return isValid;
-//         });
-//     }
-//     return moves;
-// }
-
-// function getDistanceToGoal() {
-//     const lastLocation = PLAYER.getPlayerLocation();
-//     const goalLocation = MAP.goal;
-//     const goalHoriz = goalLocation % MAP.width;
-//     const goalVert = Math.floor(goalLocation / MAP.width);
-//     const playerHoriz = lastLocation % MAP.width;
-//     const playerVert = Math.floor(lastLocation / MAP.width);
-
-//     let movesHoriz = 0;
-//     let horizDirection = "east";
-//     if (goalHoriz > playerHoriz) {
-//         horizDirection = 'east';
-//         movesHoriz = goalHoriz - playerHoriz;
-//     }
-//     else if (goalHoriz < playerHoriz) {
-//         horizDirection = 'west';
-//         movesHoriz = playerHoriz - goalHoriz;
-//     }
-
-//     let movesVert = 0;
-//     let vertDirection = "north";
-//     if (goalVert > playerVert) {
-//         vertDirection = 'south';
-//         movesVert = goalVert - playerVert;
-//     }
-//     else if (goalVert < playerVert) {
-//         vertDirection = 'north';
-//         movesVert = playerVert - goalVert;
-//     }
-
-//     return {
-//         horizontal: { moves: movesHoriz, direction: horizDirection },
-//         vertical: { moves: movesVert, direction: vertDirection }
-//     };
-// };
-
-// function turnToGoal(player: Player) {
-//     const distanceToGoal = getDistanceToGoal();
-
-//     let move = distanceToGoal.vertical;
-
-//     if (distanceToGoal.horizontal.moves > distanceToGoal.vertical.moves) {
-//         move = distanceToGoal.horizontal;
-//     }
-
-//     player.direction = move.direction as Direction;
-//     player.indicator = player.getIndicator(player.direction);
-
-//     return move;
-// };
-
-// function randomWalker(steps: ItemLocation[] = [], stepCount: number = 0) {
-//     if (stepCount > 100)
-//         return;
-
-//     const moves = randomSteps();
-//     //take some random steps
-//     randomTurns().forEach(t => moves.push(() => { t(); return true as boolean; }));
-
-//     /* STEP TOWARD GOAL WITH A BIT OF RANDOM */
-//     // const movesToGoal = turnToGoal(PLAYER);
-//     // //Take 1/4 of the steps toward the goal
-//     // [...Array(movesToGoal.moves % 4).keys()].forEach(i => moves.push(() => {
-//     //     //move fowarward toward goal
-//     //     const isValid = move(PLAYER, BOARD);
-//     //     //if the move isn't valid, make some turns
-//     //     if (!isValid)
-//     //         randomTurns().forEach(t => t());
-//     //     return isValid;
-//     // }));
-
-//     setTimeout(() => {
-//         moves.forEach((step) => {
-//             setTimeout(() => {
-//                 const lastLocation = PLAYER.getPlayerLocation();
-//                 steps.push(lastLocation);
-//                 if (step())
-//                     stepCount++;
-//             }, 250);
-//         });
-
-//         randomWalker(steps, stepCount + 1);
-//     }, 250);
-
-// }
+import * as utils from './mover-utils';
 
 export class RandomWalkerMover implements IMover {
+    directionMap: Map<Direction, Direction> = new Map([
+        ['east', 'south'],
+        ['south', 'west'],
+        ['west', 'north'],
+        ['north', 'east']
+    ]);
+    moves: IMove[] = [];
 
     getNextMove(player: IPlayer, board: IBoard): IMove {
-        throw new Error("Method not implemented.");
+        if (this.moves.length === 0)
+            this.moves = this.randomWalker(player, board);
+
+        return this.moves.shift()!;
+    }
+
+    randomTurns(currentDirection: Direction, location: ItemLocation): IMove[] {
+        let moves: IMove[] = [];
+        const randomTurns = Math.floor(Math.random() * 10 % 6);
+        // console.log('randomTurns', randomTurns);
+        let lastDirection = currentDirection;
+        for (let i = 0; i < randomTurns; i++) {
+            const nextDirection = utils.getNextDirection(lastDirection, this.directionMap);
+            moves.push(utils.createMove(nextDirection, location));
+            lastDirection = nextDirection;
+        }
+        return moves;
+    }
+
+    randomSteps(startLocation: ItemLocation, direction: Direction, map: IMap) {
+        let moves: IMove[] = [];
+        const randomSteps = Math.floor(Math.random() * 100 % (map.width / 4));
+        // console.log('randomSteps', randomSteps);
+        let lastLocation = startLocation;
+        for (let i = 0; i < randomSteps; i++) {
+            const nextLocation = utils.getNextLocation(lastLocation, direction, map.width);
+            if (utils.isValidMove(direction, lastLocation, nextLocation, map)) {
+                moves.push(utils.createMove(direction, lastLocation, nextLocation));
+            }
+        }
+        return moves;
+    }
+
+    getDistanceToGoal(location: ItemLocation, map: IMap) {
+        const goalLocation = map.goal;
+        const goalHoriz = goalLocation % map.width;
+        const goalVert = Math.floor(goalLocation / map.width);
+        const playerHoriz = location % map.width;
+        const playerVert = Math.floor(location / map.width);
+
+        let movesHoriz = 0;
+        let horizDirection: Direction | undefined = undefined;
+        if (goalHoriz > playerHoriz) {
+            horizDirection = 'east';
+            movesHoriz = goalHoriz - playerHoriz;
+        }
+        else if (goalHoriz < playerHoriz) {
+            horizDirection = 'west';
+            movesHoriz = playerHoriz - goalHoriz;
+        }
+
+        let movesVert = 0;
+        let vertDirection: Direction | undefined = undefined;
+        if (goalVert > playerVert) {
+            vertDirection = 'south';
+            movesVert = goalVert - playerVert;
+        }
+        else if (goalVert < playerVert) {
+            vertDirection = 'north';
+            movesVert = playerVert - goalVert;
+        }
+
+        return {
+            horizontal: { moves: movesHoriz, direction: horizDirection as Direction | undefined },
+            vertical: { moves: movesVert, direction: vertDirection as Direction | undefined }
+        };
+    };
+
+    turnToGoal(location: ItemLocation, map: IMap) {
+        const distanceToGoal = this.getDistanceToGoal(location, map);
+
+        let move = distanceToGoal.vertical;
+
+        if (distanceToGoal.horizontal.moves > distanceToGoal.vertical.moves || distanceToGoal.horizontal.direction === undefined) {
+            move = distanceToGoal.horizontal;
+        }
+
+        const direction = move.direction ?? 'east';
+        return utils.createMove(direction, location);
+    };
+
+    getSquaresToGoal(startLocation: ItemLocation, startDirection: Direction, map: IMap): IMove[] {
+        const distanceToGoal = this.getDistanceToGoal(startLocation, map);
+
+        let moves: IMove[] = [];
+
+        let direction = startDirection;
+        let nextDirection: Direction | undefined = startDirection;
+        let movesToGoal = 0;
+
+        if (startDirection === distanceToGoal.horizontal.direction) {
+            movesToGoal = distanceToGoal.horizontal.moves;
+            nextDirection = distanceToGoal.vertical.direction;
+        }
+        else if (startDirection === distanceToGoal.vertical.direction) {
+            movesToGoal = distanceToGoal.vertical.moves;
+            nextDirection = distanceToGoal.horizontal.direction;
+        }
+        else {
+            direction = this.turnToGoal(startLocation, map).direction;
+            if (['north', 'south'].includes(direction)) {
+                movesToGoal = distanceToGoal.vertical.moves;
+                nextDirection = distanceToGoal.horizontal.direction;
+            }
+            else {
+                movesToGoal = distanceToGoal.horizontal.moves;
+                nextDirection = distanceToGoal.vertical.direction;
+            }
+        }
+
+        if (startDirection != direction) {
+            moves.push(utils.createMove(direction, startLocation));
+        }
+
+        let location = startLocation;
+        for (let i = 0; i < movesToGoal; i++) {
+            const nextLocation = utils.getNextLocation(location, direction, map.width);
+            moves.push(utils.createMove(direction, location, nextLocation));
+        }
+
+        if (!!nextDirection) {
+            moves.push(...this.getSquaresToGoal(location, nextDirection!, map));
+        }
+
+        return moves;
+    }
+
+    randomWalker(player: IPlayer, board: IBoard) {
+        let location = player.getPlayerLocation();
+        let direction = player.direction;
+
+        if (this.moves.length > 0) {
+            const lastMove = this.moves[this.moves.length - 1];
+            location = lastMove.desitnationLocation;
+            direction = lastMove.direction;
+        }
+
+        const moves = this.randomSteps(location, direction, board.map);
+
+        if (moves.length > 0) {
+            const lastMove = moves[this.moves.length - 1];
+            location = lastMove.desitnationLocation;
+            direction = lastMove.direction;
+        }
+
+        moves.push(...this.randomTurns(direction, location));
+
+        if (moves.length > 0) {
+            const lastMove = moves[this.moves.length - 1];
+            location = lastMove.desitnationLocation;
+            direction = lastMove.direction;
+        }
+
+        /* STEP TOWARD GOAL WITH A BIT OF RANDOM */
+        const movesToGoal = this.getSquaresToGoal(location, direction, board.map);
+        //Take 1/4 of the steps toward the goal
+        movesToGoal.slice(0, Math.floor(movesToGoal.length / 4)).forEach(m => {
+            const isValidGoalStep = utils.isValidMove(m.direction, m.startLocation, m.desitnationLocation, board.map);
+            if (isValidGoalStep)
+                moves.push(m);
+            else
+                moves.push(...this.randomTurns(direction, location));
+        });
+
+        return moves;
     }
 
 

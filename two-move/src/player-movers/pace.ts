@@ -16,7 +16,8 @@ export class PaceMover implements IMover {
             if (!!this.previousMove
                 && this.previousMove.desitnationLocation === player.location
                 && this.previousMove.direction === player.direction) {
-                return this.moves.shift()!;
+                this.previousMove = this.moves.shift()!;
+                return this.previousMove;
             }
         }
 

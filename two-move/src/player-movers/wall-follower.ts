@@ -1,5 +1,7 @@
 import { Direction, IBoard, IMap, IMove, IMover, IPlayer, ItemLocation } from "../types";
 
+export type followDirection = 'left' | 'right' | 'alternate';
+
 // function followRightWall(steps: ItemLocation[] = [], stepCount: number = 0, turnCounter: number = 0) {
 //     if (stepCount > 1000)
 //         return;
