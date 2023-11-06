@@ -2,7 +2,7 @@ import { Cell } from "../board/cell";
 import { Direction, IBoard, ICell } from "../types";
 import * as utils from "./utils";
 
-let lastBoardVersion: IBoard;
+let lastBoardVersion: ICell[] | undefined = undefined;
 let showCollisionMessageTimeout: NodeJS.Timeout | undefined = undefined;
 
 export function paintBoard(board: IBoard, loadTimer: number = 0) {
@@ -10,7 +10,8 @@ export function paintBoard(board: IBoard, loadTimer: number = 0) {
         paintWholeBoard(board, loadTimer);
         return;
     }
-    updateBoard(board);
+    // updateBoard(board);
+    paintWholeBoard(board, loadTimer);
 };
 
 //TODO more info about the invalid move
@@ -61,12 +62,10 @@ function updateBoard(board: IBoard) {
     if (lastBoardVersion === undefined)
         throw new Error('lastBoardVersion is undefined, paintwholeboard should be called first');
 
-    lastBoardVersion = JSON.parse(JSON.stringify(board));
-
     let changedCells: Map<number, ICell> = new Map<number, ICell>();
-    lastBoardVersion.getCells().forEach((cell, index) => {
+    lastBoardVersion!.forEach((cell, index) => {
         //TODO add last update to cell object?
-        if (JSON.stringify(cell) !== JSON.stringify(board.getCells()[index])) {
+        if (JSON.stringify(cell) != JSON.stringify(board.getCells()[index])) {
             changedCells.set(index, cell);
         }
     });
@@ -76,16 +75,20 @@ function updateBoard(board: IBoard) {
 };
 
 export function updateCell(cell: ICell, index: number, isTemporary: boolean = false) {
-    const previousVersion = lastBoardVersion.getCell(index);
-    lastBoardVersion.setCell(index, JSON.parse(JSON.stringify(cell)));
+    if (lastBoardVersion === undefined) {
+        return;
+        //throw new Error('lastBoardVersion is undefined, paintwholeboard should be called first');
+    }
+    // console.log(cell)
+    if (!!isTemporary)
+        lastBoardVersion[index] = JSON.parse(JSON.stringify(cell));
 
     const element = utils.getElementById(`cell-${index}`);
     setCellAttributes(cell, index, element);
 
+
     if (isTemporary) {
-        setTimeout(() => {
-            updateCell(previousVersion, index);
-        }, 1000);
+        // utils.fade(element, 500, () => updateCell(lastBoardVersion![index], index));
     }
 }
 
@@ -107,6 +110,7 @@ function setCellAttributes(cell: ICell, index: number, element: HTMLElement) {
 
 
 function paintWholeBoard(board: IBoard, loadTimer: number = 0) {
+    lastBoardVersion = JSON.parse(JSON.stringify(board.getCells()));
     //Set board size
     const cellSize = board.cellWidth;
     const boardElement = utils.getElementById('board');

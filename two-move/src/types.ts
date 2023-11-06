@@ -28,6 +28,7 @@ export interface IBoard {
     map: IMap;
     getItemLocations(itemType: CellType | string): ItemLocation[];
     getCells(): ICell[];
+    updateCell(index: ItemLocation): void;
     getCell(position: ItemLocation): ICell;
     setCells(cells: ICell[]): void;
     setCell(position: ItemLocation, cell: ICell): void;

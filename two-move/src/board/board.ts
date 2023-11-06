@@ -21,6 +21,9 @@ class Board implements IBoard {
         this._events = events;
     }
 
+    updateCell(index: ItemLocation): void {
+        this._events.triggerCellUpdate({ cell: this._board[index], index: index, isTemporary: false });
+    }
 
     getCells(): ICell[] {
         //TODO deep copy instead of returning the reference
@@ -34,12 +37,12 @@ class Board implements IBoard {
 
     setCells(cells: ICell[]): void {
         //TODO validate
-        this._board = cells;
+        this._board = JSON.parse(JSON.stringify(cells));
     }
 
     setCell(position: ItemLocation, cell: ICell): void {
         //TODO validate
-        this._board[position] = cell;
+        this._board[position] = JSON.parse(JSON.stringify(cell));
     }
 
     getItemLocations(itemType: CellType | string): ItemLocation[] {
@@ -96,7 +99,7 @@ class Board implements IBoard {
             const player = this._board[startLocation].mapItems.find(mi => mi.cellType == 'player') as IPlayer;
             this._events.triggerInvalidStep({
                 player: player,
-                newLocation: this._board[desiredLocation],
+                newLocation: this._board[startLocation],
                 direction: direction!
             });
         }
@@ -109,16 +112,21 @@ class Board implements IBoard {
         const invalidClassName = `error-${direction}`;
         this._board[position].classes.push(invalidClassName);
         this._events.triggerCellUpdate({ cell: this._board[position], index: position, isTemporary: true });
+
+        setTimeout(() => {
+            this._board[position].classes = this._board[position].classes.filter(c => c !== invalidClassName);
+            this._events.triggerCellUpdate({ cell: this._board[position], index: position, isTemporary: false });
+        }, 1000);
     };
 
     updateItem(item: IMapItem) {
         this._board[item.location] = {
             indicator: item.indicator,
-            classes: [...this._board[item.location].classes, item.cellType],
-            mapItems: [...this._board[item.location].mapItems, item],
+            classes: [...new Set([...this._board[item.location].classes, item.cellType])],
+            mapItems: [...new Set([...this._board[item.location].mapItems, item])],
         };
         //utils.paintBoard(this);
-        this._events.triggerBoardUpdate({ board: this });
+        this._events.triggerCellUpdate({ cell: this._board[item.location], index: item.location, isTemporary: false });
     }
 
     move(player: IPlayer, startLocation: ItemLocation, desiredLocation?: ItemLocation): boolean {
@@ -133,8 +141,10 @@ class Board implements IBoard {
             mapItems: this._board[startLocation].mapItems.filter(i => i.cellType !== player.cellType),
         };
 
+
         player.setNextLocation();
 
+        this._events.triggerCellUpdate({ cell: this._board[startLocation], index: startLocation, isTemporary: false });
         this.updateItem(player);
 
         if (BoardValidation.isAtGoal(desiredLocation, this)) {

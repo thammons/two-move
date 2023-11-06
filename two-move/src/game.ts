@@ -40,6 +40,8 @@ function setupBoard() {
     });
 
     boardEvents.subscribeToCellUpdate((eventArgs) => {
+         //UI.paintBoard(BOARD);
+        //  console.log('cell update', JSON.stringify(eventArgs))
         UI.updateCell(eventArgs.cell, eventArgs.index, eventArgs.isTemporary);
     });
 
@@ -76,8 +78,8 @@ function setupUI() {
     const uiEvents = new UIUserEvents();
 
     uiEvents.subscribeToMove(() => {
-        PLAYER.setNextLocation();
-        BOARD.updateItem(PLAYER);
+        BOARD.move(PLAYER, PLAYER.getPlayerLocation(), PLAYER.getNextMove());
+        BOARD = LIGHTSOUT.update(BOARD, BOARD.getItemLocations('player')[0]);
     });
 
     uiEvents.subscribeToTurn(() => {
@@ -100,7 +102,9 @@ function setupUI() {
                 BOARD = LIGHTSOUT.lightsOn(BOARD, PLAYER, radius);
             }
         }
-        UI.paintBoard(BOARD);
+        console.log('lights', eventArgs)
+        //BOARD = LIGHTSOUT.update(BOARD, PLAYER.getPlayerLocation());
+        //UI.paintBoard(BOARD);
     });
 
     uiEvents.subscribeToSaveMap(() => {
@@ -116,6 +120,4 @@ function setupUI() {
     });
 
     UI_INTERACTIONS = new UIUserInteractions(uiEvents);
-    UI_INTERACTIONS.init();
-
 }

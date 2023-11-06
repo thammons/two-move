@@ -52,17 +52,17 @@ export default class MapGenerated implements IMap {
 
             const wallsTouching = this.getWallsTouchingTwoEdges(newwalls).flatMap(w => w.map(wi => wi));
             if (wallsTouching.length > 0) {
-                console.log('wallsTouching (removing)', wallsTouching);
+                // console.log('wallsTouching (removing)', wallsTouching);
                 wallsTouching.forEach(w => newwalls.splice(newwalls.indexOf(w), 1));
                 newwalls.push(...this.generateWalls(difficulty, wallsTouching.length / 4));
             }
             else {
-                console.log('done. wallsTouchingRemaining, i: ', wallsTouching, i)
+                // console.log('done. wallsTouchingRemaining, i: ', wallsTouching, i)
                 done = true;
             }
 
             if(i === cleanAttempts - 1 && !done) {
-                console.log('cleanAttempts reached, but not done, forcing done. wallsTouchingRemaining, i: ', wallsTouching, i)
+                // console.log('cleanAttempts reached, but not done, forcing done. wallsTouchingRemaining, i: ', wallsTouching, i)
                 done = true;
             }
         }
@@ -89,14 +89,14 @@ export default class MapGenerated implements IMap {
         const difficultyScale = 3.6; //finetune this
         const minValue = this.size / difficultyScale / 2;
         const maxValue = this.size / difficultyScale;
-        console.log("size, min, max walls", this.size, minValue, maxValue)
+        // console.log("size, min, max walls", this.size, minValue, maxValue)
         wallCount = wallCount ?? Math.floor((Math.random() * (maxValue * floatBetweenZeroAndOne - minValue)) + minValue);
         // wallCount = wallCount ?? Math.floor((Math.random() * (maxValue * floatBetweenZeroAndOne)) + 1);
         // console.log('wallCount', wallCount)
         for (let i = 0; i < wallCount; i++) {
             let wallStartLocation = Math.floor(Math.random() * (this.size + 1));
             let wallLocations = this.convertWallGenToMapLocations(wallStartLocation, this.generateWall());
-            console.log('wall locations', wallLocations);
+            // console.log('wall locations', wallLocations);
             walls = walls.concat(wallLocations);
         }
         // return this.generateAllWalls();
@@ -189,34 +189,34 @@ export default class MapGenerated implements IMap {
                 // console.log('top, bottom, left, right', cwTop, cwBottom, cwLeft, cwRight);
 
                 if (cwTop && cwBottom) {
-                    console.log('top and bottom', cw);
+                    // console.log('top and bottom', cw);
                     wallsTouchingTwoEdges.push(cw);
-                    console.log('wallsTouchingTwoEdges', wallsTouchingTwoEdges);
+                    // console.log('wallsTouchingTwoEdges', wallsTouchingTwoEdges);
                 }
                 else if (cwLeft && cwRight) {
-                    console.log('left and right', cw);
+                    // console.log('left and right', cw);
                     wallsTouchingTwoEdges.push(cw);
-                    console.log('wallsTouchingTwoEdges', wallsTouchingTwoEdges);
+                    // console.log('wallsTouchingTwoEdges', wallsTouchingTwoEdges);
                 }
                 else if (cwTop && cwLeft) {
-                    console.log('top and left', cw);
+                    // console.log('top and left', cw);
                     wallsTouchingTwoEdges.push(cw);
-                    console.log('wallsTouchingTwoEdges', wallsTouchingTwoEdges);
+                    // console.log('wallsTouchingTwoEdges', wallsTouchingTwoEdges);
                 }
                 else if (cwTop && cwRight) {
-                    console.log('top and right', cw);
+                    // console.log('top and right', cw);
                     wallsTouchingTwoEdges.push(cw);
-                    console.log('wallsTouchingTwoEdges', wallsTouchingTwoEdges);
+                    // console.log('wallsTouchingTwoEdges', wallsTouchingTwoEdges);
                 }
                 else if (cwBottom && cwLeft) {
-                    console.log('bottom and left', cw);
+                    // console.log('bottom and left', cw);
                     wallsTouchingTwoEdges.push(cw);
-                    console.log('wallsTouchingTwoEdges', wallsTouchingTwoEdges);
+                    // console.log('wallsTouchingTwoEdges', wallsTouchingTwoEdges);
                 }
                 else if (cwBottom && cwRight) {
-                    console.log('bottom and right', cw);
+                    // console.log('bottom and right', cw);
                     wallsTouchingTwoEdges.push(cw);
-                    console.log('wallsTouchingTwoEdges', wallsTouchingTwoEdges);
+                    // console.log('wallsTouchingTwoEdges', wallsTouchingTwoEdges);
                 }
             }
             else {
@@ -263,7 +263,7 @@ export default class MapGenerated implements IMap {
         //remove dupes and sort
         finalContiguousWalls = finalContiguousWalls.map(cw => ([...new Set(cw)] as number[]).sort((a, b) => a - b)).sort((a, b) => a[0] - b[0]);
 
-        console.log('finalContiguousWalls', finalContiguousWalls)
+        // console.log('finalContiguousWalls', finalContiguousWalls)
         return finalContiguousWalls;
     }
 

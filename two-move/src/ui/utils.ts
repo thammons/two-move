@@ -1,7 +1,7 @@
 
-export function createElement( tagName: string, innerHTML?: string, classes: string[] = []): HTMLElement {
+export function createElement(tagName: string, innerHTML?: string, classes: string[] = []): HTMLElement {
     const element = document.createElement(tagName);
-    
+
     if (!!classes.length)
         element.className += ` ${[...new Set(classes)].join(' ')}`;
 
@@ -24,14 +24,17 @@ export function unfade(element: HTMLElement, loadTimer = 100) {
         if (op >= 1) {
             op = 1;
             clearInterval(timer);
+            element.style.removeProperty('opacity');
         }
-        element.style.opacity = op.toString();
-        element.style.filter = 'alpha(opacity=' + op * 100 + ")";
-        op += op * 0.1;
+        else {
+            element.style.opacity = op.toString();
+            element.style.filter = 'alpha(opacity=' + op * 100 + ")";
+            op += op * 0.1;
+        }
     }, loadTimer);
 }
 
-export function fade(element: HTMLElement, loadTimer = 100) {
+export function fade(element: HTMLElement, loadTimer = 100, callback?: () => void) {
     let op = 1;  // initial opacity
     element.style.display = 'block';
     const timer = setInterval(function () {
@@ -39,9 +42,14 @@ export function fade(element: HTMLElement, loadTimer = 100) {
             op = 0.1;
             clearInterval(timer);
             element.style.display = 'none';
+            element.style.removeProperty('opacity');
+            if (!!callback)
+                callback();
         }
-        element.style.opacity = op.toString();
-        element.style.filter = 'alpha(opacity=' + op * 100 + ")";
-        op -= op * 0.1;
+        else {
+            element.style.opacity = op.toString();
+            element.style.filter = 'alpha(opacity=' + op * 100 + ")";
+            op -= op * 0.1;
+        }
     }, loadTimer);
 }
