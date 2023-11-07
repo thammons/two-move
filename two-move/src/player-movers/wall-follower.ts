@@ -12,6 +12,8 @@ export class WallFollowerMover implements IMover {
         ['north', 'east']
     ]);
     moves: IMove[] = [];
+    steps: ItemLocation[] = [];
+    stepCount: number = 0;
     direction: Direction = 'east';
     followDirection: followDirection = 'alternate';
     currentFollowDirection: followDirection = 'left';
@@ -36,15 +38,15 @@ export class WallFollowerMover implements IMover {
         }
         let nextLocation = utils.getNextLocation(location, nextDirection, map.width);
 
-        let moves: IMove[] = [];
+        let newMoves: IMove[] = [];
         const firstMoveTurns = followDirection === 'left' ? 3 : 1;
         const secondMoveTurns = followDirection === 'left' ? 1 : 3;
 
         let isValid: boolean = utils.isValidMove(nextDirection, location, nextLocation, map);
         if (isValid) {
-            moves.push(...this.turn(firstMoveTurns, location));
-            nextDirection = moves[moves.length - 1].direction;
-            moves.push(utils.createMove(nextDirection, location, nextLocation));
+            newMoves.push(...this.turn(firstMoveTurns, location));
+            nextDirection = newMoves[newMoves.length - 1].direction;
+            newMoves.push(utils.createMove(nextDirection, location, nextLocation));
 
             location = nextLocation;
             nextLocation = utils.getNextLocation(location, nextDirection, map.width);
@@ -52,17 +54,25 @@ export class WallFollowerMover implements IMover {
         }
 
         if (!isValid) {
-            moves.push(...this.turn(secondMoveTurns, location));
-            nextDirection = moves[moves.length - 1].direction;
+            newMoves.push(...this.turn(secondMoveTurns, location));
+            nextDirection = newMoves[newMoves.length - 1].direction;
         }
         else if (nextDirection == 'east') {
             while (isValid) {
-                moves.push(utils.createMove(nextDirection, location, nextLocation));
+                newMoves.push(utils.createMove(nextDirection, location, nextLocation));
                 nextLocation = utils.getNextLocation(location, nextDirection, map.width)
                 isValid = utils.isValidMove(nextDirection, location, nextLocation, map);
             }
         }
 
+        newMoves.forEach(m => {
+            if (m.isMove) {
+                this.stepCount++;
+                this.steps.push(m.desitnationLocation);
+            }
+        });
+
+        return newMoves;
     }
 
     //steps: ItemLocation[] = [], stepCount: number = 0, turnCounter: number = 0
@@ -163,7 +173,7 @@ export class WallFollowerMover implements IMover {
         //         directionLeft = !directionLeft;
         //     }
         // }
-
+        throw new Error('Not implemented');
 
         // setTimeout(() => {
         //     steps.push(PLAYER.getPlayerLocation());

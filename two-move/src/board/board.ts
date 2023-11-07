@@ -143,10 +143,9 @@ class Board implements IBoard {
 
 
         player.setNextLocation();
-
-        this._events.triggerCellUpdate({ cell: this._board[startLocation], index: startLocation, isTemporary: false });
         this.updateItem(player);
-
+        
+        this._events.triggerMoved({ cell: this._board[startLocation], index: startLocation, isTemporary: false });
         if (BoardValidation.isAtGoal(desiredLocation, this)) {
             this._events.triggerGoalReached();
         }

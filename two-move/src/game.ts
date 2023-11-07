@@ -1,14 +1,17 @@
 import Board from "./board/board";
 import { BoardEvents } from "./board/events";
 import MapGenerated from "./maps/generate-map1";
+import { MapSimple } from "./maps/open-map";
 import Player from "./player";
 import { IMap } from "./types";
 import { UI, UIUserEvents, UIUserInteractions } from "./ui";
 
-import { InitializeMap, LightsOut } from './board-builders/index.js';
-import { saveMap, getNextMap } from './maps/save-map.js';
+import { InitializeMap, LightsOut } from './board-builders/index';
+import { saveMap, getNextMap } from './maps/save-map';
 
+import * as mover from './player-movers/index';
 
+const moverType: mover.MoverTypes = 'pacer';
 var MAP: IMap;
 var PLAYER: Player;
 var LIGHTSOUT: LightsOut<Board>;
@@ -79,7 +82,8 @@ const restart = () => {
 }
 
 function nextMap() {
-    MAP = new MapGenerated(PLAYER?.getPlayerLocation() ?? 0);
+    // MAP = new MapGenerated(PLAYER?.getPlayerLocation() ?? 0);
+    MAP = new MapSimple();
 }
 
 function setupBoard() {
@@ -92,8 +96,14 @@ function setupBoard() {
 
     boardEvents.subscribeToCellUpdate((eventArgs) => {
         //UI.paintBoard(BOARD);
-        //  console.log('cell update', JSON.stringify(eventArgs))
+        //console.log('cell update', JSON.stringify(eventArgs))
         UI.updateCell(eventArgs.cell, eventArgs.index, eventArgs.isTemporary);
+    });
+
+    boardEvents.subscribeToMoved(() => {
+        LIGHTSOUT.update(BOARD, BOARD.getItemLocations('player')[0]);
+        //UI.updateCell(eventArgs.cell, eventArgs.index, eventArgs.isTemporary);
+         UI.paintBoard(BOARD);
     });
 
     boardEvents.subscribeToInvalidStep((eventArgs) => {
@@ -122,8 +132,8 @@ function setupBoard() {
     PLAYER = new Player(MAP.player, MAP.width, 'east');
     BOARD.updateItem(PLAYER);
 
-    //BOARD = LIGHTSOUT.init(BOARD);
-
+    BOARD = LIGHTSOUT.init(BOARD);
+    mover.runMover(moverType, PLAYER, BOARD);
     UI.paintBoard(BOARD, 100);
 }
 
@@ -132,7 +142,7 @@ function setupUI() {
 
     uiEvents.subscribeToMove(() => {
         BOARD.move(PLAYER, PLAYER.getPlayerLocation(), PLAYER.getNextMove());
-        // BOARD = LIGHTSOUT.update(BOARD, BOARD.getItemLocations('player')[0]);
+        LIGHTSOUT.update(BOARD, BOARD.getItemLocations('player')[0]);
     });
 
     uiEvents.subscribeToTurn(() => {
@@ -143,21 +153,21 @@ function setupUI() {
     uiEvents.subscribeToLight((eventArgs) => {
 
         if (!eventArgs.lightsOn) {
-            BOARD = LIGHTSOUT.lightsOff(BOARD, PLAYER);
+            LIGHTSOUT.lightsOff(BOARD, PLAYER);
         }
         else {
             if (eventArgs.showWholeBoard) {
-                BOARD = LIGHTSOUT.lightsOn(BOARD, PLAYER);
+                LIGHTSOUT.lightsOn(BOARD, PLAYER);
             }
             else {
                 //TODO: make this based on the board dimentions
                 const radius = 10;
-                BOARD = LIGHTSOUT.lightsOn(BOARD, PLAYER, radius);
+                LIGHTSOUT.lightsOn(BOARD, PLAYER, radius);
             }
         }
         console.log('lights', eventArgs)
-        //BOARD = LIGHTSOUT.update(BOARD, PLAYER.getPlayerLocation());
-        //UI.paintBoard(BOARD);
+        LIGHTSOUT.update(BOARD, PLAYER.getPlayerLocation());
+        UI.paintBoard(BOARD);
     });
 
     uiEvents.subscribeToSaveMap(() => {

@@ -53,7 +53,6 @@ export class LightsOut<T extends IBoard> implements IBoardBuilderOption<T> {
         // for(var i = 0; i < cells.length; i++) {
         //     cells[i].classes = cells[i].classes.filter(c => c != 'fog');
         // }
-
         const distanceToPlayer = override !== undefined ? override : (this.lightRadius);
         const visibleLocations = BoardValidation.locationsVisibleToPlayer(targetLocation, distanceToPlayer, cells, board.width, board.height);
 
@@ -98,7 +97,7 @@ export class LightsOut<T extends IBoard> implements IBoardBuilderOption<T> {
                 // console.log('setcell', JSON.stringify(cell));
                 // board.setCell(index, JSON.parse(JSON.stringify(cell))); 
                 board.updateCell(index);
-                // console.log('updatedcell', index, JSON.stringify(board.getCell(index)))
+                //console.log('updatedcell', index, JSON.stringify(board.getCell(index)))
             }
         });
 

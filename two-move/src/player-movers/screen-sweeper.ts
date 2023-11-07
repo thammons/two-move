@@ -38,16 +38,29 @@ export class ScreenSweeperMover implements IMover {
             desiredLocation = lastMove.desitnationLocation;
         }
 
+        const startDirection = this.direction;
+
         let lastLocation = player.getPlayerLocation();
         this.steps.push(lastLocation);
 
         const isValid = board.isValidMove(player.getPlayerLocation(), player.getNextMove());
         if (!isValid) {
 
-            if (utils.isMaxWest(this.direction, location, board.map)) {
+            if (startDirection === 'west') {
                 moves.push(...this.turn(3, location));
             }
-            else if (utils.isMaxEast(this.direction, location, board.map)) {
+            else if (startDirection === 'east') {
+                moves.push(...this.turn(1, location));
+            }
+            
+            location = desiredLocation;
+            desiredLocation = utils.getNextLocation(location, this.direction, board.map.width);
+            moves.push(utils.createMove(this.direction, location, desiredLocation));
+    
+            if (startDirection === 'west') {
+                moves.push(...this.turn(3, location));
+            }
+            else if (startDirection === 'east') {
                 moves.push(...this.turn(1, location));
             }
         }
@@ -63,13 +76,6 @@ export class ScreenSweeperMover implements IMover {
             }
         }
 
-        if (utils.isMaxWest(this.direction, location, board.map)) {
-            moves.push(...this.turn(3, location));
-        }
-        else if (utils.isMaxEast(this.direction, location, board.map)) {
-            moves.push(...this.turn(1, location));
-        }
-
 
         moves.forEach(m => {
             if (m.isMove) {
@@ -78,8 +84,11 @@ export class ScreenSweeperMover implements IMover {
             }
         });
 
+        console.log('screen-sweeper moves', moves)
         return moves;
     }
+
+    
 
     turn(count: number, location: ItemLocation): IMove[] {
         let moves: IMove[] = [];

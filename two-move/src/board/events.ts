@@ -22,6 +22,7 @@ export interface IInvalidStepEvent {
 export class BoardEvents {
     boardUpdateHandlers: ISimpleEventHandler<IBoardUpdateEvent>[] = [];
     cellUpdateHandlers: ISimpleEventHandler<ICellUpdateEvent>[] = [];
+    movedHandlers: ISimpleEventHandler<ICellUpdateEvent>[] = [];
     invalidStepHandlers: ISimpleEventHandler<IInvalidStepEvent>[] = [];
     goalReachedHandlers: ISignalHandler[] = [];
 
@@ -38,6 +39,13 @@ export class BoardEvents {
     }
     triggerCellUpdate(eventArgs: ICellUpdateEvent) {
         this.cellUpdateHandlers.forEach(h => h(eventArgs));
+    }
+    
+    subscribeToMoved(handler: ISimpleEventHandler<ICellUpdateEvent>) {
+        this.movedHandlers.push(handler);
+    }
+    triggerMoved(eventArgs: ICellUpdateEvent) {
+        this.movedHandlers.forEach(h => h(eventArgs));
     }
 
     subscribeToInvalidStep(handler: ISimpleEventHandler<IInvalidStepEvent>) {
