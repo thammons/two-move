@@ -1,11 +1,20 @@
 import { ISignalHandler, ISimpleEventHandler } from "../types";
 
-export default class UIEvents {
-    private moveHandlers: ISignalHandler[] = [];
-    private turnHandlers: ISignalHandler[] = [];
-    private lightHandlers: ISimpleEventHandler<{ lightsOn: boolean, showWholeBoard: boolean }>[] = [];
-    private saveMapHandlers: ISignalHandler[] = [];
-    private resetHandlers: ISimpleEventHandler<{ newMap: boolean }>[] = [];
+
+export interface IUIEvents {
+    moveHandlers: ISignalHandler[],
+    turnHandlers: ISignalHandler[],
+    lightHandlers: ISimpleEventHandler<{ lightsOn: boolean, showWholeBoard: boolean }>[],
+    saveMapHandlers: ISignalHandler[],
+    resetHandlers: ISimpleEventHandler<{ newMap: boolean, resetPlayer: boolean }>[]
+}
+
+export class UIEvents implements IUIEvents {
+    moveHandlers: ISignalHandler[] = [];
+    turnHandlers: ISignalHandler[] = [];
+    lightHandlers: ISimpleEventHandler<{ lightsOn: boolean, showWholeBoard: boolean }>[] = [];
+    saveMapHandlers: ISignalHandler[] = [];
+    resetHandlers: ISimpleEventHandler<{ newMap: boolean, resetPlayer: boolean }>[] = [];
 
     subscribeToMove(handler: ISignalHandler) {
         this.moveHandlers.push(handler);
@@ -35,10 +44,10 @@ export default class UIEvents {
         this.saveMapHandlers.forEach(h => h());
     }
 
-    subscribeToReset(handler: ISimpleEventHandler<{ newMap: boolean }>) {
+    subscribeToReset(handler: ISimpleEventHandler<{ newMap: boolean, resetPlayer: boolean }>) {
         this.resetHandlers.push(handler);
     }
-    triggerReset(eventArgs: { newMap: boolean }) {
+    triggerReset(eventArgs: { newMap: boolean, resetPlayer: boolean }) {
         this.resetHandlers.forEach(h => h(eventArgs));
     }
 }

@@ -3,13 +3,14 @@ import { BoardEvents } from "./board/events";
 import MapGenerated from "./maps/generate-map1";
 import { MapWalledPlayerBox } from "./maps/open-map";
 import Player from "./player";
-import { IBoardEvents, IMap } from "./types";
-import { UI, UIUserEvents, UIUserInteractions } from "./ui";
+import { IBoard, IBoardEvents, IMap, IMove, IMover, IPlayer } from "./types";
+import { UI, type IUIEvents, Types as UITypes, KeyboardInteractions, UIEvents } from "./ui";
 
 import { InitializeMap, LightsOut } from './board-builders/index';
 import { saveMap, getNextMap } from './maps/save-map';
 
 import { Mover, MoverTypes } from './player-movers/index';
+import { IUIMover, UIMover, UIMoverRunner, getKeyboardMover } from "./ui/movers/ui-mover";
 
 
 //TODO make this (game.ts) an object so blockly and use it differently than free play mode
@@ -31,173 +32,192 @@ import { Mover, MoverTypes } from './player-movers/index';
 //WallFollower mover still needs work (commented out method), gets stuck in loop if no walls to collide into
 //screen sweeper needs to flip and go north when bottom of the map is swept
 
-const useMover = false;
-const moverType: MoverTypes = 'wall-follower';
-const moverSpeed = 150;
-
-function nextMap() {
-    MAP = new MapGenerated(PLAYER?.getPlayerLocation() ?? 0);
-    //  MAP = new MapWalledPlayerBox();
+export interface IGameOptions {
+    useMover: boolean,
+    uiMoverCreators: ((speed: number, player: IPlayer, board: IBoard) => IUIMover)[],
+    moverType: MoverTypes,
+    moverSpeed: number,
+    getNextMap: (player: IPlayer) => IMap,
 }
 
-var MOVER: Mover;
-var MAP: IMap;
-var PLAYER: Player;
-var LIGHTSOUT: LightsOut<Board>;
-var BOARD: Board;
-
-let UI_INTERACTIONS: UIUserInteractions;
-
+const GameOptions: IGameOptions = {
+    useMover: false,
+    moverType: 'wall-follower',
+    moverSpeed: 150,
+    uiMoverCreators: [getKeyboardMover],
+    getNextMap: (player: IPlayer) => new MapGenerated(player?.getPlayerLocation() ?? 0)
+}
 
 window.onload = () => {
-    init();
+    const game = new Game(GameOptions);
+    game.init();
+
 }
 
-export function init() {
-    setupBoard();
-    setupUI();
-    // console.log(Maps1);
-    // MAP_FROM_JSON = new MapFromJson(Maps1);
 
-    const moveBtn = document.getElementById('move-btn');
-    if (!moveBtn) throw new Error('move-btn not found');
-    moveBtn.onclick = move;
+// var MOVER: Mover;
+// var MAP: IMap;
+// var PLAYER: Player;
+// var LIGHTSOUT: LightsOut<Board>;
+// var BOARD: Board;
 
-    const turnBtn = document.getElementById('turn-btn');
-    if (!turnBtn) throw new Error('turn-btn not found');
-    turnBtn.onclick = turnRight;
+// let UI_INTERACTIONS: UIUserInteractions;
 
-    const restartBtn = document.getElementById('restart-btn');
-    if (!restartBtn) throw new Error('restart-btn not found');
-    restartBtn.onclick = restart;
-}
+class UIButtonMover implements IMover {
 
-let moveQueue: (() => void)[] = [];
-let isRunningQueue = false;
-const runQueue = (forceRun: boolean = false) => {
-    if (!forceRun && isRunningQueue) return;
-    isRunningQueue = true;
-    if (moveQueue.length > 0) {
-        setTimeout(() => {
-            moveQueue[0]();
-            moveQueue.shift();
-            UI.paintBoard(BOARD);
-            console.log('queue', moveQueue.length)
-            runQueue(true);
-        }, 200);
-    }
-    else {
-        isRunningQueue = false;
+    moves: IMove[] = [];
+    getNextMove(player: IPlayer, board: IBoard): IMove {
+
+        //if no moves, just wait
+        if (!this.moves.length)
+            return {
+                direction: player.direction,
+                startLocation: player.location,
+                desitnationLocation: player.location,
+                isMove: false
+            };
+        return this.moves.shift()!;
     }
 }
 
-//playerControls:
-const move = () => {
-    moveQueue.push(() => BOARD.move(PLAYER, PLAYER.getPlayerLocation(), PLAYER.getNextMove()));
-    runQueue();
-}
+//TODO add UI mover
 
-const turnRight = () => {
-    moveQueue.push(() => {
-        PLAYER.turnRight();
-        BOARD.updateItem(PLAYER);
-    });
-    runQueue();
-}
 
-const restart = () => {
-    moveQueue = [];
-    setupBoard();
-}
 
-function setupBoard() {
-    if (MAP === undefined) {
-        nextMap();
-        //TODO pull last map from localstorage?
-        //pull first map from localstorage?
+
+export class Game {
+
+    private useMover: boolean;
+    private moverType: MoverTypes;
+    private moverSpeed: number;
+    private map: IMap;
+    private getNextMap: (player: IPlayer) => IMap;
+
+    //this isn't read as it uses eventhandlers
+    private uiMovers: IUIMover[] = [];
+    private uiMoverCreators: ((speed: number, player: IPlayer, board: IBoard) => IUIMover)[];
+
+
+    private board: Board | undefined = undefined;
+    private lightsout: LightsOut<Board> | undefined = undefined;
+
+
+    private player: Player | undefined = undefined;
+    private mover: Mover | undefined = undefined;
+
+    constructor(boardOptions: IGameOptions) {
+        this.useMover = boardOptions.useMover;
+        this.moverType = boardOptions.moverType;
+        this.moverSpeed = boardOptions.moverSpeed;
+        this.uiMoverCreators = boardOptions.uiMoverCreators;
+        this.getNextMap = boardOptions.getNextMap;
+
+        this.map = this.getNextMap(this.player!);
     }
 
-    BOARD = new Board(MAP);
-    const create = new InitializeMap<Board>(MAP);
-    LIGHTSOUT = new LightsOut<Board>(2, ['goal', 'player'])
-
-    BOARD = create.init(BOARD);
-
-    //BLOCKLY needs a slightly different game mode...
-    // PLAYER = new Player(MAP.player, MAP.width, PLAYER?.direction ?? 'east');
-    PLAYER = new Player(MAP.player, MAP.width, 'east');
-    BOARD.updateItem(PLAYER);
-
-    //adds board handlers in init
-    LIGHTSOUT.init(BOARD);
-
-    const uiHandlers: IBoardEvents = {
-        boardUpdateHandlers: [(eventArgs) => UI.paintBoard(eventArgs.board)],
-        cellUpdateHandlers: [(eventArgs) => UI.updateCell(eventArgs.cell, eventArgs.index, eventArgs.isTemporary)],
-        movedHandlers: [(eventArgs) => UI.updateCell(eventArgs.cell, eventArgs.index, eventArgs.isTemporary)],
-        invalidStepHandlers: [(eventArgs) => UI.updateCell(eventArgs.newLocation, eventArgs.player.location, true)],
-        goalReachedHandlers: [
-            () => {
-                nextMap();
-                setupBoard();
-            }
-        ]
-    };
-    BOARD.addEventListeners(uiHandlers);
-
-    if (useMover) {
-        if (!!MOVER) MOVER.stop();
-        MOVER = new Mover(moverType);
-        MOVER.runMover(PLAYER, BOARD, moverSpeed);
+    init() {
+        this.setupBoard();
+        this.setupUI();
+        // console.log(Maps1);
+        // MAP_FROM_JSON = new MapFromJson(Maps1);
     }
 
-    UI.paintBoard(BOARD, 100);
-}
-
-function setupUI() {
-    const uiEvents = new UIUserEvents();
-
-    uiEvents.subscribeToMove(() => {
-        BOARD.move(PLAYER, PLAYER.getPlayerLocation(), PLAYER.getNextMove());
-        LIGHTSOUT.update(BOARD, BOARD.getItemLocations('player')[0]);
-    });
-
-    uiEvents.subscribeToTurn(() => {
-        PLAYER.turnRight();
-        BOARD.updateItem(PLAYER);
-    });
-
-    uiEvents.subscribeToLight((eventArgs) => {
-
-        if (!eventArgs.lightsOn) {
-            LIGHTSOUT.lightsOff(BOARD, PLAYER);
-        }
-        else {
-            if (eventArgs.showWholeBoard) {
-                LIGHTSOUT.lightsOn(BOARD, PLAYER);
-            }
-            else {
-                //TODO: make this based on the board dimentions
-                const radius = 10;
-                LIGHTSOUT.lightsOn(BOARD, PLAYER, radius);
-                // This will mark the cells as seen
-                // LIGHTSOUT.update(BOARD, PLAYER.getPlayerLocation());
-            }
-        }
-        UI.paintBoard(BOARD);
-    });
-
-    uiEvents.subscribeToSaveMap(() => {
-        saveMap(MAP);
-    });
-
-    uiEvents.subscribeToReset((eventArgs) => {
-        if (eventArgs.newMap) {
-            nextMap();
+    private setupBoard() {
+        if (this.map === undefined) {
+            this.getNextMap(this.player!);
+            //TODO pull last map from localstorage?
+            //pull first map from localstorage?
         }
 
-        setupBoard();
-    });
+        this.board = new Board(this.map);
+        const create = new InitializeMap<Board>(this.map);
+        this.lightsout = new LightsOut<Board>(2, ['goal', 'player'])
 
-    UI_INTERACTIONS = new UIUserInteractions(uiEvents);
+        this.board = create.init(this.board);
+
+        //BLOCKLY needs a slightly different game mode...
+        // PLAYER = new Player(MAP.player, MAP.width, PLAYER?.direction ?? 'east');
+        this.player! = new Player(this.map.player, this.map.width, 'east');
+        this.board.updateItem(this.player!);
+
+        //adds board handlers in init
+        this.lightsout.init(this.board);
+
+        const uiHandlers: IBoardEvents = {
+            boardUpdateHandlers: [(eventArgs) => UI.paintBoard(eventArgs.board)],
+            cellUpdateHandlers: [(eventArgs) => UI.updateCell(eventArgs.cell, eventArgs.index, eventArgs.isTemporary)],
+            movedHandlers: [(eventArgs) => UI.updateCell(eventArgs.cell, eventArgs.index, eventArgs.isTemporary)],
+            invalidStepHandlers: [(eventArgs) => UI.updateCell(eventArgs.newLocation, eventArgs.player.location, true)],
+            goalReachedHandlers: [
+                () => {
+                    this.getNextMap(this.player!);
+                    this.setupBoard();
+                }
+            ]
+        };
+        this.board.addEventListeners(uiHandlers);
+
+        if (this.useMover) {
+            if (!!this.mover) this.mover.stop();
+            this.mover = new Mover(this.moverType);
+            this.mover.runMover(this.player!, this.board, this.moverSpeed);
+        }
+
+        UI.paintBoard(this.board, 100);
+    }
+
+    private setupUI() {
+        const uiEvents: IUIEvents = {
+            moveHandlers: [() => {
+                this.board!.move(this.player!, this.player!.getPlayerLocation(), this.player!.getNextMove());
+                // this.lightsout!.update(this.board!, this.board!.getItemLocations('player')[0]);
+            }],
+            turnHandlers: [() => {
+                this.player!.turnRight();
+                this.board!.updateItem(this.player!);
+            }],
+            lightHandlers: [(eventArgs) => {
+
+                if (!eventArgs.lightsOn) {
+                    this.lightsout!.lightsOff(this.board!, this.player!);
+                }
+                else {
+                    if (eventArgs.showWholeBoard) {
+                        this.lightsout!.lightsOn(this.board!, this.player!);
+                    }
+                    else {
+                        //TODO: make this based on the board dimentions
+                        const radius = 10;
+                        this.lightsout!.lightsOn(this.board!, this.player!, radius);
+                        // This will mark the cells as seen
+                        // LIGHTSOUT.update(BOARD, PLAYER.getPlayerLocation());
+                    }
+                }
+                UI.paintBoard(this.board!);
+            }],
+            saveMapHandlers: [() => {
+                saveMap(this.map);
+            }],
+            resetHandlers: [(eventArgs) => {
+                if (eventArgs.newMap) {
+                    this.getNextMap(this.player!);
+                }
+
+                this.setupBoard();
+            }]
+        }
+
+        if (!this.uiMovers.length)
+            this.uiMovers = [];
+//Player has no direction?
+        this.uiMovers = this.uiMoverCreators.map((fn) => {
+            return fn(this.moverSpeed, this.player!, this.board!);
+        });
+
+        this.uiMovers.forEach((mover) => {
+            const runner = new UIMoverRunner();
+            runner.runQueue(mover, this.player!, this.board!);
+            UI.paintBoard(this.board!);
+        });
+    }
 }

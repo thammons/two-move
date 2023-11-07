@@ -1,8 +1,9 @@
-import UIUserEvents from './ui-user-events';
+import { UIEvents, IUIEvents } from '../ui-user-events';
+import { IUIUserInteractions } from './types';
 
 
-export default class UIUserInteractions {
-    private _events: UIUserEvents;
+export class KeyboardInteractions implements IUIUserInteractions {
+    private _events: UIEvents;
     private _keydownEvents: Map<string, Function> = new Map([
         ['ArrowUp', () => this._events.triggerMove()],
         ['ArrowDown', () => this._events.triggerMove()],
@@ -17,7 +18,7 @@ export default class UIUserInteractions {
         ['f', () => this._events.triggerLight({ lightsOn: true, showWholeBoard: false })],
         ['e', () => this._events.triggerLight({ lightsOn: true, showWholeBoard: true })],
 
-        ['r', () => this._events.triggerReset({ newMap: true })],
+        ['r', () => this._events.triggerReset({ newMap: true, resetPlayer: false })],
         ['!', () => this._events.triggerSaveMap()],
     ]);
 
@@ -26,8 +27,13 @@ export default class UIUserInteractions {
         ['e', () => this._events.triggerLight({ lightsOn: false, showWholeBoard: false })],
     ]);
 
-    constructor(events: UIUserEvents) {
-        this._events = events;
+    constructor(events: IUIEvents) {
+        this._events = new UIEvents();
+        this._events.moveHandlers = events.moveHandlers;
+        this._events.turnHandlers = events.turnHandlers;
+        this._events.lightHandlers = events.lightHandlers;
+        this._events.saveMapHandlers = events.saveMapHandlers;
+        this._events.resetHandlers = events.resetHandlers;
         this.init();
     }
 

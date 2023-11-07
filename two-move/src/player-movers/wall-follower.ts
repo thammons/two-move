@@ -1,5 +1,5 @@
 import { Direction, IBoard, IMap, IMove, IMover, IPlayer, ItemLocation } from "../types";
-import { Move } from "./move";
+import { Move } from "../board/move";
 import * as utils from './mover-utils';
 
 export type followDirection = 'left' | 'right' | 'alternate';

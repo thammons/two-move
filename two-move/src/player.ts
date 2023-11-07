@@ -19,8 +19,6 @@ class Player implements IPlayer {
     }
 
     turnRight() {
-        // const playerIndex = this.getPlayerLocation();
-
         switch (this.direction) {
             case 'east':
                 this.direction = 'south';
