@@ -32,7 +32,7 @@ export class RandomWalkerMover implements IMover {
 
     randomSteps(startLocation: ItemLocation, direction: Direction, map: IMap) {
         let moves: IMove[] = [];
-        const randomSteps = Math.floor(Math.random() * 100 % (map.width / 4));
+        const randomSteps = Math.floor(Math.random() * 100 % (map.width / 2)) + 1;
         // console.log('randomSteps', randomSteps);
         let lastLocation = startLocation;
         for (let i = 0; i < randomSteps; i++) {
@@ -92,7 +92,10 @@ export class RandomWalkerMover implements IMover {
         return utils.createMove(direction, location);
     };
 
-    getSquaresToGoal(startLocation: ItemLocation, startDirection: Direction, map: IMap): IMove[] {
+    getSquaresToGoal(startLocation: ItemLocation, startDirection: Direction, map: IMap, isSecondCall: boolean = false): IMove[] {
+        if (startDirection === undefined)
+            return [];
+
         const distanceToGoal = this.getDistanceToGoal(startLocation, map);
 
         let moves: IMove[] = [];
@@ -101,11 +104,11 @@ export class RandomWalkerMover implements IMover {
         let nextDirection: Direction | undefined = startDirection;
         let movesToGoal = 0;
 
-        if (startDirection === distanceToGoal.horizontal.direction) {
+        if (startDirection !== distanceToGoal.horizontal.direction) {
             movesToGoal = distanceToGoal.horizontal.moves;
             nextDirection = distanceToGoal.vertical.direction;
         }
-        else if (startDirection === distanceToGoal.vertical.direction) {
+        else if (startDirection !== distanceToGoal.vertical.direction) {
             movesToGoal = distanceToGoal.vertical.moves;
             nextDirection = distanceToGoal.horizontal.direction;
         }
@@ -131,14 +134,14 @@ export class RandomWalkerMover implements IMover {
             moves.push(utils.createMove(direction, location, nextLocation));
         }
 
-        if (!!nextDirection) {
-            moves.push(...this.getSquaresToGoal(location, nextDirection!, map));
+        if (!!nextDirection && !isSecondCall) {
+            moves.push(...this.getSquaresToGoal(location, nextDirection!, map, true));
         }
 
         return moves;
     }
 
-    randomWalker(player: IPlayer, board: IBoard) {
+    randomWalker(player: IPlayer, board: IBoard): IMove[] {
         let location = player.getPlayerLocation();
         let direction = player.direction;
 
@@ -148,32 +151,39 @@ export class RandomWalkerMover implements IMover {
             direction = lastMove.direction;
         }
 
-        const moves = this.randomSteps(location, direction, board.map);
-
+        let moves = this.randomSteps(location, direction, board.map);
         if (moves.length > 0) {
-            const lastMove = moves[this.moves.length - 1];
+            const lastMove = moves[moves.length - 1];
             location = lastMove.desitnationLocation;
             direction = lastMove.direction;
         }
 
         moves.push(...this.randomTurns(direction, location));
-
         if (moves.length > 0) {
-            const lastMove = moves[this.moves.length - 1];
+            const lastMove = moves[moves.length - 1];
             location = lastMove.desitnationLocation;
             direction = lastMove.direction;
         }
 
+        //shuffle the moves
+        moves = moves.sort(() => Math.random() - 0.5);
+
         /* STEP TOWARD GOAL WITH A BIT OF RANDOM */
         const movesToGoal = this.getSquaresToGoal(location, direction, board.map);
-        //Take 1/4 of the steps toward the goal
-        movesToGoal.slice(0, Math.floor(movesToGoal.length / 4)).forEach(m => {
-            const isValidGoalStep = utils.isValidMove(m.direction, m.startLocation, m.desitnationLocation, board.map);
-            if (isValidGoalStep)
-                moves.push(m);
-            else
-                moves.push(...this.randomTurns(direction, location));
-        });
+        if (movesToGoal.length > 0) {
+            //Take 1/4 of the steps toward the goal
+            movesToGoal.slice(0, Math.floor(movesToGoal.length / 4) + 1).forEach(m => {
+                const isValidGoalStep = utils.isValidMove(m.direction, m.startLocation, m.desitnationLocation, board.map);
+                if (isValidGoalStep)
+                    moves.push(m);
+                else
+                    moves.push(...this.randomTurns(direction, location));
+            });
+        }
+
+        if (moves.length === 0) {
+            return this.randomWalker(player, board);
+        }
 
         return moves;
     }

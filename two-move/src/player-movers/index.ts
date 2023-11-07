@@ -1,53 +1,68 @@
 import { IBoard, IMover, IPlayer } from "../types";
 import { PaceMover } from "./pace";
+import { RandomWalkerMover } from "./random-walker";
 import { ScreenSweeperMover } from "./screen-sweeper";
 import { WallFollowerMover } from "./wall-follower";
 
-export type MoverTypes = 'none' | 'screen-sweeper' | 'wall-follower' | 'pacer';
+export type MoverTypes = 'none' | 'pacer' | 'random-walker' | 'screen-sweeper' | 'wall-follower';
 
-// TODO:
-// setup a constructor for taking in a type
-// factory: create a move
+export class Mover {
+    private moverType: MoverTypes = 'none';
+    private mover: IMover | undefined = undefined;
 
-//TODO - need a way to interrupt the mover, 
-//  user keypress should recast the move arrays they hold internaly
+    private halted: boolean = false;
+    private makeMoveTimeout: NodeJS.Timeout | undefined = undefined;
 
-let mover: IMover | undefined = undefined;
-
-export function runMover(moverType: MoverTypes, player: IPlayer, board: IBoard) {
-
-    switch (moverType) {
-        case 'pacer':
-            mover = new PaceMover();
-            break;
-        case 'screen-sweeper':
-            mover = new ScreenSweeperMover();
-            break;
-        case 'wall-follower':
-            mover = new WallFollowerMover();
-            break;
+    constructor(moverType: MoverTypes) {
+        this.moverType = moverType;
     }
 
-    if (!!mover)
-        makeMoves(mover, player, board);
-}
+    stop() {
+        this.halted = true;
+        if (!!this.makeMoveTimeout)
+            clearTimeout(this.makeMoveTimeout);
+    }
 
+    runMover(player: IPlayer, board: IBoard, speed: number = 500) {
 
-let makeMoveTimeout: NodeJS.Timeout | undefined = undefined;
+        switch (this.moverType) {
+            case 'pacer':
+                this.mover = new PaceMover();
+                break;
+            case 'screen-sweeper':
+                this.mover = new ScreenSweeperMover();
+                break;
+            case 'wall-follower':
+                this.mover = new WallFollowerMover();
+                break;
+            case 'random-walker':
+                this.mover = new RandomWalkerMover();
+                break;
+        }
 
-export function makeMoves(mover: IMover, player: IPlayer, board: IBoard) {
-    const move = mover.getNextMove(player, board);
-    // console.log(move);
-    player.direction = move.direction;
-    player.indicator = player.getIndicator();
+        if (!!this.mover)
+            this.makeMoves(this.mover, player, board, speed);
+    }
 
-    if (move.isMove)
-        board.move(player, player.getPlayerLocation(), player.getNextMove());
+    private makeMoves(mover: IMover, player: IPlayer, board: IBoard, speed: number = 500) {
+        if (this.halted)
+            return;
 
-    if (!!makeMoveTimeout)
-        clearTimeout(makeMoveTimeout);
+        const move = mover.getNextMove(player, board);
+        // console.log(move);
+        player.direction = move.direction;
+        player.indicator = player.getIndicator();
 
-    makeMoveTimeout = setTimeout(() => {
-        makeMoves(mover, player, board);
-    }, 500);
+        if (move.isMove)
+            board.move(player, player.getPlayerLocation(), player.getNextMove());
+
+        if (!!this.makeMoveTimeout)
+            clearTimeout(this.makeMoveTimeout);
+
+        this.makeMoveTimeout = setTimeout(() => {
+            this.makeMoves(mover, player, board, speed);
+            // console.log('makeMoves', move)
+        }, speed);
+    }
+
 }

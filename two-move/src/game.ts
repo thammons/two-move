@@ -1,7 +1,7 @@
 import Board from "./board/board";
 import { BoardEvents } from "./board/events";
 import MapGenerated from "./maps/generate-map1";
-import { MapSimple } from "./maps/open-map";
+import { MapWalledPlayerBox } from "./maps/open-map";
 import Player from "./player";
 import { IMap } from "./types";
 import { UI, UIUserEvents, UIUserInteractions } from "./ui";
@@ -9,9 +9,21 @@ import { UI, UIUserEvents, UIUserInteractions } from "./ui";
 import { InitializeMap, LightsOut } from './board-builders/index';
 import { saveMap, getNextMap } from './maps/save-map';
 
-import * as mover from './player-movers/index';
+import { Mover, MoverTypes } from './player-movers/index';
 
-const moverType: mover.MoverTypes = 'pacer';
+
+//TODO make this an object so blockly and use it differently than free play mode
+
+
+const moverType: MoverTypes = 'random-walker';
+const moverSpeed = 150;
+
+function nextMap() {
+    MAP = new MapGenerated(PLAYER?.getPlayerLocation() ?? 0);
+    //  MAP = new MapWalledPlayerBox();
+}
+
+var MOVER: Mover;
 var MAP: IMap;
 var PLAYER: Player;
 var LIGHTSOUT: LightsOut<Board>;
@@ -81,11 +93,6 @@ const restart = () => {
     setupBoard();
 }
 
-function nextMap() {
-    // MAP = new MapGenerated(PLAYER?.getPlayerLocation() ?? 0);
-    MAP = new MapSimple();
-}
-
 function setupBoard() {
 
     const boardEvents = new BoardEvents();
@@ -103,7 +110,7 @@ function setupBoard() {
     boardEvents.subscribeToMoved(() => {
         LIGHTSOUT.update(BOARD, BOARD.getItemLocations('player')[0]);
         //UI.updateCell(eventArgs.cell, eventArgs.index, eventArgs.isTemporary);
-         UI.paintBoard(BOARD);
+        UI.paintBoard(BOARD);
     });
 
     boardEvents.subscribeToInvalidStep((eventArgs) => {
@@ -133,7 +140,11 @@ function setupBoard() {
     BOARD.updateItem(PLAYER);
 
     BOARD = LIGHTSOUT.init(BOARD);
-    mover.runMover(moverType, PLAYER, BOARD);
+    
+    if (!!MOVER) MOVER.stop();
+    MOVER = new Mover(moverType);
+    MOVER.runMover(PLAYER, BOARD, moverSpeed);
+    
     UI.paintBoard(BOARD, 100);
 }
 
