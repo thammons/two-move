@@ -13,7 +13,8 @@ import { Mover, MoverTypes } from './player-movers/index';
 
 
 //TODO make this an object so blockly and use it differently than free play mode
-
+//TODO make moves a dropdown in the ui? TEST PAGE!!
+//TODO add the scoreboard
 
 const moverType: MoverTypes = 'random-walker';
 const moverSpeed = 150;
@@ -107,10 +108,10 @@ function setupBoard() {
         UI.updateCell(eventArgs.cell, eventArgs.index, eventArgs.isTemporary);
     });
 
-    boardEvents.subscribeToMoved(() => {
+    boardEvents.subscribeToMoved((eventArgs) => {
         LIGHTSOUT.update(BOARD, BOARD.getItemLocations('player')[0]);
-        //UI.updateCell(eventArgs.cell, eventArgs.index, eventArgs.isTemporary);
-        UI.paintBoard(BOARD);
+        UI.updateCell(eventArgs.cell, eventArgs.index, eventArgs.isTemporary);
+        // UI.paintBoard(BOARD);
     });
 
     boardEvents.subscribeToInvalidStep((eventArgs) => {

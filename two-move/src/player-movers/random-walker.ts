@@ -165,9 +165,6 @@ export class RandomWalkerMover implements IMover {
             direction = lastMove.direction;
         }
 
-        //shuffle the moves
-        moves = moves.sort(() => Math.random() - 0.5);
-
         /* STEP TOWARD GOAL WITH A BIT OF RANDOM */
         const movesToGoal = this.getSquaresToGoal(location, direction, board.map);
         if (movesToGoal.length > 0) {
