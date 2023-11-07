@@ -5,6 +5,11 @@ import { javascriptGenerator } from 'blockly/javascript';
 import { save, load } from './blockly/serialization';
 import { toolbox } from './blockly/toolbox-small';
 import { forBlock } from './blockly/javascript-generator';
+import { IGameOptions, IPlayer } from './types';
+import { getButtonMover, getKeyboardMover } from './ui/movers';
+import MapGenerated from './maps/generate-map1';
+import { onload } from './two-move';
+
 // import './index.css';
 const darktheme = Blockly.Theme.defineTheme('dark', {
   'base': Blockly.Themes.Classic,
@@ -24,6 +29,18 @@ const darktheme = Blockly.Theme.defineTheme('dark', {
     // 'blackBackground': '#333',
   },
 });
+
+const BlocklyGameOptions: IGameOptions = {
+  useMover: false,
+  moverType: 'wall-follower',
+  moverSpeed: 150,
+  uiMoverCreators: [getButtonMover, getKeyboardMover],
+  getNextMap: (player: IPlayer) => new MapGenerated(player?.getPlayerLocation() ?? 0)
+}
+
+onload(BlocklyGameOptions);
+
+
 // Register the blocks and generator with Blockly
 Blockly.common.defineBlocks(blocks);
 Object.assign(javascriptGenerator.forBlock, forBlock);
