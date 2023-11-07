@@ -1,14 +1,13 @@
 import Board from "./board/board";
-import MapGenerated from "./maps/generate-map1";
 import Player from "./player";
 import { IBoard, IBoardEvents, IGameOptions, IMap, IPlayer } from "./types";
 
 import { InitializeMap, LightsOut } from './board-builders/index';
-import { saveMap, getNextMap } from './maps/save-map';
+import { saveMap } from './maps/save-map';
 
 import { Mover, MoverTypes } from './player-movers/index';
 import { IUIEvents, IUIMover } from "./ui/types";
-import { UIMoverRunner, getButtonMover, getKeyboardMover } from "./ui/movers";
+import { UIMoverRunner, } from "./ui/movers";
 import { UI } from "./ui";
 import { ScoreBoard } from "./scoreing";
 import { printScoreboard } from "./ui/ui-scoreing";

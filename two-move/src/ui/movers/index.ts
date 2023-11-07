@@ -21,7 +21,7 @@ export function getButtonMover(speed: number, player: IPlayer, board: IBoard): I
 export class UIMoverRunner {
     private makeMoveTimeout: NodeJS.Timeout | undefined = undefined;
     private halted: boolean = false;
-    runQueue = (mover: IUIMover, player: IPlayer, board: IBoard) => {
+    runQueue(mover: IUIMover, player: IPlayer, board: IBoard) {
         if (this.halted)
             return;
 
@@ -40,7 +40,7 @@ export class UIMoverRunner {
                 if (!!this.makeMoveTimeout)
                     clearTimeout(this.makeMoveTimeout);
             }
-
+            
             this.makeMoveTimeout = setTimeout(() => {
                 this.runQueue(mover, player, board);
             }, mover.speed);

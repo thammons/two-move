@@ -58,7 +58,7 @@ class Board implements IBoard {
         return mappedItems.map(m => m.location);
     }
 
-    getDirection = (startLocation: ItemLocation, desiredLocation: ItemLocation) => {
+    getDirection(startLocation: ItemLocation, desiredLocation: ItemLocation) {
         if (desiredLocation === startLocation) {
             return 'east';
         } else if (desiredLocation === startLocation + 1) {
