@@ -32,15 +32,7 @@ export class BoardValidation {
 
     static locationsVisibleToPlayer(playerLocation: ItemLocation, distanceToPlayer: number, cells: ICell[], boardWidth:number, boardHeight:number): ItemLocation[] {
         const visibleLocations: ItemLocation[] = [];
-
-
-        /*
-            TODO: Cells beyond a wall should not be visible
-            TODO: Flashlight only shows whats in front of you
-        */
-
         visibleLocations.push(playerLocation);
-
 
         const foundWall = (index: number) => {
             let foundWall = true;
@@ -90,26 +82,13 @@ export class BoardValidation {
 
         diag.forEach(horiz => {
 
-            // const foundWestWalls: number[] = [];
-            // const foundEastWalls: number[] = [];
-            // const foundNorthWalls: number[] = [];
-            // const foundSouthWalls: number[] = [];
-
             const isMaxWest = this.isMaxWest(playerLocation, horiz, boardWidth);
             const isMaxEast = this.isMaxEast(playerLocation, horiz, boardWidth);
             diag.forEach(vert => {
                 //climbs north and south, scanning east and west
                 const currentRow = boardWidth * vert;
-                // const northWest = playerLocation - currentRow - horiz;
-                // const southWest = playerLocation + currentRow - horiz;
-                // const northEast = playerLocation - currentRow + horiz;
-                // const southEast = playerLocation + currentRow + horiz;
 
-
-                // if (foundWall(playerLocation - vert + 1))
-                //     foundWestWalls.push(vert);
                 if (!isMaxWest) {
-                    // if(!foundWestWalls.includes(vert))
                     //north west
                     visibleLocations.push(playerLocation - currentRow - horiz);
                     //south west

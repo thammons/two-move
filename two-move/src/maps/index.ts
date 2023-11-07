@@ -1,0 +1,1 @@
+// get map by type (similar to movers)

@@ -24,7 +24,7 @@ export class InitializeMap<T extends IBoard> implements IBoardBuilderOption<T> {
     updateCells(map: IMap, board: T): ICell[] {
         const itemLocations = BuildMap(map);
 
-        //THIS CREATES A REFERENCE TO THE SAME OBJECT IN EACH CELL
+        //FILL CREATES A REFERENCE TO THE SAME OBJECT IN EACH CELL
         // const cells: ICell[] = Array(board.height * board.width).fill({ indicator: ' ', classes: [], mapItems: [] });
 
         const cells: ICell[] = [...Array(board.height * board.width)].map(() => {

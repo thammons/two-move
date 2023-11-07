@@ -4,8 +4,8 @@ import { getKeyboardMover } from "./ui/movers";
 import { onload } from './two-move'
 
 const GameOptions: IGameOptions = {
-    useMover: false,
-    moverType: 'wall-follower',
+    useMover: true,
+    moverType: 'pacer',
     moverSpeed: 150,
     uiMoverCreators: [getKeyboardMover],
     getNextMap: (player: IPlayer) => new MapGenerated(player?.getPlayerLocation() ?? 0)

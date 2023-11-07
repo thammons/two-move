@@ -1,5 +1,5 @@
+import { Move } from "../board/move.js";
 import { Direction, IBoard, IMap, IMove, IMover, IPlayer } from "../types.js";
-import * as utils from './mover-utils';
 
 export class PaceMover implements IMover {
     directionMap: Map<Direction, Direction> = new Map([
@@ -12,31 +12,30 @@ export class PaceMover implements IMover {
     previousMove: IMove | undefined = undefined;
 
     getNextMove(player: IPlayer, board: IBoard): IMove {
-        if (this.moves.length > 0) {
-            if (!!this.previousMove
-                && this.previousMove.desitnationLocation === player.location
-                && this.previousMove.direction === player.direction) {
-                this.previousMove = this.moves.shift()!;
-                return this.previousMove;
-            }
-        }
+        if (this.moves.length === 0
+            || !this.previousMove
+            || (this.previousMove.desitnationLocation !== player.location
+            && this.previousMove.direction !== player.direction))
+            this.moves = this.generateMoves(player, board.map, 10);
 
-        this.moves = this.generateMoves(player, board.map, 10);
-        return this.moves.shift()!;
+        this.previousMove = this.moves.shift()!;
+        return this.previousMove;
     }
 
     generateMoves(player: IPlayer, map: IMap, numberToGenerate: number): IMove[] {
         const moves: IMove[] = [];
 
-        let location = player.location;
-        let direction = player.direction;
+        let lastMove = new Move(player.direction, player.location, player.location);
+        let nextMove = lastMove;
 
         Array.from(Array(numberToGenerate).keys()).forEach(() => {
-            const getNextDirection = () => utils.getNextDirection(direction, this.directionMap);
-            const move = utils.getNextValidMove(location, direction, map, getNextDirection);
-            location = move.desitnationLocation;
-            direction = move.direction;
-            moves.push(move);
+            nextMove = nextMove.getNextMove(map.width);
+            let isValid = nextMove.isValidMove(map);
+            moves.push(nextMove);
+            if (!isValid) {
+                nextMove = nextMove.getNextDirection(this.directionMap);
+                moves.push(nextMove);
+            }
         });
 
         const goal = moves.findIndex(m => map.goal === m.desitnationLocation);

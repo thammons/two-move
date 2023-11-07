@@ -1,6 +1,5 @@
 import { Direction, IBoard, IMap, IMove, IMover, IPlayer, ItemLocation } from "../types";
 import { Move } from "../board/move";
-import * as utils from './mover-utils';
 
 export type followDirection = 'left' | 'right' | 'alternate';
 
@@ -234,7 +233,7 @@ export class WallFollowerMover implements IMover {
         for (let i = 0; i < count; i++) {
             const newIndex = (index + count) % 4;
             const newDirection = keys[newIndex];
-            moves.push(utils.createMove(newDirection, lastMove.desitnationLocation));
+            moves.push(new Move(newDirection, lastMove.desitnationLocation, lastMove.desitnationLocation));
             this.direction = newDirection;
         }
 

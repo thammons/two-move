@@ -32,7 +32,7 @@ import { UI } from "./ui";
 //screen sweeper needs to flip and go north when bottom of the map is swept
 
 
-export function onload(gameOptions:IGameOptions) {
+export function onload(gameOptions: IGameOptions) {
     window.onload = () => {
         const game = new Game(gameOptions);
         game.init();
@@ -101,7 +101,7 @@ export class Game {
 
         const uiHandlers: IBoardEvents = {
             boardUpdateHandlers: [(eventArgs) => UI.paintBoard(eventArgs.board)],
-            cellUpdateHandlers: [(eventArgs) => { UI.updateCell(eventArgs.cell, eventArgs.index, eventArgs.isTemporary); console.log("updatecell") }],
+            cellUpdateHandlers: [(eventArgs) => UI.updateCell(eventArgs.cell, eventArgs.index, eventArgs.isTemporary)],
             movedHandlers: [(eventArgs) => UI.updateCell(eventArgs.cell, eventArgs.index, eventArgs.isTemporary)],
             invalidStepHandlers: [(eventArgs) => UI.updateCell(eventArgs.newLocation, eventArgs.player.location, true)],
             goalReachedHandlers: [
@@ -128,14 +128,15 @@ export class Game {
 
         this.runners.forEach(r => r.halt());
         this.runners = [];
-        
+
         UI.paintBoard(this.board, 100);
 
         this.uiMovers.forEach((mover) => {
 
             const runner = new UIMoverRunner();
+
+            //TODO: The runner should manage the queue for all movers (including automated movers)
             runner.runQueue(mover, this.player!, this.board!);
-            // UI.paintBoard(this.board!);
             this.runners.push(runner);
         });
 
