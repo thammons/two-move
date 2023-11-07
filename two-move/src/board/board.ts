@@ -1,4 +1,4 @@
-import { ItemLocation, Direction, IBoard, ICell, IPlayer, IMap, IMapItem, CellType } from "../types.js";
+import { ItemLocation, Direction, IBoard, ICell, IPlayer, IMap, IMapItem, CellType, IBoardEvents } from "../types.js";
 import { BoardValidation } from "./validation.js";
 import { BoardEvents } from "./events.js";
 
@@ -12,13 +12,21 @@ class Board implements IBoard {
     _board: ICell[] = [];
     _events: BoardEvents;
 
-    constructor(map: IMap, events: BoardEvents) {
+    constructor(map: IMap) {
         this.width = map.width;
         this.height = map.height;
         this.cellWidth = map.cellWidth;
         this.size = this.width * this.width;
         this.map = map;
-        this._events = events;
+        this._events = new BoardEvents();
+    }
+
+    addEventListeners(events: IBoardEvents) {
+        this._events.boardUpdateHandlers.push(...events.boardUpdateHandlers);
+        this._events.cellUpdateHandlers.push(...events.cellUpdateHandlers);
+        this._events.movedHandlers.push(...events.movedHandlers);
+        this._events.invalidStepHandlers.push(...events.invalidStepHandlers);
+        this._events.goalReachedHandlers.push(...events.goalReachedHandlers);
     }
 
     updateCell(index: ItemLocation): void {

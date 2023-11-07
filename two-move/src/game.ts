@@ -3,7 +3,7 @@ import { BoardEvents } from "./board/events";
 import MapGenerated from "./maps/generate-map1";
 import { MapWalledPlayerBox } from "./maps/open-map";
 import Player from "./player";
-import { IMap } from "./types";
+import { IBoardEvents, IMap } from "./types";
 import { UI, UIUserEvents, UIUserInteractions } from "./ui";
 
 import { InitializeMap, LightsOut } from './board-builders/index';
@@ -12,11 +12,27 @@ import { saveMap, getNextMap } from './maps/save-map';
 import { Mover, MoverTypes } from './player-movers/index';
 
 
-//TODO make this an object so blockly and use it differently than free play mode
+//TODO make this (game.ts) an object so blockly and use it differently than free play mode
 //TODO make moves a dropdown in the ui? TEST PAGE!!
 //TODO add the scoreboard
+//TODO make maps like mover - wraper class with a type to generate a map
 
-const moverType: MoverTypes = 'random-walker';
+//lights - pass the board to the lights out class, have it attach it's own handlers. handlers need a priority?
+//ui - pass the board to the ui class, have it attach it's own handlers
+
+//Test page:
+// Set map size / cell size
+// pick mover / set speed
+// map builder (buttons for picking cell type, click on map to set cell's type - toggle, default to empty)
+
+//push walls? - when you bang against it, the wall shifts one space in the direction you hit it, 
+//  stopping if there is an item or edge of the map
+
+//WallFollower mover still needs work (commented out method), gets stuck in loop if no walls to collide into
+//screen sweeper needs to flip and go north when bottom of the map is swept
+
+const useMover = false;
+const moverType: MoverTypes = 'wall-follower';
 const moverSpeed = 150;
 
 function nextMap() {
@@ -95,41 +111,13 @@ const restart = () => {
 }
 
 function setupBoard() {
-
-    const boardEvents = new BoardEvents();
-
-    boardEvents.subscribeToBoardUpdate((eventArgs) => {
-        UI.paintBoard(eventArgs.board);
-    });
-
-    boardEvents.subscribeToCellUpdate((eventArgs) => {
-        //UI.paintBoard(BOARD);
-        //console.log('cell update', JSON.stringify(eventArgs))
-        UI.updateCell(eventArgs.cell, eventArgs.index, eventArgs.isTemporary);
-    });
-
-    boardEvents.subscribeToMoved((eventArgs) => {
-        LIGHTSOUT.update(BOARD, BOARD.getItemLocations('player')[0]);
-        UI.updateCell(eventArgs.cell, eventArgs.index, eventArgs.isTemporary);
-        // UI.paintBoard(BOARD);
-    });
-
-    boardEvents.subscribeToInvalidStep((eventArgs) => {
-        UI.updateCell(eventArgs.newLocation, eventArgs.player.location, true);
-    });
-
-    boardEvents.subscribeToGoalReached(() => {
-        nextMap();
-        setupBoard();
-    });
-
     if (MAP === undefined) {
         nextMap();
         //TODO pull last map from localstorage?
         //pull first map from localstorage?
     }
 
-    BOARD = new Board(MAP, boardEvents);
+    BOARD = new Board(MAP);
     const create = new InitializeMap<Board>(MAP);
     LIGHTSOUT = new LightsOut<Board>(2, ['goal', 'player'])
 
@@ -140,12 +128,29 @@ function setupBoard() {
     PLAYER = new Player(MAP.player, MAP.width, 'east');
     BOARD.updateItem(PLAYER);
 
-    BOARD = LIGHTSOUT.init(BOARD);
-    
-    if (!!MOVER) MOVER.stop();
-    MOVER = new Mover(moverType);
-    MOVER.runMover(PLAYER, BOARD, moverSpeed);
-    
+    //adds board handlers in init
+    LIGHTSOUT.init(BOARD);
+
+    const uiHandlers: IBoardEvents = {
+        boardUpdateHandlers: [(eventArgs) => UI.paintBoard(eventArgs.board)],
+        cellUpdateHandlers: [(eventArgs) => UI.updateCell(eventArgs.cell, eventArgs.index, eventArgs.isTemporary)],
+        movedHandlers: [(eventArgs) => UI.updateCell(eventArgs.cell, eventArgs.index, eventArgs.isTemporary)],
+        invalidStepHandlers: [(eventArgs) => UI.updateCell(eventArgs.newLocation, eventArgs.player.location, true)],
+        goalReachedHandlers: [
+            () => {
+                nextMap();
+                setupBoard();
+            }
+        ]
+    };
+    BOARD.addEventListeners(uiHandlers);
+
+    if (useMover) {
+        if (!!MOVER) MOVER.stop();
+        MOVER = new Mover(moverType);
+        MOVER.runMover(PLAYER, BOARD, moverSpeed);
+    }
+
     UI.paintBoard(BOARD, 100);
 }
 
@@ -175,10 +180,10 @@ function setupUI() {
                 //TODO: make this based on the board dimentions
                 const radius = 10;
                 LIGHTSOUT.lightsOn(BOARD, PLAYER, radius);
+                // This will mark the cells as seen
+                // LIGHTSOUT.update(BOARD, PLAYER.getPlayerLocation());
             }
         }
-        console.log('lights', eventArgs)
-        LIGHTSOUT.update(BOARD, PLAYER.getPlayerLocation());
         UI.paintBoard(BOARD);
     });
 

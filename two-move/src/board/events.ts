@@ -1,25 +1,8 @@
-import { Direction, IPlayer, ICell, IBoard } from "../types";
+import { IBoardEvents, IBoardUpdateEvent, ICellUpdateEvent, IInvalidStepEvent } from "../types";
 import { ISimpleEventHandler, ISignalHandler } from "../types";
 
-export interface IBoardUpdateEvent {
-    board: IBoard,
-}
 
-export interface ICellUpdateEvent {
-    cell: ICell,
-    index: number,
-    isTemporary: boolean
-}
-
-export interface IInvalidStepEvent {
-    direction: Direction,
-    player: IPlayer,
-    newLocation: ICell
-}
-
-
-
-export class BoardEvents {
+export class BoardEvents implements IBoardEvents {
     boardUpdateHandlers: ISimpleEventHandler<IBoardUpdateEvent>[] = [];
     cellUpdateHandlers: ISimpleEventHandler<ICellUpdateEvent>[] = [];
     movedHandlers: ISimpleEventHandler<ICellUpdateEvent>[] = [];
@@ -40,7 +23,7 @@ export class BoardEvents {
     triggerCellUpdate(eventArgs: ICellUpdateEvent) {
         this.cellUpdateHandlers.forEach(h => h(eventArgs));
     }
-    
+
     subscribeToMoved(handler: ISimpleEventHandler<ICellUpdateEvent>) {
         this.movedHandlers.push(handler);
     }

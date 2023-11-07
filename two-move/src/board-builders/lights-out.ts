@@ -1,6 +1,5 @@
-import { CellType, IBoard, IBoardBuilderOption, ICell, IMapItem, ItemLocation } from "../types.js";
+import { CellType, IBoard, IBoardBuilderOption, ICell, ICellUpdateEvent, IMapItem, ItemLocation } from "../types.js";
 import { BoardValidation } from "../board/validation.js";
-import { updateCell } from "../ui/ui-view.js";
 
 export class LightsOut<T extends IBoard> implements IBoardBuilderOption<T> {
 
@@ -18,6 +17,14 @@ export class LightsOut<T extends IBoard> implements IBoardBuilderOption<T> {
 
     init(board: T): T {
         this.isInitialLoad = true;
+        board.addEventListeners({
+            movedHandlers: [() => this.update(board, board.getItemLocations('player')[0])],
+            boardUpdateHandlers: [],
+            cellUpdateHandlers: [],
+            invalidStepHandlers: [],
+            goalReachedHandlers: []
+        });
+
         this.getUpdatedBoard(board, board.getItemLocations('player')[0]);
         return board;
     }

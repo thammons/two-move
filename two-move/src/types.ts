@@ -21,11 +21,36 @@ export interface IBoardHooks {
     invalidStep: (player: IPlayer, cell: ICell, direction: Direction) => void;
 }
 
+export interface IBoardUpdateEvent {
+    board: IBoard,
+}
+
+export interface ICellUpdateEvent {
+    cell: ICell,
+    index: number,
+    isTemporary: boolean
+}
+
+export interface IInvalidStepEvent {
+    direction: Direction,
+    player: IPlayer,
+    newLocation: ICell
+}
+
+export interface IBoardEvents {
+    boardUpdateHandlers: ISimpleEventHandler<IBoardUpdateEvent>[];
+    cellUpdateHandlers: ISimpleEventHandler<ICellUpdateEvent>[];
+    movedHandlers: ISimpleEventHandler<ICellUpdateEvent>[];
+    invalidStepHandlers: ISimpleEventHandler<IInvalidStepEvent>[];
+    goalReachedHandlers: ISignalHandler[];
+}
+
 export interface IBoard {
     width: number;
     height: number;
     cellWidth: number;
     map: IMap;
+    addEventListeners(events: IBoardEvents): void;
     getItemLocations(itemType: CellType | string): ItemLocation[];
     getCells(): ICell[];
     updateCell(index: ItemLocation): void;
