@@ -86,8 +86,11 @@ class Board implements IBoard {
         direction = this.getDirection(startLocation, desiredLocation);
 
         if (desiredLocation < 0 || desiredLocation > this.size - 1) {
+            if (startLocation >= 0 && startLocation < this.size) {
+                this.indicateInvalidMove(startLocation, direction);
+            }
             //    console.log("board > isValidMove > desiredLocation out of bounds", desiredLocation);
-            isValidMove = false;
+            return false;
         }
 
         else if (BoardValidation.isBlocked(startLocation, desiredLocation, this)) {
@@ -133,7 +136,7 @@ class Board implements IBoard {
             classes: [...new Set([...this._board[item.location].classes, item.cellType])],
             mapItems: [...new Set([...this._board[item.location].mapItems, item])],
         };
-        //utils.paintBoard(this);
+
         this._events.triggerCellUpdate({ cell: this._board[item.location], index: item.location, isTemporary: false });
     }
 
@@ -152,7 +155,7 @@ class Board implements IBoard {
 
         player.setNextLocation();
         this.updateItem(player);
-        
+
         this._events.triggerMoved({ cell: this._board[startLocation], index: startLocation, isTemporary: false });
         if (BoardValidation.isAtGoal(desiredLocation, this)) {
             this._events.triggerGoalReached();

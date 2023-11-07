@@ -55,6 +55,8 @@ export class Mover {
 
         if (move.isMove)
             board.move(player, player.getPlayerLocation(), player.getNextMove());
+        else
+            board.updateCell(board.getItemLocations('player')[0])
 
         if (!!this.makeMoveTimeout)
             clearTimeout(this.makeMoveTimeout);

@@ -16,11 +16,6 @@ export interface IMap {
     player: ItemLocation;
 }
 
-export interface IBoardHooks {
-    validStep: (player: IPlayer, previousLocation: ItemLocation, cell: ICell) => void;
-    invalidStep: (player: IPlayer, cell: ICell, direction: Direction) => void;
-}
-
 export interface IBoardUpdateEvent {
     board: IBoard,
 }

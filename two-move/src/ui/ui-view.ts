@@ -79,13 +79,12 @@ export function updateCell(cell: ICell, index: number, isTemporary: boolean = fa
         return;
         //throw new Error('lastBoardVersion is undefined, paintwholeboard should be called first');
     }
-    // console.log(cell)
+
     if (!!isTemporary)
         lastBoardVersion[index] = JSON.parse(JSON.stringify(cell));
 
     const element = utils.getElementById(`cell-${index}`);
     setCellAttributes(cell, index, element);
-
 
     if (isTemporary) {
         // utils.fade(element, 500, () => updateCell(lastBoardVersion![index], index));

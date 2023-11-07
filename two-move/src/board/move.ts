@@ -26,7 +26,6 @@ export class Move implements IMove {
     getNextDirection(directionMap?: Map<Direction, Direction>): Move {
         if (!directionMap) directionMap = this.defaultDirectionMap;
 
-        console.log(directionMap);
         const direction = this.direction;
         let nextDirection = direction;
         if (directionMap.has(direction)) {

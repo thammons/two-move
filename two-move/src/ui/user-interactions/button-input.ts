@@ -1,5 +1,5 @@
-import { IUIEvents, UIEvents } from '../ui-user-events';
-import { IUIUserInteractions } from './types';
+import { UIEvents } from '../ui-user-events';
+import { IUIEvents, IUIUserInteractions } from '../types';
 
 
 export class ButtonInteractions implements IUIUserInteractions {
@@ -18,11 +18,11 @@ export class ButtonInteractions implements IUIUserInteractions {
     init() {
         const moveBtn = document.getElementById('move-btn');
         if (!!moveBtn)
-            moveBtn.onclick = () => this._events.triggerMove;
+            moveBtn.onclick = () => this._events.triggerMove();
 
         const turnBtn = document.getElementById('turn-btn');
         if (!!turnBtn)
-            turnBtn.onclick = () => this._events.triggerTurn;
+            turnBtn.onclick = () => this._events.triggerTurn();
 
         //TODO: This doesn't cover map progression
         const restartBtn = document.getElementById('restart-btn');

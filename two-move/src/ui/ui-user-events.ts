@@ -1,13 +1,7 @@
 import { ISignalHandler, ISimpleEventHandler } from "../types";
+import { IUIEvents } from "./types";
 
 
-export interface IUIEvents {
-    moveHandlers: ISignalHandler[],
-    turnHandlers: ISignalHandler[],
-    lightHandlers: ISimpleEventHandler<{ lightsOn: boolean, showWholeBoard: boolean }>[],
-    saveMapHandlers: ISignalHandler[],
-    resetHandlers: ISimpleEventHandler<{ newMap: boolean, resetPlayer: boolean }>[]
-}
 
 export class UIEvents implements IUIEvents {
     moveHandlers: ISignalHandler[] = [];

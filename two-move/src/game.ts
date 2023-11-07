@@ -1,16 +1,15 @@
 import Board from "./board/board";
-import { BoardEvents } from "./board/events";
 import MapGenerated from "./maps/generate-map1";
-import { MapWalledPlayerBox } from "./maps/open-map";
 import Player from "./player";
-import { IBoard, IBoardEvents, IMap, IMove, IMover, IPlayer } from "./types";
-import { UI, type IUIEvents, Types as UITypes, KeyboardInteractions, UIEvents } from "./ui";
+import { IBoard, IBoardEvents, IMap, IPlayer } from "./types";
 
 import { InitializeMap, LightsOut } from './board-builders/index';
 import { saveMap, getNextMap } from './maps/save-map';
 
 import { Mover, MoverTypes } from './player-movers/index';
-import { IUIMover, UIMover, UIMoverRunner, getKeyboardMover } from "./ui/movers/ui-mover";
+import { IUIEvents, IUIMover } from "./ui/types";
+import { UIMoverRunner, getButtonMover, getKeyboardMover } from "./ui/movers";
+import { UI } from "./ui";
 
 
 //TODO make this (game.ts) an object so blockly and use it differently than free play mode
@@ -48,8 +47,17 @@ const GameOptions: IGameOptions = {
     getNextMap: (player: IPlayer) => new MapGenerated(player?.getPlayerLocation() ?? 0)
 }
 
+
+const BlocklyGameOptions: IGameOptions = {
+    useMover: false,
+    moverType: 'wall-follower',
+    moverSpeed: 150,
+    uiMoverCreators: [getButtonMover, getKeyboardMover],
+    getNextMap: (player: IPlayer) => new MapGenerated(player?.getPlayerLocation() ?? 0)
+}
+
 window.onload = () => {
-    const game = new Game(GameOptions);
+    const game = new Game(BlocklyGameOptions);
     game.init();
 
 }
@@ -62,23 +70,6 @@ window.onload = () => {
 // var BOARD: Board;
 
 // let UI_INTERACTIONS: UIUserInteractions;
-
-class UIButtonMover implements IMover {
-
-    moves: IMove[] = [];
-    getNextMove(player: IPlayer, board: IBoard): IMove {
-
-        //if no moves, just wait
-        if (!this.moves.length)
-            return {
-                direction: player.direction,
-                startLocation: player.location,
-                desitnationLocation: player.location,
-                isMove: false
-            };
-        return this.moves.shift()!;
-    }
-}
 
 //TODO add UI mover
 
@@ -96,7 +87,7 @@ export class Game {
     //this isn't read as it uses eventhandlers
     private uiMovers: IUIMover[] = [];
     private uiMoverCreators: ((speed: number, player: IPlayer, board: IBoard) => IUIMover)[];
-
+    private runners: UIMoverRunner[] = [];
 
     private board: Board | undefined = undefined;
     private lightsout: LightsOut<Board> | undefined = undefined;
@@ -145,7 +136,7 @@ export class Game {
 
         const uiHandlers: IBoardEvents = {
             boardUpdateHandlers: [(eventArgs) => UI.paintBoard(eventArgs.board)],
-            cellUpdateHandlers: [(eventArgs) => UI.updateCell(eventArgs.cell, eventArgs.index, eventArgs.isTemporary)],
+            cellUpdateHandlers: [(eventArgs) => {UI.updateCell(eventArgs.cell, eventArgs.index, eventArgs.isTemporary); console.log("updatecell")}],
             movedHandlers: [(eventArgs) => UI.updateCell(eventArgs.cell, eventArgs.index, eventArgs.isTemporary)],
             invalidStepHandlers: [(eventArgs) => UI.updateCell(eventArgs.newLocation, eventArgs.player.location, true)],
             goalReachedHandlers: [
@@ -162,6 +153,24 @@ export class Game {
             this.mover = new Mover(this.moverType);
             this.mover.runMover(this.player!, this.board, this.moverSpeed);
         }
+
+        if (!this.uiMovers.length)
+            this.uiMovers = [];
+        
+        this.uiMovers = this.uiMoverCreators.map((fn) => {
+            return fn(this.moverSpeed, this.player!, this.board!);
+        });
+
+        this.runners.forEach(r => r.halt());
+        this.runners = [];
+
+        this.uiMovers.forEach((mover) => {
+
+            const runner = new UIMoverRunner();
+            runner.runQueue(mover, this.player!, this.board!);
+            // UI.paintBoard(this.board!);
+            this.runners.push(runner);
+        });
 
         UI.paintBoard(this.board, 100);
     }
@@ -207,17 +216,5 @@ export class Game {
             }]
         }
 
-        if (!this.uiMovers.length)
-            this.uiMovers = [];
-//Player has no direction?
-        this.uiMovers = this.uiMoverCreators.map((fn) => {
-            return fn(this.moverSpeed, this.player!, this.board!);
-        });
-
-        this.uiMovers.forEach((mover) => {
-            const runner = new UIMoverRunner();
-            runner.runQueue(mover, this.player!, this.board!);
-            UI.paintBoard(this.board!);
-        });
     }
 }

@@ -1,43 +1,7 @@
-import { KeyboardInteractions } from "..";
+
 import { Move } from "../../board/move";
-import { IBoard, IMove, IMover, IPlayer } from "../../types";
-import { IUIEvents } from "../ui-user-events";
-import { IUIUserInteractions } from "../user-interactions/types";
-
-
-export interface IUIMover extends IMover {
-    speed: number;
-    move(player: IPlayer): void;
-    turnRight(player: IPlayer, board: IBoard): void;
-    restart(): void;
-    wireEventHandlers(player: IPlayer, board: IBoard, createEventer: (events: IUIEvents) => IUIUserInteractions): IUIEvents;
-}
-
-//nearly identical to PlayerMovers/index's Mover.makeMoves
-export class UIMoverRunner {
-    private makeMoveTimeout: NodeJS.Timeout | undefined = undefined;
-    private halted: boolean = false;
-    runQueue = (mover: IUIMover, player: IPlayer, board: IBoard) => {
-        if (this.halted)
-            return;
-
-        const move = mover.getNextMove(player, board);
-        // console.log(move);
-        player.direction = move.direction;
-        player.indicator = player.getIndicator();
-
-        if (move.isMove)
-            board.move(player, player.getPlayerLocation(), player.getNextMove());
-
-        if (!!this.makeMoveTimeout)
-            clearTimeout(this.makeMoveTimeout);
-
-        this.makeMoveTimeout = setTimeout(() => {
-            this.runQueue(mover, player, board);
-            // console.log('makeMoves', move)
-        }, mover.speed);
-    }
-}
+import { IBoard, IMove, IPlayer } from "../../types";
+import { IUIEvents, IUIMover, IUIUserInteractions } from "../types";
 
 export class UIMover implements IUIMover {
     speed: number = 250;
@@ -56,14 +20,27 @@ export class UIMover implements IUIMover {
         return this.moves.shift()!;
     }
 
-    move(player: IPlayer) {
-        this.moves.push(new Move(player.direction, player.location, player.getNextMove()));
+    private getLastMove(player:IPlayer){
+        let lastMove = new Move(player.direction, player.location, player.location);
+        if (this.moves.length > 0)
+            lastMove = Move.init(this.moves[this.moves.length - 1])
+        return lastMove;
+    }
+
+    move(player: IPlayer, board: IBoard) {
+        const lastMove = this.getLastMove(player);
+        let nextMove = lastMove.getNextMove(board.map.width); 
+
+        //one invalid move is allowed
+        if(!lastMove.isValidMove(board.map)){
+            nextMove = Move.init(lastMove);
+        }
+        this.moves.push(nextMove);
+
     }
 
     turnRight(player: IPlayer, board: IBoard) {
-        let lastMove = Move.init(this.moves[this.moves.length - 1]);
-        if (!lastMove)
-            lastMove = new Move(player.direction, player.location, player.location);
+        const lastMove = this.getLastMove(player);
 
         const nextMove = lastMove.getNextDirection();
         this.moves.push(nextMove);
@@ -75,7 +52,7 @@ export class UIMover implements IUIMover {
 
     wireEventHandlers(player: IPlayer, board: IBoard, createEventer: (events: IUIEvents) => IUIUserInteractions): IUIEvents {
         const userEvents: IUIEvents = {
-            moveHandlers: [() => this.move(player)],
+            moveHandlers: [() => this.move(player, board)],
             turnHandlers: [() => this.turnRight(player, board)],
             lightHandlers: [],
             resetHandlers: [() => this.restart()],
@@ -85,14 +62,4 @@ export class UIMover implements IUIMover {
         this.eventer = createEventer(userEvents);
         return userEvents;
     }
-
-
-}
-
-
-export function getKeyboardMover(speed: number, player: IPlayer, board: IBoard): IUIMover {
-    const mover = new UIMover(speed);
-    const createEventer = (events: IUIEvents) => new KeyboardInteractions(events);
-    mover.wireEventHandlers(player, board, createEventer);
-    return mover;
 }

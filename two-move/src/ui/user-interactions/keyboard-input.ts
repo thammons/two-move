@@ -1,5 +1,5 @@
-import { UIEvents, IUIEvents } from '../ui-user-events';
-import { IUIUserInteractions } from './types';
+import { UIEvents } from '../ui-user-events';
+import { IUIEvents, IUIUserInteractions } from '../types';
 
 
 export class KeyboardInteractions implements IUIUserInteractions {
