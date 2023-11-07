@@ -10,6 +10,8 @@ import { Mover, MoverTypes } from './player-movers/index';
 import { IUIEvents, IUIMover } from "./ui/types";
 import { UIMoverRunner, getButtonMover, getKeyboardMover } from "./ui/movers";
 import { UI } from "./ui";
+import { ScoreBoard } from "./scoreing";
+import { printScoreboard } from "./ui/ui-scoreing";
 
 
 //TODO make this (game.ts) an object so blockly and use it differently than free play mode
@@ -42,6 +44,7 @@ export function onload(gameOptions: IGameOptions) {
 
 
 export class Game {
+    private score: ScoreBoard | undefined = undefined;
 
     private useMover: boolean;
     private moverType: MoverTypes;
@@ -69,6 +72,7 @@ export class Game {
         this.getNextMap = boardOptions.getNextMap;
 
         this.map = this.getNextMap(this.player!);
+        this.score = new ScoreBoard(ScoreBoard.loadScore())
     }
 
     init() {
@@ -102,11 +106,32 @@ export class Game {
         const uiHandlers: IBoardEvents = {
             boardUpdateHandlers: [(eventArgs) => UI.paintBoard(eventArgs.board)],
             cellUpdateHandlers: [(eventArgs) => UI.updateCell(eventArgs.cell, eventArgs.index, eventArgs.isTemporary)],
-            movedHandlers: [(eventArgs) => UI.updateCell(eventArgs.cell, eventArgs.index, eventArgs.isTemporary)],
-            invalidStepHandlers: [(eventArgs) => UI.updateCell(eventArgs.newLocation, eventArgs.player.location, true)],
+            movedHandlers: [
+                (eventArgs) => {
+                    UI.updateCell(eventArgs.cell, eventArgs.index, eventArgs.isTemporary);
+                    if (!!this.score) {
+                        this.score.updateScore();
+                        ScoreBoard.saveScore(this.score);
+                        printScoreboard(this.score!);
+                    }
+                }],
+            invalidStepHandlers: [
+                (eventArgs) => {
+                    UI.updateCell(eventArgs.newLocation, eventArgs.player.location, true);
+                    if (!!this.score) {
+                        this.score.updateCollisions();
+                        ScoreBoard.saveScore(this.score);
+                        printScoreboard(this.score!);
+                    }
+                }],
             goalReachedHandlers: [
                 () => {
                     this.getNextMap(this.player!);
+                    if (!!this.score) {
+                        this.score.updateLevel();
+                        ScoreBoard.saveScore(this.score);
+                        printScoreboard(this.score!);
+                    }
                     this.setupBoard();
                 }
             ]

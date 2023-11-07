@@ -88,6 +88,12 @@ class Board implements IBoard {
         if (desiredLocation < 0 || desiredLocation > this.size - 1) {
             if (startLocation >= 0 && startLocation < this.size) {
                 this.indicateInvalidMove(startLocation, direction);
+                const player = this._board[startLocation].mapItems.find(mi => mi.cellType == 'player') as IPlayer;
+                this._events.triggerInvalidStep({
+                    player: player,
+                    newLocation: this._board[startLocation],
+                    direction: direction!
+                });
             }
             //    console.log("board > isValidMove > desiredLocation out of bounds", desiredLocation);
             return false;

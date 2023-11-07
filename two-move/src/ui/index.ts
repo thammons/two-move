@@ -1,4 +1,4 @@
-import * as UI from './ui-view';
+import * as UI from './ui-board';
 import { UIEvents } from './ui-user-events';
 import { KeyboardInteractions, ButtonInteractions } from './user-interactions';
 
