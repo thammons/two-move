@@ -1,5 +1,3 @@
-import { MoverTypes } from "./player-movers";
-import { IUIMover } from "./ui/types";
 
 export type Direction = 'east' | 'west' | 'north' | 'south';
 export type PlayerIndicator = '>' | '<' | '^' | 'v';
@@ -11,9 +9,7 @@ export type CellClass = CellType | 'fog' | 'unseen' | 'seen' | string;
 export type ItemLocation = number;
 
 export interface IGameOptions {
-    useMover: boolean,
-    uiMoverCreators: ((speed: number, player: IPlayer, board: IBoard) => IUIMover)[],
-    moverType: MoverTypes,
+    moverCreators: ((speed: number, player: IPlayer, board: IBoard) => IMover)[],
     moverSpeed: number,
     getNextMap: (player: IPlayer) => IMap,
 }
@@ -134,6 +130,8 @@ export interface IMove {
 }
 
 export interface IMover {
+    speed: number;
+    clear(): void;
     getNextMove(player: IPlayer, board: IBoard): IMove;
 }
 

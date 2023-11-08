@@ -31,10 +31,8 @@ const darktheme = Blockly.Theme.defineTheme('dark', {
 });
 
 const BlocklyGameOptions: IGameOptions = {
-  useMover: false,
-  moverType: 'wall-follower',
   moverSpeed: 150,
-  uiMoverCreators: [getButtonMover, getKeyboardMover],
+  moverCreators: [getButtonMover, getKeyboardMover],
   getNextMap: (player: IPlayer) => new MapGenerated(player?.getPlayerLocation() ?? 0)
 }
 

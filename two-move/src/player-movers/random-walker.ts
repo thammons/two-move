@@ -26,6 +26,15 @@ export class RandomWalkerMover implements IMover {
         ['north', 'east']
     ]);
     moves: IMove[] = [];
+    speed:number;
+
+    constructor(speed:number) {
+        this.speed = speed;
+    }
+
+    clear(){
+        this.moves = [];
+    }
 
     getNextMove(player: IPlayer, board: IBoard): IMove {
         if (this.moves.length === 0)

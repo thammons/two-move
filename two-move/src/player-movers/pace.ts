@@ -9,17 +9,21 @@ export class PaceMover implements IMover {
         ['south', 'north']
     ]);
     moves: IMove[] = [];
-    previousMove: IMove | undefined = undefined;
+    speed:number;
+
+    constructor(speed:number) {
+        this.speed = speed;
+    }
+
+    clear(){
+        this.moves = [];
+    }
 
     getNextMove(player: IPlayer, board: IBoard): IMove {
-        if (this.moves.length === 0
-            || !this.previousMove
-            || (this.previousMove.desitnationLocation !== player.location
-            && this.previousMove.direction !== player.direction))
-            this.moves = this.generateMoves(player, board.map, 10);
+        if (this.moves.length === 0)
+            this.moves = this.generateMoves(player, board.map, 1);
 
-        this.previousMove = this.moves.shift()!;
-        return this.previousMove;
+        return this.moves.shift()!;
     }
 
     generateMoves(player: IPlayer, map: IMap, numberToGenerate: number): IMove[] {
@@ -29,11 +33,12 @@ export class PaceMover implements IMover {
         let nextMove = lastMove;
 
         Array.from(Array(numberToGenerate).keys()).forEach(() => {
+            lastMove = nextMove;
             nextMove = nextMove.getNextMove(map.width);
             let isValid = nextMove.isValidMove(map);
             moves.push(nextMove);
             if (!isValid) {
-                nextMove = nextMove.getNextDirection(this.directionMap);
+                nextMove = lastMove.getNextDirection(this.directionMap);
                 moves.push(nextMove);
             }
         });

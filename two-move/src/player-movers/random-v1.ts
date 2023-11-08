@@ -2,6 +2,7 @@ import { Direction, IBoard, IMove, IMover, IPlayer, ItemLocation } from "../type
 
 
 export class RandomMoverv1 implements IMover {
+    speed: number;
     directionMap: Map<Direction, Direction> = new Map([
         ['east', 'south'],
         ['south', 'west'],
@@ -11,6 +12,15 @@ export class RandomMoverv1 implements IMover {
     steps: ItemLocation[] = [];
     stepCount: number = 0;
     stepLimit: number = 100;
+
+    constructor(speed: number) {
+        this.speed = speed;
+    }
+
+    clear(){
+        //nothing to clear;
+    }
+
     getNextMove(player: IPlayer, board: IBoard): IMove {
         if (board.isAtGoal(player.location) || this.stepCount > this.stepLimit)
             throw new Error('RandomMoverv1: Reached goal or step limit');

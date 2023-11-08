@@ -1,21 +1,18 @@
 import Board from "./board/board";
 import Player from "./player";
-import { IBoard, IBoardEvents, IGameOptions, IMap, IPlayer } from "./types";
+import { IBoard, IBoardEvents, IGameOptions, IMap, IMover, IPlayer } from "./types";
 
 import { InitializeMap, LightsOut } from './board-builders/index';
 import { saveMap } from './maps/save-map';
 
-import { Mover, MoverTypes } from './player-movers/index';
-import { IUIEvents, IUIMover } from "./ui/types";
-import { UIMoverRunner, } from "./ui/movers";
+import { IUIEvents } from "./ui/types";
 import { UI } from "./ui";
 import { ScoreBoard } from "./scoreing";
 import { printScoreboard } from "./ui/ui-scoreing";
+import { MoverRunner } from "./player-movers/move-runner";
 
 
-//TODO make this (game.ts) an object so blockly and use it differently than free play mode
 //TODO make moves a dropdown in the ui? TEST PAGE!!
-//TODO add the scoreboard
 //TODO make maps like mover - wraper class with a type to generate a map
 
 //lights - pass the board to the lights out class, have it attach it's own handlers. handlers need a priority?
@@ -26,11 +23,9 @@ import { printScoreboard } from "./ui/ui-scoreing";
 // pick mover / set speed
 // map builder (buttons for picking cell type, click on map to set cell's type - toggle, default to empty)
 
-//push walls? - when you bang against it, the wall shifts one space in the direction you hit it, 
-//  stopping if there is an item or edge of the map
-
 //WallFollower mover still needs work (commented out method), gets stuck in loop if no walls to collide into
 //screen sweeper needs to flip and go north when bottom of the map is swept
+//wallfollower types need to be in MoverTypes
 
 
 export function onload(gameOptions: IGameOptions) {
@@ -44,30 +39,23 @@ export function onload(gameOptions: IGameOptions) {
 
 export class Game {
     private score: ScoreBoard | undefined = undefined;
-
-    private useMover: boolean;
-    private moverType: MoverTypes;
     private moverSpeed: number;
     private map: IMap;
     private getNextMap: (player: IPlayer) => IMap;
 
     //this isn't read as it uses eventhandlers
-    private uiMovers: IUIMover[] = [];
-    private uiMoverCreators: ((speed: number, player: IPlayer, board: IBoard) => IUIMover)[];
-    private runners: UIMoverRunner[] = [];
+    private movers: IMover[] = [];
+    private moverCreators: ((speed: number, player: IPlayer, board: IBoard) => IMover)[];
+    private moverRunner:MoverRunner | undefined = undefined;
 
     private board: Board | undefined = undefined;
     private lightsout: LightsOut<Board> | undefined = undefined;
 
-
     private player: Player | undefined = undefined;
-    private mover: Mover | undefined = undefined;
 
     constructor(boardOptions: IGameOptions) {
-        this.useMover = boardOptions.useMover;
-        this.moverType = boardOptions.moverType;
         this.moverSpeed = boardOptions.moverSpeed;
-        this.uiMoverCreators = boardOptions.uiMoverCreators;
+        this.moverCreators = boardOptions.moverCreators;
         this.getNextMap = boardOptions.getNextMap;
 
         this.map = this.getNextMap(this.player!);
@@ -137,33 +125,21 @@ export class Game {
         };
         this.board.addEventListeners(uiHandlers);
 
-        if (this.useMover) {
-            if (!!this.mover) this.mover.stop();
-            this.mover = new Mover(this.moverType);
-            this.mover.runMover(this.player!, this.board, this.moverSpeed);
+
+        if (!!this.movers.length){
+            this.moverRunner?.halt();
+            this.moverRunner = undefined;
+            this.movers = [];
         }
 
-        if (!this.uiMovers.length)
-            this.uiMovers = [];
-
-        this.uiMovers = this.uiMoverCreators.map((fn) => {
+        this.movers = this.moverCreators.map((fn) => {
             return fn(this.moverSpeed, this.player!, this.board!);
         });
 
-        this.runners.forEach(r => r.halt());
-        this.runners = [];
+        this.moverRunner = new MoverRunner();
+        this.moverRunner.runMovers(this.movers, this.player!, this.board!);
 
         UI.paintBoard(this.board, 100);
-
-        this.uiMovers.forEach((mover) => {
-
-            const runner = new UIMoverRunner();
-
-            //TODO: The runner should manage the queue for all movers (including automated movers)
-            runner.runQueue(mover, this.player!, this.board!);
-            this.runners.push(runner);
-        });
-
     }
 
     private setupUI() {

@@ -12,6 +12,10 @@ export class UIMover implements IUIMover {
         this.speed = speed;
     }
 
+    clear() {
+        this.moves = [];
+    }
+
     getNextMove(player: IPlayer, board: IBoard): IMove {
 
         //if no moves, just wait
@@ -20,7 +24,7 @@ export class UIMover implements IUIMover {
         return this.moves.shift()!;
     }
 
-    private getLastMove(player:IPlayer){
+    private getLastMove(player: IPlayer) {
         let lastMove = new Move(player.direction, player.location, player.location);
         if (this.moves.length > 0)
             lastMove = Move.init(this.moves[this.moves.length - 1])
@@ -29,10 +33,10 @@ export class UIMover implements IUIMover {
 
     move(player: IPlayer, board: IBoard) {
         const lastMove = this.getLastMove(player);
-        let nextMove = lastMove.getNextMove(board.map.width); 
+        let nextMove = lastMove.getNextMove(board.map.width);
 
         //one invalid move is allowed
-        if(!lastMove.isValidMove(board.map)){
+        if (!lastMove.isValidMove(board.map)) {
             nextMove = Move.init(lastMove);
         }
         this.moves.push(nextMove);

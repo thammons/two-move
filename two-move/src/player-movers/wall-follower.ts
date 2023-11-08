@@ -18,9 +18,15 @@ export class WallFollowerMover implements IMover {
     followDirection: followDirection = 'alternate';
     currentFollowDirection: followDirection = 'left';
     turnCounter: number = 0;
-
-    constructor(followDirection: followDirection = 'alternate') {
+    speed:number;
+    
+    constructor(speed:number, followDirection: followDirection = 'alternate') {
         this.followDirection = followDirection;
+        this.speed = speed;
+    }
+
+    clear(){
+        this.moves = [];
     }
 
     getNextMove(player: IPlayer, board: IBoard): IMove {

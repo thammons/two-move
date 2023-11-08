@@ -2,12 +2,11 @@ import MapGenerated from "./maps/generate-map1";
 import { IGameOptions, IPlayer } from "./types";
 import { getKeyboardMover } from "./ui/movers";
 import { onload } from './two-move'
+import { getMover } from "./player-movers";
 
 const GameOptions: IGameOptions = {
-    useMover: true,
-    moverType: 'pacer',
     moverSpeed: 150,
-    uiMoverCreators: [getKeyboardMover],
+    moverCreators: [getKeyboardMover, () => getMover('pacer', 500)!],
     getNextMap: (player: IPlayer) => new MapGenerated(player?.getPlayerLocation() ?? 0)
 }
 

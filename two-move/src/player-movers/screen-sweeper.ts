@@ -30,6 +30,15 @@ export class ScreenSweeperMover implements IMover {
     stepCount: number = 0;
     stepLimit: number = 100;
     direction: Direction = 'east';
+    speed:number;
+
+    constructor(speed:number) {
+        this.speed = speed;
+    }
+
+    clear(){
+        this.moves = [];
+    }
 
     getNextMove(player: IPlayer, board: IBoard): IMove {
         if (this.moves.length === 0)
