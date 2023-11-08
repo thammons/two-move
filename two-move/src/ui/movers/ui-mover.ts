@@ -1,4 +1,5 @@
 
+import { LightsOut } from "../../board-builders";
 import { Move } from "../../board/move";
 import { IBoard, IMove, IPlayer } from "../../types";
 import { IUIEvents, IUIMover, IUIUserInteractions } from "../types";
@@ -17,11 +18,30 @@ export class UIMover implements IUIMover {
     }
 
     getNextMove(player: IPlayer, board: IBoard): IMove {
-
         //if no moves, just wait
         if (!this.moves.length)
             return new Move(player.direction, player.location, player.location);
         return this.moves.shift()!;
+    }
+
+    move(player: IPlayer, board: IBoard) {
+        const lastMove = this.getLastMove(player);
+        let nextMove = lastMove.getNextMove(board.map.width);
+
+        //one invalid move is allowed
+        if (!lastMove.isValidMove(board.map)) {
+            this.clearInvalidMoves(board);
+            nextMove = Move.init(lastMove);
+        }
+
+        this.moves.push(nextMove);
+    }
+
+    turnRight(player: IPlayer, board: IBoard) {
+        const lastMove = this.getLastMove(player);
+
+        const nextMove = lastMove.getNextDirection();
+        this.moves.push(nextMove);
     }
 
     private getLastMove(player: IPlayer) {
@@ -31,23 +51,8 @@ export class UIMover implements IUIMover {
         return lastMove;
     }
 
-    move(player: IPlayer, board: IBoard) {
-        const lastMove = this.getLastMove(player);
-        let nextMove = lastMove.getNextMove(board.map.width);
-
-        //one invalid move is allowed
-        if (!lastMove.isValidMove(board.map)) {
-            nextMove = Move.init(lastMove);
-        }
-        this.moves.push(nextMove);
-
-    }
-
-    turnRight(player: IPlayer, board: IBoard) {
-        const lastMove = this.getLastMove(player);
-
-        const nextMove = lastMove.getNextDirection();
-        this.moves.push(nextMove);
+    private clearInvalidMoves(board: IBoard) {
+        this.moves = this.moves.filter(m => Move.init(m).isValidMove(board.map));
     }
 
     restart() {

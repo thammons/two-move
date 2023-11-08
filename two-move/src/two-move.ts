@@ -1,6 +1,6 @@
 import Board from "./board/board";
 import Player from "./player";
-import { IBoard, IBoardEvents, IGameOptions, IMap, IMover, IPlayer } from "./types";
+import { IBoardEvents, IGameOptions, IMap, IMover, IMoverCreatorParams, IPlayer } from "./types";
 
 import { InitializeMap, LightsOut } from './board-builders/index';
 import { saveMap } from './maps/save-map';
@@ -43,7 +43,7 @@ export class Game {
 
     //this isn't read as it uses eventhandlers
     private movers: IMover[] = [];
-    private moverCreators: ((speed: number, player: IPlayer, board: IBoard) => IMover)[];
+    private moverCreators: ((params: IMoverCreatorParams) => IMover)[];
     private moverRunner: MoverRunner | undefined = undefined;
 
     private board: Board | undefined = undefined;
@@ -62,7 +62,6 @@ export class Game {
 
     init() {
         this.setupBoard();
-        this.setupUI();
         // console.log(Maps1);
         // MAP_FROM_JSON = new MapFromJson(Maps1);
     }
@@ -139,25 +138,23 @@ export class Game {
         }
 
         this.movers = this.moverCreators.map((fn) => {
-            return fn(this.moverSpeed, this.player!, this.board!);
+            return fn({
+                speed: this.moverSpeed,
+                player: this.player!,
+                board: this.board!,
+                attachEvents: this.getUIEvents()
+            });
         });
 
         this.moverRunner = new MoverRunner();
         this.moverRunner.runMovers(this.movers, this.player!, this.board!);
     }
 
-    private setupUI() {
+    private getUIEvents(): IUIEvents {
         const uiEvents: IUIEvents = {
-            moveHandlers: [() => {
-                this.board!.move(this.player!, this.player!.getPlayerLocation(), this.player!.getNextMove());
-                // this.lightsout!.update(this.board!, this.board!.getItemLocations('player')[0]);
-            }],
-            turnHandlers: [() => {
-                this.player!.turnRight();
-                this.board!.updateItem(this.player!);
-            }],
+            moveHandlers: [],
+            turnHandlers: [],
             lightHandlers: [(eventArgs) => {
-
                 if (!eventArgs.lightsOn) {
                     this.lightsout!.lightsOff(this.board!, this.player!);
                 }
@@ -185,7 +182,9 @@ export class Game {
 
                 this.setupBoard();
             }]
-        }
+        };
+
+        return uiEvents;
 
     }
 }

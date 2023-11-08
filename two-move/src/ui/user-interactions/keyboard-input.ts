@@ -27,13 +27,13 @@ export class KeyboardInteractions implements IUIUserInteractions {
         ['e', () => this._events.triggerLight({ lightsOn: false, showWholeBoard: false })],
     ]);
 
-    constructor(events: IUIEvents) {
+    constructor(events: IUIEvents[]) {
         this._events = new UIEvents();
-        this._events.moveHandlers = events.moveHandlers;
-        this._events.turnHandlers = events.turnHandlers;
-        this._events.lightHandlers = events.lightHandlers;
-        this._events.saveMapHandlers = events.saveMapHandlers;
-        this._events.resetHandlers = events.resetHandlers;
+        this._events.moveHandlers = events.flatMap(e => e.moveHandlers);
+        this._events.turnHandlers = events.flatMap(e => e.turnHandlers);
+        this._events.lightHandlers = events.flatMap(e => e.lightHandlers);
+        this._events.saveMapHandlers = events.flatMap(e => e.saveMapHandlers);
+        this._events.resetHandlers = events.flatMap(e => e.resetHandlers);
         this.init();
     }
 

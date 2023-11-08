@@ -1,3 +1,4 @@
+import { IUIEvents } from "./ui/types";
 
 export type Direction = 'east' | 'west' | 'north' | 'south';
 export type PlayerIndicator = '>' | '<' | '^' | 'v';
@@ -8,8 +9,15 @@ export type CellClass = CellType | 'fog' | 'unseen' | 'seen' | string;
 
 export type ItemLocation = number;
 
+export interface IMoverCreatorParams {
+    speed: number;
+    player: IPlayer;
+    board: IBoard;
+    attachEvents: IUIEvents;
+}
+
 export interface IGameOptions {
-    moverCreators: ((speed: number, player: IPlayer, board: IBoard) => IMover)[],
+    moverCreators: ((params: IMoverCreatorParams) => IMover)[],
     moverSpeed: number,
     getNextMap: (player: IPlayer) => IMap,
 }

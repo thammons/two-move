@@ -1,19 +1,19 @@
-import { IBoard, IPlayer } from "../../types";
+import { IBoard, IMoverCreatorParams, IPlayer } from "../../types";
 import { ButtonInteractions, KeyboardInteractions } from "..";
 import { IUIEvents, IUIMover } from "../types";
 import { UIMover } from "./ui-mover";
 
-export function getKeyboardMover(speed: number, player: IPlayer, board: IBoard): IUIMover {
-    const mover = new UIMover(speed);
-    const createEventer = (events: IUIEvents) => new KeyboardInteractions(events);
-    mover.wireEventHandlers(player, board, createEventer);
+export function getKeyboardMover(args: IMoverCreatorParams): IUIMover {
+    const createEventer = (_events: IUIEvents) => new KeyboardInteractions([_events, args.attachEvents]);
+    const mover = new UIMover(args.speed);
+    mover.wireEventHandlers(args.player, args.board, createEventer);
     return mover;
 }
 
-export function getButtonMover(speed: number, player: IPlayer, board: IBoard): IUIMover {
-    const mover = new UIMover(speed);
-    const createEventer = (events: IUIEvents) => new ButtonInteractions(events);
-    mover.wireEventHandlers(player, board, createEventer);
+export function getButtonMover(args: IMoverCreatorParams): IUIMover {
+    const createEventer = (_events: IUIEvents) => new ButtonInteractions([_events, args.attachEvents]);
+    const mover = new UIMover(args.speed);
+    mover.wireEventHandlers(args.player, args.board, createEventer);
     return mover;
 }
 
