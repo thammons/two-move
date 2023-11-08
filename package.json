@@ -4,7 +4,8 @@
   "description": "A maze dungeon game",
   "main": "./dist/main.js",
   "scripts": {
-    "build": "tsc",
+    "build": "vite build",
+    "start:preview": "vite preview",
     "test": "npm run test --prefix ./two-move-ts/testsetup",
     "test:watch": "npm run test:watch --prefix ./two-move-ts/testsetup"
   },
