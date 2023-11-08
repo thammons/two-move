@@ -32,10 +32,8 @@ export function onload(gameOptions: IGameOptions) {
     window.onload = () => {
         const game = new Game(gameOptions);
         game.init();
-
     }
 }
-
 
 export class Game {
     private score: ScoreBoard | undefined = undefined;
@@ -46,7 +44,7 @@ export class Game {
     //this isn't read as it uses eventhandlers
     private movers: IMover[] = [];
     private moverCreators: ((speed: number, player: IPlayer, board: IBoard) => IMover)[];
-    private moverRunner:MoverRunner | undefined = undefined;
+    private moverRunner: MoverRunner | undefined = undefined;
 
     private board: Board | undefined = undefined;
     private lightsout: LightsOut<Board> | undefined = undefined;
@@ -87,8 +85,15 @@ export class Game {
         this.player! = new Player(this.map.player, this.map.width, 'east');
         this.board.updateItem(this.player!);
 
-        //adds board handlers in init
-        this.lightsout.init(this.board);
+        this.setupBoardHanders();
+
+        this.setupMovers();
+
+        UI.paintBoard(this.board!, 100);
+    }
+
+    private setupBoardHanders() {
+        this.lightsout!.init(this.board!);
 
         const uiHandlers: IBoardEvents = {
             boardUpdateHandlers: [(eventArgs) => UI.paintBoard(eventArgs.board)],
@@ -123,10 +128,11 @@ export class Game {
                 }
             ]
         };
-        this.board.addEventListeners(uiHandlers);
+        this.board!.addEventListeners(uiHandlers);
+    }
 
-
-        if (!!this.movers.length){
+    private setupMovers() {
+        if (!!this.movers.length) {
             this.moverRunner?.halt();
             this.moverRunner = undefined;
             this.movers = [];
@@ -138,8 +144,6 @@ export class Game {
 
         this.moverRunner = new MoverRunner();
         this.moverRunner.runMovers(this.movers, this.player!, this.board!);
-
-        UI.paintBoard(this.board, 100);
     }
 
     private setupUI() {
