@@ -1,5 +1,31 @@
 import { Direction, ItemLocation, IPlayer, CellType, PlayerIndicator } from './types.js';
 
+
+interface IDirectionDependencies {
+    indicator: PlayerIndicator;
+    nextDirection: Direction;
+    nextMove: (playerLocation: ItemLocation, mapWidth: number) => ItemLocation;
+}
+
+const directionDependencies: Record<Direction, IDirectionDependencies> = {
+    'east': {
+        indicator: '>', nextDirection: 'south',
+        nextMove: (playerLocation: ItemLocation, mapWidth: number) => playerLocation + 1
+    },
+    'west': {
+        indicator: '<', nextDirection: 'north',
+        nextMove: (playerLocation: ItemLocation, mapWidth: number) => playerLocation - 1
+    },
+    'north': {
+        indicator: '^', nextDirection: 'east',
+        nextMove: (playerLocation: ItemLocation, mapWidth: number) => playerLocation - mapWidth
+    },
+    'south': {
+        indicator: 'v', nextDirection: 'west',
+        nextMove: (playerLocation: ItemLocation, mapWidth: number) => playerLocation + mapWidth
+    }
+};
+
 class Player implements IPlayer {
     cellType: CellType = 'player';
     direction: Direction;
@@ -19,40 +45,17 @@ class Player implements IPlayer {
     }
 
     turnRight() {
-        switch (this.direction) {
-            case 'east':
-                this.direction = 'south';
-                this.indicator = 'v';
-                break;
-            case 'south':
-                this.direction = 'west';
-                this.indicator = '<';
-                break;
-            case 'west':
-                this.direction = 'north';
-                this.indicator = '^';
-                break;
-            case 'north':
-                this.direction = 'east';
-                this.indicator = '>';
-                break;
-        }
+        const nextDirection = directionDependencies[this.direction].nextDirection;
+        this.direction = nextDirection;
+        this.indicator = directionDependencies[nextDirection].indicator;
     }
 
     getIndicator(): PlayerIndicator {
         return this._getIndicator(this.direction);
     }
-    _getIndicator(direction: Direction): PlayerIndicator {
-        switch (direction) {
-            case 'east':
-                return '>';
-            case 'west':
-                return '<';
-            case 'north':
-                return '^';
-            case 'south':
-                return 'v';
-        }
+
+    private _getIndicator(direction: Direction): PlayerIndicator {
+        return directionDependencies[direction].indicator;
     }
 
     setNextLocation(): void {
@@ -62,35 +65,7 @@ class Player implements IPlayer {
 
     getNextMove(): ItemLocation {
         const playerIndex = this.getPlayerLocation();
-        let nextMove = playerIndex;
-
-        switch (this.direction) {
-            case 'east':
-                nextMove = this._getEast(playerIndex);
-                break;
-            case 'west':
-                nextMove = this._getWest(playerIndex);
-                break;
-            case 'north':
-                nextMove = this._getNorth(playerIndex);
-                break;
-            case 'south':
-                nextMove = this._getSouth(playerIndex);
-                break;
-        }
-
-        return nextMove;
+        return directionDependencies[this.direction].nextMove(playerIndex, this.boardWidth);
     }
-
-
-    _getEast(playerIndex: ItemLocation): ItemLocation { return playerIndex + 1; }
-
-    _getWest(playerIndex: ItemLocation): ItemLocation { return playerIndex - 1; }
-
-    _getNorth(playerIndex: ItemLocation): ItemLocation { return playerIndex - this.boardWidth; }
-
-    _getSouth(playerIndex: ItemLocation): ItemLocation { return playerIndex + this.boardWidth; }
-
-
 }
 export default Player;
