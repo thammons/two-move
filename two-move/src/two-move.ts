@@ -29,10 +29,10 @@ import { MoverRunner } from "./player-movers/move-runner";
 
 
 export function onload(gameOptions: IGameOptions) {
-    window.onload = () => {
+    window.addEventListener('load', () => {
         const game = new Game(gameOptions);
         game.init();
-    }
+    });
 }
 
 export class Game {

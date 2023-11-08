@@ -4,6 +4,7 @@ import { RandomWalkerMover } from "./random-walker";
 import { ScreenSweeperMover } from "./screen-sweeper";
 import { WallFollowerMover } from "./wall-follower";
 
+export const MoverNames = ['none', 'pacer', 'random-walker', 'screen-sweeper', 'wall-follower'];
 export type MoverTypes = 'none' | 'pacer' | 'random-walker' | 'screen-sweeper' | 'wall-follower';
 
 

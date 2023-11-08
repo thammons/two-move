@@ -8,7 +8,6 @@
     <link rel="stylesheet" href="../_styles/board.css" />
     <link rel="stylesheet" href="../_styles/test-page.css" />
 
-    <!-- <script src="./v1-index.js"></script> -->
     <script src="../src/test-page.ts" type="module"></script>
 
 </head>
@@ -45,6 +44,7 @@
 
     <div id="test-container">
         <div id="test-controls">
+            <!-- TODO Set sliders for all number inputs... what should their min/max's be? -->
             <div id="board-settings">
                 <h2>Board Settings</h2>
                 <label for="board-height">Board Height</label>
@@ -74,6 +74,7 @@
                     <div class="cell-type button-minstyle grid-item goal"></div>
                     <div class="cell-type button-minstyle grid-item player">&gt;</div>
                 </div>
+                <div id="save-board" class="button sm">Save Board</div>
             </div>
         </div>
         <div id="board">
@@ -83,11 +84,9 @@
     </div>
 
     <div id="message-box">
-        <div class="button" id="show-move-log" style="display:none">Show Move Log <em>this button isn't setup</em>
-        </div>
+        <div class="button" id="show-move-log" style="display:none">Show Move Log <em>this button isn't setup</em></div>
         <div id="last-move"></div>
     </div>
-
 </body>
 
 </html>

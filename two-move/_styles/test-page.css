@@ -14,7 +14,7 @@
     flex-direction: column;
     flex-wrap: wrap;
     align-items: left;
-    height: 40vh;
+    height: 560px;
 }
 
 #test-controls > div {
@@ -40,3 +40,8 @@
     margin: 2px;
     font-size: 45px !important;
 }
+
+.cell-type.selected {
+    border: 2px solid green;
+}
+

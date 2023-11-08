@@ -2,6 +2,7 @@ import { IMap, ItemLocation } from "../types";
 import MapGenerated from "./generate-map1";
 import { MapBigSimple, MapSimple, MapWalledPlayerBox, MapWalledPlayerUnEvenBox } from "./simple-maps";
 
+export const MapNames = ['from-saved', 'generated', 'simple', 'big-simple', 'walled-player-box', 'walled-player-uneven-box'];
 export type MapType = 'from-saved' | 'generated' | 'simple' | 'big-simple' | 'walled-player-box' | 'walled-player-uneven-box';
 
 export interface IMapParams {

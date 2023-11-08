@@ -2,7 +2,10 @@ import MapGenerated from "./maps/generate-map1";
 import { IGameOptions, IPlayer } from "./types";
 import { getKeyboardMover } from "./ui/movers";
 import { onload } from './two-move'
-import { getMover } from "./player-movers";
+import { getMover, MoverNames } from "./player-movers";
+import { MapNames } from "./maps";
+
+import * as UITestPage from './ui/ui-test-page';
 
 const GameOptions: IGameOptions = {
     moverSpeed: 150,
@@ -11,3 +14,5 @@ const GameOptions: IGameOptions = {
 }
 
 onload(GameOptions);
+
+UITestPage.addEvents(MapNames, MoverNames);
