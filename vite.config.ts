@@ -10,7 +10,7 @@ export default defineConfig({
       generateBundle(_, bundle) {
         for (const outputItem of Object.values(bundle)) {
           if (outputItem.fileName.endsWith('.html')) {
-            outputItem.fileName = outputItem.fileName.replace('two-move/html/', '')
+            outputItem.fileName = outputItem.fileName.replace('two-move/_html/', '')
           }
         }
       }
@@ -27,10 +27,11 @@ export default defineConfig({
       },
       input: {
         main: resolve(__dirname, 'index.html'),
-        home: resolve(__dirname, 'two-move/html/home.html'),
-        game: resolve(__dirname, 'two-move/html/game.html'),
-        fourOhFour: resolve(__dirname, 'two-move/html/404.html'),
-        blockly: resolve(__dirname, 'two-move/html/blockly-builder.html'),
+        home: resolve(__dirname, 'two-move/_html/home.html'),
+        game: resolve(__dirname, 'two-move/_html/game.html'),
+        test: resolve(__dirname, 'two-move/_html/test-page.html'),
+        fourOhFour: resolve(__dirname, 'two-move/_html/404.html'),
+        blockly: resolve(__dirname, 'two-move/_html/blockly-builder.html'),
         
       },
     }
