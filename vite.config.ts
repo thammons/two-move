@@ -2,10 +2,12 @@ import { defineConfig, BuildOptions } from 'vite';
 const { resolve } = require('path');
 
 export default defineConfig({
+  base: './',
   plugins: [
     {
       name: 'replace-src-path',
       apply: 'build',
+
       enforce: 'post',
       generateBundle(_, bundle) {
         for (const outputItem of Object.values(bundle)) {
