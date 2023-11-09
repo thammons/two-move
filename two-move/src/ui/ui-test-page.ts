@@ -1,23 +1,26 @@
+import { ISetting, ITestPageEventHandlers, SettingName, TestPageEvents } from "./ui-test-page-events";
 
 
+let testPageEventHandlers: TestPageEvents;
 
-
-export function init(mapNames: string[], moverTypes: string[], options?: ITestPageOptions) {
-    window.addEventListener('load', (event) => {
+export function init(mapNames: string[], moverTypes: string[], options?: ITestPageOptions, eventHandlers?: ITestPageEventHandlers) {
+    window.addEventListener('load', () => {
         loadMapNames(mapNames);
         loadMoverTypes(moverTypes);
 
         addHtmlElementEvents();
 
+        //TODO: load slider values, not just the "value" text
         loadSliderDisplayValues(options);
 
+        testPageEventHandlers = new TestPageEvents(eventHandlers);
+        //TODO call handler for each of the controls from the saved data (if there is any)
     });
 
 }
 
 
 function addHtmlElementEvents() {
-
     addCellTypeEvents();
     boardCellOnClickEvents();
 
@@ -70,7 +73,6 @@ const boardCellOnClick = (cell: Element) => {
     //change classes to what is on the selected "cell-type"
     const cellTypes = document.getElementsByClassName("cell-type");
     let cellType: Element | undefined = undefined;
-    let indicator = " ";
 
     for (let i = 0; i < cellTypes.length; i++) {
         if (cellTypes[i].classList.contains("selected")) {
@@ -81,8 +83,6 @@ const boardCellOnClick = (cell: Element) => {
 
     if (cellType === undefined)
         return;
-
-    const classes = cellType?.classList ?? [];
 
     const classesToMove = ["wall", "player", "goal"];
 
@@ -115,7 +115,6 @@ const boardCellOnClick = (cell: Element) => {
 const loadSliderDisplayValues = (options?: ITestPageOptions) => {
     if (!options)
         options = getData();
-console.log("loadsliders", options);
     (<HTMLInputElement>document.getElementById("board-height-value")).innerHTML = options.height.toString();
     (<HTMLInputElement>document.getElementById("board-width-value")).innerHTML = options.width.toString();
     (<HTMLInputElement>document.getElementById("cell-size-value")).innerHTML = options.cellSize.toString();
@@ -160,22 +159,13 @@ const onChangeEvents: Map<string, () => void> = new Map<string, () => void>([
 ]);
 
 const setOnChangeEvents = () => {
-    onChangeEvents.forEach((value, key) => {
-        const element = document.getElementById(key);
-        if (element !== null) {
-            element.addEventListener("change", () => {
-                value();
-                saveOptions();
-                const valueElement = document.getElementById(key + "-value");
-                if (valueElement !== null)
-                    valueElement.innerHTML = (<HTMLInputElement>element).value.toString();
-
-            });
-        }
-    });
+    setValueEvents("change", onChangeEvents, [
+        saveOptions,
+        (setting) => testPageEventHandlers.triggerSettingsChange(setting)
+    ]);
 };
 
-const onInputEvents = new Map<string, () => void>([    
+const onInputEvents = new Map<string, () => void>([
     ["board-height", () => { }],
     ["board-width", () => { }],
     ["cell-size", () => { }],
@@ -185,20 +175,28 @@ const onInputEvents = new Map<string, () => void>([
 
 
 const setOnInputEvents = () => {
-    onChangeEvents.forEach((value, key) => {
+    setValueEvents("input", onInputEvents);
+};
+
+const setValueEvents = (eventType: string, events: Map<string, () => void>, eventsForAll?: ((settingEvent: ISetting) => void)[]) => {
+    events.forEach((value, key) => {
         const element = document.getElementById(key);
         if (element !== null) {
-            element.addEventListener("input", () => {
-                value();
+            const inputEle = <HTMLInputElement>element;
+            element.addEventListener(eventType, () => {
                 const valueElement = document.getElementById(key + "-value");
+
                 if (valueElement !== null)
-                    valueElement.innerHTML = (<HTMLInputElement>element).value.toString();
+                    valueElement.innerHTML = inputEle.value.toString();
+
+                value();
+                if (eventsForAll !== undefined)
+                    eventsForAll.forEach((e) => !e || e({ name: key as SettingName, value: inputEle.value.toString() }));
 
             });
         }
     });
 };
-
 
 const saveOptions = () => {
     const options = getData();
@@ -210,7 +208,6 @@ const loadOptions = (data?: ITestPageOptions) => {
     if (!data && options !== null) {
         data = JSON.parse(options);
     }
-    console.log(data);
     if (!!data) {
         (<HTMLInputElement>document.getElementById("board-height")).value = data.height.toString();
         (<HTMLInputElement>document.getElementById("board-width")).value = data.width.toString();
