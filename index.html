@@ -10,9 +10,8 @@
 
     <script type="module" src="./two-move/src/main.ts"></script>
     <script type="module">
-        console.log(import.meta.env.MODE);
         if(import.meta.env.MODE === "production")
-            window.location.href = "./dist/home.html";
+            window.location.href = "./home.html";
         if(import.meta.env.MODE === "development")
             window.location.href = "./two-move/_html/home.html";
     </script>
