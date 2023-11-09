@@ -34,7 +34,9 @@ const BlocklyGameOptions: IGameOptions = {
   moverSpeed: 150,
   moverCreators: [getButtonMover, getKeyboardMover],
   getNextMap: (player: IPlayer) => new MapGenerated(player?.getPlayerLocation() ?? 0),
-  lightsout: false
+  lightsout: false,
+  fadeOnReset: false,
+  preservePlayerDirection: false,
 }
 
 onload(BlocklyGameOptions);

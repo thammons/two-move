@@ -48,19 +48,20 @@ export class TwoMoveGame {
 
     private board: Board | undefined = undefined;
     private fadeOnReset: boolean = false;
-    private useLightesOut: boolean = false;
+    private useLightesOut: boolean = true;
     private lightsout: LightsOut<Board> | undefined = undefined;
     private flashlightRadius: number = 10;
 
     private player: Player | undefined = undefined;
+    private preservePlayerDirection: boolean = true;
 
     constructor(boardOptions: IGameOptions) {
         this.fadeOnReset = boardOptions.fadeOnReset ?? this.fadeOnReset;
         this.moverSpeed = boardOptions.moverSpeed;
         this.moverCreators = boardOptions.moverCreators;
         this.getNextMap = boardOptions.getNextMap;
-        this.useLightesOut = boardOptions.lightsout ?? true;
-
+        this.useLightesOut = boardOptions.lightsout ?? this.useLightesOut;
+        this.preservePlayerDirection = boardOptions.preservePlayerDirection ?? this.preservePlayerDirection;
         this.map = this.getNextMap(this.player!);
         this.score = new ScoreBoard(ScoreBoard.loadScore());
     }
@@ -89,9 +90,8 @@ export class TwoMoveGame {
 
         this.board = create.init(this.board);
 
-        //BLOCKLY needs a slightly different game mode...
-        // PLAYER = new Player(MAP.player, MAP.width, PLAYER?.direction ?? 'east');
-        this.player! = new Player(this.map.player, this.map.width, 'east');
+        const playerDirection = this.preservePlayerDirection ? this.player?.direction : 'east';
+        this.player! = new Player(this.map.player, this.map.width, playerDirection);
         this.board.updateItem(this.player!);
 
         this.setupBoardHanders();

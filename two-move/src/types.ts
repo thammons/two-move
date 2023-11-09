@@ -22,6 +22,7 @@ export interface IGameOptions {
     getNextMap: (player: IPlayer) => IMap,
     lightsout?: boolean,
     fadeOnReset?: boolean,
+    preservePlayerDirection?: boolean,
 }
 
 export interface IMap {
