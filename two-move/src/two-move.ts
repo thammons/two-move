@@ -31,16 +31,15 @@ import { showCollisionMessage, showLastMove, showWinMessage } from "./ui/ui-boar
 
 export function onload(gameOptions: IGameOptions) {
     window.addEventListener('load', () => {
-        const game = new TwoMoveGame(gameOptions);
-        game.init();
+        new TwoMoveGame(gameOptions);
     });
 }
 
 export class TwoMoveGame {
     private score: ScoreBoard | undefined = undefined;
     private moverSpeed: number;
-    private map: IMap;
-    private getNextMap: (player: IPlayer) => IMap;
+    private map: IMap | undefined;
+    private getNextMap: (player?: IPlayer) => IMap;
 
     //this isn't read as it uses eventhandlers
     private movers: IMover[] = [];
@@ -63,20 +62,28 @@ export class TwoMoveGame {
         this.getNextMap = boardOptions.getNextMap;
         this.useLightesOut = boardOptions.lightsout ?? this.useLightesOut;
         this.preservePlayerDirection = boardOptions.preservePlayerDirection ?? this.preservePlayerDirection;
-        this.map = this.getNextMap(this.player!);
         this.score = new ScoreBoard(ScoreBoard.loadScore());
+        this.setupBoard();
     }
 
-    init() {
+    reset(boardOptions?: IGameOptions) {
+        this.map = undefined;
+        if (boardOptions) {
+            this.fadeOnReset = boardOptions.fadeOnReset ?? this.fadeOnReset;
+            this.moverSpeed = boardOptions.moverSpeed;
+            this.moverCreators = boardOptions.moverCreators;
+            this.getNextMap = boardOptions.getNextMap;
+            this.useLightesOut = boardOptions.lightsout ?? this.useLightesOut;
+            this.preservePlayerDirection = boardOptions.preservePlayerDirection ?? this.preservePlayerDirection;
+        }
+        this.score = new ScoreBoard(ScoreBoard.loadScore());
         this.setupBoard();
-        // console.log(Maps1);
-        // MAP_FROM_JSON = new MapFromJson(Maps1);
     }
 
     private setupBoard() {
         let boardLoadFade = 100;
         if (this.map === undefined) {
-            this.map = this.getNextMap(this.player!);
+            this.map = this.getNextMap(this.player);
             //TODO pull last map from localstorage?
             //pull first map from localstorage?
         }
@@ -92,14 +99,17 @@ export class TwoMoveGame {
         this.board = create.init(this.board);
 
         const playerDirection = this.preservePlayerDirection ? this.player?.direction : 'east';
-        this.player! = new Player(this.map.player, this.map.width, playerDirection);
-        this.board.updateItem(this.player!);
+        this.player = new Player(this.map.player, this.map.width, playerDirection);
+        this.board.updateItem(this.player);
 
         this.setupBoardHanders();
 
         this.setupMovers();
 
         UI.paintBoard(this.board!, boardLoadFade);
+
+        if (!!this.score)
+            printScoreboard(this.score);
     }
 
     private setupBoardHanders() {
@@ -168,13 +178,14 @@ export class TwoMoveGame {
         const lightsHandler = this.lightsout === undefined
             ? []
             : this.lightsout.getUIEvents(this.flashlightRadius, this.board!, this.player!);
-            
+
         const uiEvents: IUIEvents = {
             moveHandlers: [() => showLastMove(this.player?.direction ?? 'east', true)],
             turnHandlers: [() => showLastMove(this.player?.getNextDirection() ?? 'east', false)],
             lightHandlers: lightsHandler,
             saveMapHandlers: [() => {
-                saveMap(this.map);
+                if (!!this.map)
+                    saveMap(this.map);
             }],
             resetHandlers: [(eventArgs) => {
                 if (eventArgs.newMap) {

@@ -115,6 +115,7 @@ function paintWholeBoard(board: IBoard, loadTimer: number = 0) {
     //Set board size
     const cellSize = board.cellWidth;
     const boardElement = utils.getElementById('board');
+    boardElement.style.minWidth = `${board.width * (cellSize + 2)}px`;
     boardElement.style.width = `${board.width * (cellSize + 2)}px`;
 
 

@@ -19,7 +19,7 @@ export interface IMoverCreatorParams {
 export interface IGameOptions {
     moverCreators: ((params: IMoverCreatorParams) => IMover)[],
     moverSpeed: number,
-    getNextMap: (player: IPlayer) => IMap,
+    getNextMap: (player?: IPlayer) => IMap,
     lightsout?: boolean,
     fadeOnReset?: boolean,
     preservePlayerDirection?: boolean,

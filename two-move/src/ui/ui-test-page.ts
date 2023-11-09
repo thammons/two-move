@@ -1,5 +1,50 @@
 import { ISetting, ITestPageEventHandlers, SettingName, TestPageEvents } from "./ui-test-page-events";
 
+export interface ITestPageOptions {
+    height?: number;
+    width?: number;
+    cellSize?: number;
+    difficulty?: number;
+    mapName?: string;
+    moverType?: string;
+    moverSpeed?: number;
+};
+
+export class TestPageOptions implements ITestPageOptions {
+    height?: number;
+    width?: number;
+    cellSize?: number;
+    difficulty?: number;
+    mapName?: string;
+    moverType?: string;
+    moverSpeed?: number;
+
+    [key: string]: number | string | undefined;
+
+    static init(options: ITestPageOptions) {
+        const newOptions = new TestPageOptions();
+        newOptions.height = options.height;
+        newOptions.width = options.width;
+        newOptions.cellSize = options.cellSize;
+        newOptions.difficulty = options.difficulty;
+        newOptions.mapName = options.mapName;
+        newOptions.moverType = options.moverType;
+        newOptions.moverSpeed = options.moverSpeed;
+        return newOptions;
+    }
+
+    static updateValues(oldOptions: TestPageOptions, newOptions: TestPageOptions) {
+        console.log('updateValues', oldOptions, newOptions)
+        const options = new TestPageOptions();
+        for (let key in newOptions) {
+            if (newOptions.hasOwnProperty(key) && options.hasOwnProperty(key)) {
+                options[key] = newOptions[key] ?? oldOptions[key];
+                console.log('updated', key, options[key], newOptions[key], oldOptions[key]);
+            }
+        }
+        return options;
+    }
+}
 
 let testPageEventHandlers: TestPageEvents;
 
@@ -10,8 +55,8 @@ export function init(mapNames: string[], moverTypes: string[], options?: ITestPa
 
         addHtmlElementEvents();
 
-        //TODO: load slider values, not just the "value" text
         loadSliderDisplayValues(options);
+        loadOptions(options);
 
         testPageEventHandlers = new TestPageEvents(eventHandlers);
         //TODO call handler for each of the controls from the saved data (if there is any)
@@ -115,13 +160,19 @@ const boardCellOnClick = (cell: Element) => {
 const loadSliderDisplayValues = (options?: ITestPageOptions) => {
     if (!options)
         options = getData();
-    (<HTMLInputElement>document.getElementById("board-height-value")).innerHTML = options.height.toString();
-    (<HTMLInputElement>document.getElementById("board-width-value")).innerHTML = options.width.toString();
-    (<HTMLInputElement>document.getElementById("cell-size-value")).innerHTML = options.cellSize.toString();
-    (<HTMLInputElement>document.getElementById("difficulty-value")).innerHTML = options.difficulty.toString();
-    (<HTMLInputElement>document.getElementById("mover-speed-value")).innerHTML = options.moverSpeed.toString();
+    if (!!options) {
+        if (options.height !== undefined && !isNaN(options.height))
+            (<HTMLInputElement>document.getElementById("board-height-value")).innerHTML = options.height.toString();
+        if (options.width !== undefined && !isNaN(options.width))
+            (<HTMLInputElement>document.getElementById("board-width-value")).innerHTML = options.width.toString();
+        if (options.cellSize !== undefined && !isNaN(options.cellSize))
+            (<HTMLInputElement>document.getElementById("cell-size-value")).innerHTML = options.cellSize.toString();
+        if (options.difficulty !== undefined && !isNaN(options.difficulty))
+            (<HTMLInputElement>document.getElementById("difficulty-value")).innerHTML = options.difficulty.toString();
+        if (options.moverSpeed !== undefined && !isNaN(options.moverSpeed))
+            (<HTMLInputElement>document.getElementById("mover-speed-value")).innerHTML = options.moverSpeed.toString();
 
-
+    }
 };
 
 const loadMapNames = (mapNames: string[]) => {
@@ -155,7 +206,7 @@ const onChangeEvents: Map<string, () => void> = new Map<string, () => void>([
     ["difficulty", () => { }],
     ["map-type", () => { }],
     ["mover-type", () => { }],
-    ["mover-speed", () => { }],
+    ["mover-speed", () => { }]
 ]);
 
 const setOnChangeEvents = () => {
@@ -209,24 +260,21 @@ const loadOptions = (data?: ITestPageOptions) => {
         data = JSON.parse(options);
     }
     if (!!data) {
-        (<HTMLInputElement>document.getElementById("board-height")).value = data.height.toString();
-        (<HTMLInputElement>document.getElementById("board-width")).value = data.width.toString();
-        (<HTMLInputElement>document.getElementById("cell-size")).value = data.cellSize.toString();
-        (<HTMLInputElement>document.getElementById("difficulty")).value = data.difficulty.toString();
-        (<HTMLInputElement>document.getElementById("map-type")).value = data.mapName;
-        (<HTMLInputElement>document.getElementById("mover-type")).value = data.moverType;
-        (<HTMLInputElement>document.getElementById("mover-speed")).value = data.moverSpeed.toString();
+        if (data.height !== undefined && !isNaN(data.height))
+            (<HTMLInputElement>document.getElementById("board-height")).value = data.height.toString();
+        if (data.width !== undefined && !isNaN(data.width))
+            (<HTMLInputElement>document.getElementById("board-width")).value = data.width.toString();
+        if (data.cellSize !== undefined && !isNaN(data.cellSize))
+            (<HTMLInputElement>document.getElementById("cell-size")).value = data.cellSize.toString();
+        if (data.difficulty !== undefined && !isNaN(data.difficulty))
+            (<HTMLInputElement>document.getElementById("difficulty")).value = data.difficulty.toString();
+        if (!!data.mapName)
+            (<HTMLInputElement>document.getElementById("map-type")).value = data.mapName;
+        if (!!data.moverType)
+            (<HTMLInputElement>document.getElementById("mover-type")).value = data.moverType;
+        if (data.moverSpeed !== undefined && !isNaN(data.moverSpeed))
+            (<HTMLInputElement>document.getElementById("mover-speed")).value = data.moverSpeed.toString();
     }
-};
-
-export interface ITestPageOptions {
-    height: number;
-    width: number;
-    cellSize: number;
-    difficulty: number;
-    mapName: string;
-    moverType: string;
-    moverSpeed: number;
 };
 
 const getData = (): ITestPageOptions => {
