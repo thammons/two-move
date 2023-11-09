@@ -22,24 +22,30 @@ export default class MapGenerated implements IMap {
         this.size = boardWidth * boardHeight;
         this.cellWidth = cellWidth;
         this.walls = this.generateWalls(deletethisDifficulty ?? difficulty);
-        this.player = playerLocation ?? 0;
-        this.goal = this.generateGoal(this.walls, this.player);
-        if (this.player === this.goal) {
-            this.player = 0;
-            if (this.player === this.goal) {
-                this.player = boardWidth * boardHeight - 1;
+        this.goal = this.generateGoal(this.walls, playerLocation ?? 0);
+        this.player = this.setPlayer(playerLocation ?? 0, this.goal, this.height, this.width);
+        this.walls = this.cleanupWalls(this.walls, this.player, this.goal, deletethisDifficulty ?? difficulty);
+
+        console.log('goal', this.goal);
+    }
+
+    setPlayer = (desiredPlayerLocation: ItemLocation, goal: ItemLocation, height: number, width: number): ItemLocation => {
+        let nextPlayerLocation = () => Math.floor(Math.random() * (this.width * this.height - 1) + 1);
+        let isValid = false;
+
+        while (!isValid) {
+            let playerIsOnGoal = desiredPlayerLocation === goal;
+            let outOfBounds = desiredPlayerLocation > width * height - 1 || desiredPlayerLocation < 0;
+            isValid = !outOfBounds || !playerIsOnGoal;
+            if (!isValid) {
+                desiredPlayerLocation = nextPlayerLocation();
             }
         }
 
-        //if player is out of bounds, replace him on the board
-        if (this.player > boardWidth * boardHeight - 1 || this.player < 0) {
-            this.player = Math.floor(Math.random() * 10_000 % (boardWidth * boardHeight));
-        }
-
-        this.walls = this.cleanupWalls(this.walls, deletethisDifficulty ?? difficulty);
+        return desiredPlayerLocation;
     }
 
-    cleanupWalls = (walls: ItemLocation[], difficulty: number): ItemLocation[] => {
+    cleanupWalls = (walls: ItemLocation[], playerLocation: ItemLocation, goalLocation: ItemLocation, difficulty: number): ItemLocation[] => {
         const newwalls = JSON.parse(JSON.stringify(walls));
         const cleanAttempts = 10;
         let done = false;
@@ -61,11 +67,21 @@ export default class MapGenerated implements IMap {
                 done = true;
             }
 
-            if(i === cleanAttempts - 1 && !done) {
+            if (i === cleanAttempts - 1 && !done) {
                 // console.log('cleanAttempts reached, but not done, forcing done. wallsTouchingRemaining, i: ', wallsTouching, i)
                 done = true;
             }
         }
+
+        const indexOfPlayer = newwalls.indexOf(playerLocation);
+        const indexOfGoal = newwalls.indexOf(goalLocation);
+        if (indexOfPlayer > -1) {
+            newwalls.splice(indexOfPlayer, 1);
+        }
+        if (indexOfGoal > -1) {
+            newwalls.splice(indexOfGoal, 1);
+        }
+
         return newwalls;
     }
 
@@ -316,10 +332,10 @@ export default class MapGenerated implements IMap {
     generateGoal = (walls: ItemLocation[], player: ItemLocation): ItemLocation => {
         //TODO: Move goal based on player and difficulty (lower difficulty means closer to player)
 
-        let goalLocation = Math.floor(Math.random() * this.size);
-        while (walls.includes(goalLocation) || goalLocation === player) {
-            goalLocation = Math.floor(Math.random() * this.size);
-        }
+        let goalLocation: ItemLocation;
+        do {
+            goalLocation = Math.floor(Math.random() * (this.size - 1) + 1);
+        } while (walls.includes(goalLocation) || goalLocation === player);
         return goalLocation as ItemLocation;
     }
 }
