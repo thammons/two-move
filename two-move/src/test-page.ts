@@ -1,12 +1,29 @@
 import MapGenerated from "./maps/generate-map1";
-import { IGameOptions, IPlayer } from "./types";
+import { IGameOptions, IMover, IPlayer } from "./types";
 import { getKeyboardMover } from "./ui/movers";
 import { TwoMoveGame, onload } from './two-move'
-import { getMover, MoverNames } from "./player-movers";
+import { getMover, MoverNames, MoverTypes } from "./player-movers";
 import { MapNames, MapType, getMap } from "./maps";
 
 import * as UITestPage from './ui/ui-test-page';
 import { ITestPageEventHandlers, SettingName } from "./ui/ui-test-page-events";
+import { IUIMover } from "./ui/types";
+
+
+
+
+
+
+/* //TODO:
+    All maps need to be resizeable
+    get mover working
+    'saveboard' button is not wired up to... anything..
+    break up ui-test-page.ts into smaller files
+
+*/
+
+
+
 
 let TestOptions: UITestPage.ITestPageOptions = {
     height: 50,
@@ -18,27 +35,37 @@ let TestOptions: UITestPage.ITestPageOptions = {
     moverSpeed: 150,
 };
 
-const GameOptions: IGameOptions = {
-    moverSpeed: 150,
-    moverCreators: [getKeyboardMover],// () => getMover('pacer', 500)!],
-    getNextMap: (player?: IPlayer) => getMap(
-        TestOptions.mapName as MapType, {
-        boardHeight: TestOptions.height === undefined ? 10 : TestOptions.height,
-        boardWidth: TestOptions.width === undefined ? 10 : TestOptions.width,
-        cellWidth: TestOptions.cellSize === undefined ? 25 : TestOptions.cellSize,
-        difficulty: TestOptions.difficulty === undefined ? 50 : TestOptions.difficulty / 100,
-        playerLocation: player?.getPlayerLocation() ?? 0,
-    })!,
-    lightsout: false,
-    preservePlayerDirection: true,
-    fadeOnReset: false,
-};
-
 let game: TwoMoveGame;
 
 window.addEventListener('load', () => {
-    game = new TwoMoveGame(GameOptions);
+    const loadedOptions = UITestPage.getStoredOptions();
+    TestOptions = loadedOptions ?? TestOptions;
+    game = new TwoMoveGame(getGameOptionsFromTestOptions(TestOptions));
 });
+
+const getGameOptionsFromTestOptions = (testOptions: UITestPage.ITestPageOptions): IGameOptions => {
+    let moverCreators: (() => IMover)[] = [];
+    if (testOptions.moverType !== undefined && MoverNames.includes(testOptions.moverType)) {
+        moverCreators.push(() => getMover(testOptions.moverType as MoverTypes, testOptions.moverSpeed ?? 150)!);
+    }
+    const GameOptions: IGameOptions = {
+        //TODO: refactor to create GameOptions from TestOptions
+        moverSpeed: testOptions.moverSpeed ?? 150,
+        moverCreators: [getKeyboardMover, ...moverCreators],
+        getNextMap: (player?: IPlayer) => getMap(
+            testOptions.mapName as MapType, {
+            boardHeight: testOptions.height === undefined ? 10 : testOptions.height,
+            boardWidth: testOptions.width === undefined ? 10 : testOptions.width,
+            cellWidth: testOptions.cellSize === undefined ? 25 : testOptions.cellSize,
+            difficulty: testOptions.difficulty === undefined ? 50 : testOptions.difficulty / 100,
+            playerLocation: player?.getPlayerLocation() ?? 0,
+        })!,
+        lightsout: false,
+        preservePlayerDirection: true,
+        fadeOnReset: false,
+    }
+    return GameOptions;
+}
 
 let changeHandlerDelay: NodeJS.Timeout | undefined = undefined;
 const settingChangesQueue: { name: SettingName, value: string }[] = [];
@@ -58,22 +85,7 @@ function updateSettingsOnChange(setting: { name: SettingName, value: string }) {
     changeHandlerDelay = setTimeout(() => {
 
         TestOptions = updateSettingsFromQueue();
-        game.reset({
-            //TODO: refactor to create GameOptions from TestOptions
-            moverSpeed: 150,
-            moverCreators: [getKeyboardMover],// () => getMover('pacer', 500)!],
-            getNextMap: (player?: IPlayer) => getMap(
-                TestOptions.mapName as MapType, {
-                boardHeight: TestOptions.height === undefined ? 10 : TestOptions.height,
-                boardWidth: TestOptions.width === undefined ? 10 : TestOptions.width,
-                cellWidth: TestOptions.cellSize === undefined ? 25 : TestOptions.cellSize,
-                difficulty: TestOptions.difficulty === undefined ? 50 : TestOptions.difficulty / 100,
-                playerLocation: player?.getPlayerLocation() ?? 0,
-            })!,
-            lightsout: false,
-            preservePlayerDirection: true,
-            fadeOnReset: false,
-        });
+        game.reset(getGameOptionsFromTestOptions(TestOptions));
 
         if (!!changeHandlerDelay)
             clearTimeout(changeHandlerDelay);

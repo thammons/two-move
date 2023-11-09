@@ -254,11 +254,19 @@ const saveOptions = () => {
     localStorage.setItem("test-page-options", JSON.stringify(options));
 };
 
-const loadOptions = (data?: ITestPageOptions) => {
+export const getStoredOptions = (): ITestPageOptions | undefined => {
+    let data: ITestPageOptions | undefined = undefined;
     const options = localStorage.getItem("test-page-options");
-    if (!data && options !== null) {
+    if (options !== null) {
         data = JSON.parse(options);
     }
+
+    return data;
+}
+
+const loadOptions = (options?: ITestPageOptions) => {
+    const data = options || getStoredOptions();
+
     if (!!data) {
         if (data.height !== undefined && !isNaN(data.height))
             (<HTMLInputElement>document.getElementById("board-height")).value = data.height.toString();
