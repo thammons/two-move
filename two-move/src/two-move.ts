@@ -47,6 +47,7 @@ export class TwoMoveGame {
     private moverRunner: MoverRunner | undefined = undefined;
 
     private board: Board | undefined = undefined;
+    private fadeOnReset: boolean = false;
     private useLightesOut: boolean = false;
     private lightsout: LightsOut<Board> | undefined = undefined;
     private flashlightRadius: number = 10;
@@ -54,13 +55,14 @@ export class TwoMoveGame {
     private player: Player | undefined = undefined;
 
     constructor(boardOptions: IGameOptions) {
+        this.fadeOnReset = boardOptions.fadeOnReset ?? this.fadeOnReset;
         this.moverSpeed = boardOptions.moverSpeed;
         this.moverCreators = boardOptions.moverCreators;
         this.getNextMap = boardOptions.getNextMap;
         this.useLightesOut = boardOptions.lightsout ?? true;
 
         this.map = this.getNextMap(this.player!);
-        this.score = new ScoreBoard(ScoreBoard.loadScore())
+        this.score = new ScoreBoard(ScoreBoard.loadScore());
     }
 
     init() {
@@ -70,10 +72,14 @@ export class TwoMoveGame {
     }
 
     private setupBoard() {
+        let boardLoadFade = 100;
         if (this.map === undefined) {
             this.map = this.getNextMap(this.player!);
             //TODO pull last map from localstorage?
             //pull first map from localstorage?
+        }
+        else {
+            boardLoadFade = this.fadeOnReset ? boardLoadFade : 0;
         }
 
         this.board = new Board(this.map);
@@ -92,7 +98,7 @@ export class TwoMoveGame {
 
         this.setupMovers();
 
-        UI.paintBoard(this.board!, 100);
+        UI.paintBoard(this.board!, boardLoadFade);
     }
 
     private setupBoardHanders() {

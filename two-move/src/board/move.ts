@@ -52,25 +52,29 @@ export class Move implements IMove {
         return new Move(this.direction, this.desitnationLocation, nextLocation);
     }
 
-    isValidMove(map: IMap): boolean {
+    isValidMove(map: IMap, playerLocation?: ItemLocation): boolean {
         const direction = this.direction;
         const startLocation = this.startLocation;
         const desiredLocation = this.desitnationLocation;
 
-        const moveIsAtEdgeWest = isMaxWest(direction, startLocation, map);
-        const moveIsAtEdgeEast = isMaxEast(direction, startLocation, map);
+        const moveIsAtEdgeWest = isMaxWest(direction, startLocation, map.width);
+        const moveIsAtEdgeEast = isMaxEast(direction, startLocation, map.width);
         const moveIsOffTheBoard = desiredLocation < 0 || desiredLocation > map.width * map.height - 1;
         const moveIsBlocked = () => map.walls.includes(desiredLocation);
-    
-        return !(moveIsOffTheBoard || moveIsAtEdgeWest || moveIsAtEdgeEast || moveIsBlocked());
+
+        const isValidMoveForPlayer = !playerLocation || playerLocation === startLocation;
+
+        return isValidMoveForPlayer
+            && !(moveIsOffTheBoard || moveIsAtEdgeWest || moveIsAtEdgeEast || moveIsBlocked());
     }
 }
 
-//TODO This should live on a generic map?
-export function isMaxWest(direction: Direction, location: ItemLocation, map: IMap): boolean {
-    return direction === 'west' && location % map.width === 0;
+//TODO These should live on a generic map?
+export function isMaxWest(direction: Direction, playerLocation: ItemLocation, boardWidth: number): boolean {
+    return direction === 'west' && (playerLocation % boardWidth) < 0;
 }
 
-export function isMaxEast(direction: Direction, location: ItemLocation, map: IMap): boolean {
-    return direction === 'east' && location % map.width === map.width - 1;
+export function isMaxEast(direction: Direction, playerLocation: ItemLocation, boardWidth: number): boolean {
+    return direction === 'east' && Math.floor(playerLocation / boardWidth) !== Math.floor((playerLocation) / boardWidth);
 }
+

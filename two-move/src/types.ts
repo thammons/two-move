@@ -20,7 +20,8 @@ export interface IGameOptions {
     moverCreators: ((params: IMoverCreatorParams) => IMover)[],
     moverSpeed: number,
     getNextMap: (player: IPlayer) => IMap,
-    lightsout?: boolean
+    lightsout?: boolean,
+    fadeOnReset?: boolean,
 }
 
 export interface IMap {
