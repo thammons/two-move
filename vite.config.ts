@@ -2,7 +2,8 @@ import { defineConfig, BuildOptions } from 'vite';
 const { resolve } = require('path');
 
 export default defineConfig({
-  base: './',
+  base: '/',
+  root: './',
   plugins: [
     {
       name: 'replace-src-path',
@@ -11,8 +12,9 @@ export default defineConfig({
       enforce: 'post',
       generateBundle(_, bundle) {
         for (const outputItem of Object.values(bundle)) {
-          if (outputItem.fileName.endsWith('.html')) {
-            outputItem.fileName = outputItem.fileName.replace('two-move/_html/', '')
+          const outputItemAny = (outputItem as any);
+          if (outputItemAny.fileName && outputItemAny.fileName.endsWith('.html')) {
+            outputItemAny.fileName = outputItemAny.fileName.replace('two-move/_html/', '')
           }
         }
       }
@@ -22,11 +24,6 @@ export default defineConfig({
     assetsDir: 'dist',
     outDir: 'dist',
     rollupOptions: {
-      output: {
-        entryFileNames: 'assets/[name]-[hash].js',
-        chunkFileNames: 'assets/[name]-[hash].js',
-        assetFileNames: 'assets/[name]-[hash].[ext]',
-      },
       input: {
         main: resolve(__dirname, 'index.html'),
         home: resolve(__dirname, 'two-move/_html/home.html'),
@@ -34,8 +31,9 @@ export default defineConfig({
         test: resolve(__dirname, 'two-move/_html/test-page.html'),
         fourOhFour: resolve(__dirname, 'two-move/_html/404.html'),
         blockly: resolve(__dirname, 'two-move/_html/blockly-builder.html'),
-        
+
       },
     }
   }
-})
+
+});
