@@ -1,5 +1,4 @@
 
-import { LightsOut } from "../../board-builders";
 import { Move } from "../../board/move";
 import { IBoard, IMove, IPlayer } from "../../types";
 import { IUIEvents, IUIMover, IUIUserInteractions } from "../types";

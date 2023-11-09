@@ -1,4 +1,4 @@
-import { IBoard, IMoverCreatorParams, IPlayer } from "../../types";
+import { IMoverCreatorParams } from "../../types";
 import { ButtonInteractions, KeyboardInteractions } from "..";
 import { IUIEvents, IUIMover } from "../types";
 import { UIMover } from "./ui-mover";
