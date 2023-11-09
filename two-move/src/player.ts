@@ -44,6 +44,10 @@ class Player implements IPlayer {
         return this.location;
     }
 
+    getNextDirection(): Direction {
+        return directionDependencies[this.direction].nextDirection;
+    }
+
     turnRight() {
         const nextDirection = directionDependencies[this.direction].nextDirection;
         this.direction = nextDirection;

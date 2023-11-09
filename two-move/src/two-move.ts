@@ -10,6 +10,7 @@ import { UI } from "./ui";
 import { ScoreBoard } from "./scoreing";
 import { printScoreboard } from "./ui/ui-scoreing";
 import { MoverRunner } from "./player-movers/move-runner";
+import { showCollisionMessage, showLastMove, showWinMessage } from "./ui/ui-board";
 
 
 //TODO make moves a dropdown in the ui? TEST PAGE!!
@@ -124,6 +125,7 @@ export class TwoMoveGame {
                         this.score.updateCollisions();
                         ScoreBoard.saveScore(this.score);
                         printScoreboard(this.score!);
+                        showCollisionMessage();
                     }
                 }],
             goalReachedHandlers: [
@@ -133,6 +135,7 @@ export class TwoMoveGame {
                         this.score.updateLevel();
                         ScoreBoard.saveScore(this.score);
                         printScoreboard(this.score!);
+                        showWinMessage();
                     }
                     this.setupBoard();
                 }
@@ -165,9 +168,10 @@ export class TwoMoveGame {
         const lightsHandler = this.lightsout === undefined
             ? []
             : this.lightsout.getUIEvents(this.flashlightRadius, this.board!, this.player!);
+            
         const uiEvents: IUIEvents = {
-            moveHandlers: [],
-            turnHandlers: [],
+            moveHandlers: [() => showLastMove(this.player?.direction ?? 'east', true)],
+            turnHandlers: [() => showLastMove(this.player?.getNextDirection() ?? 'east', false)],
             lightHandlers: lightsHandler,
             saveMapHandlers: [() => {
                 saveMap(this.map);

@@ -56,7 +56,9 @@ body {
     /* height: 200px; */
     padding: 0 2em;
     margin: 1em;
-    overflow-y: auto;
+    width: 75%;
+    text-align: center;  
+
 }
 
 #show-move-log {

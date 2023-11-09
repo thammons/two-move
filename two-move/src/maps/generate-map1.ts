@@ -25,8 +25,6 @@ export default class MapGenerated implements IMap {
         this.goal = this.generateGoal(this.walls, playerLocation ?? 0);
         this.player = this.setPlayer(playerLocation ?? 0, this.goal, this.height, this.width);
         this.walls = this.cleanupWalls(this.walls, this.player, this.goal, deletethisDifficulty ?? difficulty);
-
-        console.log('goal', this.goal);
     }
 
     setPlayer = (desiredPlayerLocation: ItemLocation, goal: ItemLocation, height: number, width: number): ItemLocation => {

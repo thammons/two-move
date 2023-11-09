@@ -50,12 +50,14 @@ export function showLastMove(direction: Direction, isMove: boolean) {
     const lastMoveElement = utils.getElementById('last-move');
 
     const moveText = isMove ? 'move' : 'turn';
-    const lastMoveText = utils.createElement('div', `${moveText}(); //${moveText} ${direction}`);
+    const message = `${moveText}(); //${moveText} ${direction}`;
+    const lastMoveText = utils.createElement('pre', message);
 
     lastMoveElement.innerHTML = '';
     lastMoveElement.appendChild(lastMoveText);
 
-    moveLogElement.appendChild(lastMoveText);
+    const lastMoveTextLog = utils.createElement('pre', message);
+    moveLogElement.appendChild(lastMoveTextLog);
 }
 
 function updateBoard(board: IBoard) {

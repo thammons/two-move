@@ -126,11 +126,12 @@ export interface ICell {
 
 export interface IPlayer extends IMapItem {
     direction: Direction;
-    setNextLocation(): void;
-    turnRight(): void;
     getPlayerLocation(): ItemLocation;
-    getIndicator(): PlayerIndicator;
+    setNextLocation(): void;
     getNextMove(): ItemLocation;
+    getIndicator(): PlayerIndicator;
+    getNextDirection(): Direction;
+    turnRight(): void;
 }
 
 export interface IMove {
