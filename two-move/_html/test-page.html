@@ -47,14 +47,14 @@
             <!-- TODO Set sliders for all number inputs... what should their min/max's be? -->
             <div id="board-settings">
                 <h2>Board Settings</h2>
-                <label for="board-height">Board Height</label>
-                <input type="text" id="board-height" placeholder="Board Height" class="numeric" />
-                <label for="board-width">Board Width</label>
-                <input type="text" id="board-width" placeholder="Board Width" class=numeric />
-                <label for="cell-size">Cell Size</label>
-                <input type="text" id="cell-size" placeholder="Cell Size" class=numeric />
-                <label for="difficulty">Difficulty</label>
-                <input type="text" id="difficulty" placeholder="Difficulty" class=numeric />
+                <label for="board-height">Board Height: <span id="board-height-value"></span></label>
+                <input type="range" min="10" max="100" step="5" value="50" id="board-height" class="numeric" />
+                <label for="board-width">Board Width: <span id="board-width-value"></span></label>
+                <input type="range" min="10" max="100" step="5" value="50" id="board-width" class=numeric />
+                <label for="cell-size">Cell Size: <span id="cell-size-value"></span></label>
+                <input type="range" min="5" max="100" step="5" value="50" id="cell-size" class=numeric />
+                <label for="difficulty">Difficulty: <span id="difficulty-value"></span></label>
+                <input type="range" min="1" max="10" value="5" id="difficulty" class=numeric />
                 <label for="map-type">Maps</label>
                 <select id="map-type"></select>
             </div>
@@ -62,8 +62,8 @@
                 <h2>Mover Settings</h2>
                 <label for="mover-type">Mover Type</label>
                 <select id="mover-type"></select>
-                <label for="mover-speed">Mover Speed</label>
-                <input type="range" min="1" max="100" value="50" id="mover-speed" class=numeric />
+                <label for="mover-speed">Mover Speed: <span id="mover-speed-value"></span></label>
+                <input type="range" min="0" max="100" value="50" id="mover-speed" class=numeric />
             </div>
 
             <div id="board-editor">

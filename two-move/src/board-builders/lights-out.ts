@@ -1,8 +1,7 @@
-import { CellType, IBoard, IBoardBuilderOption, IMapItem, ItemLocation } from "../types.js";
+import { CellType, IBoard, IBoardBuilderOption, IMapItem, IPlayer, ItemLocation } from "../types.js";
 import { BoardValidation } from "../board/validation.js";
 
 export class LightsOut<T extends IBoard> implements IBoardBuilderOption<T> {
-
     lightRadius: number;
     iluminate: (CellType | string)[];
     isInitialLoad: boolean = true;
@@ -28,6 +27,27 @@ export class LightsOut<T extends IBoard> implements IBoardBuilderOption<T> {
         this.getUpdatedBoard(board, board.getItemLocations('player')[0]);
         return board;
     }
+
+    getUIEvents(flashlightRadius: number, board: T, player: IPlayer) {
+        return [(eventArgs: { lightsOn: boolean, showWholeBoard: boolean }) => {
+            if (!eventArgs.lightsOn) {
+                this.lightsOff(board, player);
+            }
+            else {
+                if (eventArgs.showWholeBoard) {
+                    this.lightsOn(board, player);
+                }
+                else {
+                    //TODO: make this based on the board dimentions
+                    const radius = flashlightRadius;
+                    this.lightsOn(board, player, radius);
+                    // This will mark the cells as seen
+                    // LIGHTSOUT.update(BOARD, PLAYER.getPlayerLocation());
+                }
+            }
+        }];
+    }
+
     update(board: T, targetLocation: ItemLocation): T {
         this.getUpdatedBoard(board, targetLocation, this.lightPower || this.lightRadius, this.updateSeen);
         return board;

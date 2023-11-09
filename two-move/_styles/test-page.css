@@ -45,3 +45,10 @@
     border: 2px solid green;
 }
 
+.grid-item:hover {
+    cursor: pointer;
+}
+
+.grid-item:active {
+    background-color: #555;
+}

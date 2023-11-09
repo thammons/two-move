@@ -47,7 +47,9 @@ export class Game {
     private moverRunner: MoverRunner | undefined = undefined;
 
     private board: Board | undefined = undefined;
+    private useLightesOut: boolean = false;
     private lightsout: LightsOut<Board> | undefined = undefined;
+    private flashlightRadius: number = 10;
 
     private player: Player | undefined = undefined;
 
@@ -55,6 +57,7 @@ export class Game {
         this.moverSpeed = boardOptions.moverSpeed;
         this.moverCreators = boardOptions.moverCreators;
         this.getNextMap = boardOptions.getNextMap;
+        this.useLightesOut = boardOptions.lightsout ?? true;
 
         this.map = this.getNextMap(this.player!);
         this.score = new ScoreBoard(ScoreBoard.loadScore())
@@ -75,7 +78,8 @@ export class Game {
 
         this.board = new Board(this.map);
         const create = new InitializeMap<Board>(this.map);
-        this.lightsout = new LightsOut<Board>(2, ['goal', 'player'])
+        if (this.useLightesOut)
+            this.lightsout = new LightsOut<Board>(2, ['goal', 'player'])
 
         this.board = create.init(this.board);
 
@@ -92,7 +96,8 @@ export class Game {
     }
 
     private setupBoardHanders() {
-        this.lightsout!.init(this.board!);
+        if (this.lightsout && this.board)
+            this.lightsout.init(this.board);
 
         const uiHandlers: IBoardEvents = {
             boardUpdateHandlers: [(eventArgs) => UI.paintBoard(eventArgs.board)],
@@ -151,27 +156,13 @@ export class Game {
     }
 
     private getUIEvents(): IUIEvents {
+        const lightsHandler = this.lightsout === undefined
+            ? []
+            : this.lightsout.getUIEvents(this.flashlightRadius, this.board!, this.player!);
         const uiEvents: IUIEvents = {
             moveHandlers: [],
             turnHandlers: [],
-            lightHandlers: [(eventArgs) => {
-                if (!eventArgs.lightsOn) {
-                    this.lightsout!.lightsOff(this.board!, this.player!);
-                }
-                else {
-                    if (eventArgs.showWholeBoard) {
-                        this.lightsout!.lightsOn(this.board!, this.player!);
-                    }
-                    else {
-                        //TODO: make this based on the board dimentions
-                        const radius = 10;
-                        this.lightsout!.lightsOn(this.board!, this.player!, radius);
-                        // This will mark the cells as seen
-                        // LIGHTSOUT.update(BOARD, PLAYER.getPlayerLocation());
-                    }
-                }
-                UI.paintBoard(this.board!);
-            }],
+            lightHandlers: lightsHandler,
             saveMapHandlers: [() => {
                 saveMap(this.map);
             }],

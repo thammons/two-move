@@ -10,9 +10,11 @@ import * as UITestPage from './ui/ui-test-page';
 const GameOptions: IGameOptions = {
     moverSpeed: 150,
     moverCreators: [getKeyboardMover],// () => getMover('pacer', 500)!],
-    getNextMap: (player: IPlayer) => new MapGenerated(player?.getPlayerLocation() ?? 0)
+    getNextMap: (player: IPlayer) => new MapGenerated(player?.getPlayerLocation() ?? 0),
+    lightsout: false
+
 }
 
 onload(GameOptions);
 
-UITestPage.addEvents(MapNames, MoverNames);
+UITestPage.init(MapNames, MoverNames);
