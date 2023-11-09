@@ -11,8 +11,9 @@ const GameOptions: IGameOptions = {
     moverSpeed: 150,
     moverCreators: [getKeyboardMover],// () => getMover('pacer', 500)!],
     getNextMap: (player: IPlayer) => new MapGenerated(player?.getPlayerLocation() ?? 0),
-    lightsout: false
-
+    lightsout: false,
+    preservePlayerDirection: true,
+    fadeOnReset: false,
 }
 
 onload(GameOptions);
