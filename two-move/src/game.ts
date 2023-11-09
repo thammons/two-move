@@ -6,7 +6,7 @@ import { getMover } from "./player-movers";
 
 const GameOptions: IGameOptions = {
     moverSpeed: 150,
-    moverCreators: [getKeyboardMover, () => getMover('pacer', 500)!],
+    moverCreators: [getKeyboardMover],// () => getMover('pacer', 500)!],
     getNextMap: (player: IPlayer) => new MapGenerated(player?.getPlayerLocation() ?? 0)
 }
 

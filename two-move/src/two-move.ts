@@ -30,12 +30,12 @@ import { MoverRunner } from "./player-movers/move-runner";
 
 export function onload(gameOptions: IGameOptions) {
     window.addEventListener('load', () => {
-        const game = new Game(gameOptions);
+        const game = new TwoMoveGame(gameOptions);
         game.init();
     });
 }
 
-export class Game {
+export class TwoMoveGame {
     private score: ScoreBoard | undefined = undefined;
     private moverSpeed: number;
     private map: IMap;
@@ -71,7 +71,7 @@ export class Game {
 
     private setupBoard() {
         if (this.map === undefined) {
-            this.getNextMap(this.player!);
+            this.map = this.getNextMap(this.player!);
             //TODO pull last map from localstorage?
             //pull first map from localstorage?
         }
@@ -122,7 +122,7 @@ export class Game {
                 }],
             goalReachedHandlers: [
                 () => {
-                    this.getNextMap(this.player!);
+                    this.map = this.getNextMap(this.player!);
                     if (!!this.score) {
                         this.score.updateLevel();
                         ScoreBoard.saveScore(this.score);
@@ -168,7 +168,7 @@ export class Game {
             }],
             resetHandlers: [(eventArgs) => {
                 if (eventArgs.newMap) {
-                    this.getNextMap(this.player!);
+                    this.map = this.getNextMap(this.player!);
                 }
 
                 this.setupBoard();

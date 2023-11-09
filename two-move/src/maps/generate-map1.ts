@@ -119,6 +119,25 @@ export default class MapGenerated implements IMap {
     };
 
     wallOptions: Map<string, ItemLocation[][]> = new Map([
+        /*
+            Tetris Peices 
+            o is a square:
+                [ ][ ]
+                [ ][ ]
+            s is
+                [ ][ ]
+                    [ ][ ]
+            z is
+                    [ ][ ]
+                [ ][ ]
+            T is
+                [ ][ ][ ]
+                   [ ]
+            L is
+                [ ]
+                [ ]
+                [ ][ ]
+        */
         ["o", [[0, 1], [0, 1]]],
         // ["i", [[0], [0], [0], [0]]],
         // ["i3", [[0, 1, 2, 3]]],
