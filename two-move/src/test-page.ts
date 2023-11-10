@@ -86,6 +86,10 @@ function updateSettingsOnChange(setting: { name: SettingName, value: string }) {
 
         TestOptions = updateSettingsFromQueue();
         game.reset(getGameOptionsFromTestOptions(TestOptions));
+        
+        //TODO: After board refresh, the handlers aren't working
+        UITestPage.init(MapNames, MoverNames, TestOptions, testHandlers);
+
 
         if (!!changeHandlerDelay)
             clearTimeout(changeHandlerDelay);

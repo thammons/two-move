@@ -68,6 +68,7 @@ export class TwoMoveGame {
 
     reset(boardOptions?: IGameOptions) {
         this.map = undefined;
+        this.player = undefined;
         if (boardOptions) {
             this.fadeOnReset = boardOptions.fadeOnReset ?? this.fadeOnReset;
             this.moverSpeed = boardOptions.moverSpeed;
@@ -171,7 +172,11 @@ export class TwoMoveGame {
         });
 
         this.moverRunner = new MoverRunner();
-        this.moverRunner.runMovers(this.movers, this.player!, this.board!);
+
+        setTimeout(() => {
+            if (!!this.moverRunner)
+                this.moverRunner.runMovers(this.movers, this.player!, this.board!);
+        }, 500);
     }
 
     private getUIEvents(): IUIEvents {
