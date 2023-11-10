@@ -13,6 +13,8 @@ export interface NullableIMap {
     player?: number;
     goal?: number;
     walls?: number[];
+
+    [key: string]: any;
 }
 
 export class MapFromJson {
