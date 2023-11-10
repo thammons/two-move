@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Two Move</title>
+    <link rel="stylesheet" href="./styles/site.css" />
+    <link rel="stylesheet" href="./styles/game-display.css" />
+    <link rel="stylesheet" href="./styles/board.css" />
+    
+    <script src="./dist/index.js" type="module"></script>
+
+</head>
+
+<body>
+    <div style="display:none" id="assets">
+    </div>
+
+    <div id="header">
+        <div id="title">
+            <h1 id="title-text">Two Move!</h1>
+            <h2 id="title-subtitle"><em>It's A-MAZE-ING!</em></h2>
+        </div>
+        <div id="scoreboard">
+            <div>Level: NaN</div>
+            <div>Score: NaN</div>
+            <div>Collisions: NaN</div>
+        </div>
+        <div id="score-explainer">
+            <em>Level: How many maps played</em>
+            <em>Score: needs work...</em>
+        </div>
+        <div id="status-container">
+            <div id="error"></div>
+            <div id="success"></div>
+        </div>
+    </div>
+    <div id="board">
+        <div id="grid-container-items">
+        </div>
+    </div>
+    <div id="message-box">
+        <div class="button" id="show-move-log">Show Move Log <em>this button isn't setup</em> </div>
+
+        <div id="last-move"></div>
+    </div>
+
+    <div id="move-log" style="display:none"></div>
+
+</body>
+
+</html>
