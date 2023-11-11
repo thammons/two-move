@@ -31,7 +31,7 @@ export class BaseMover implements IMover {
 
         if (!this.moves.length) {
             const move = this.move(player, board);
-            broken // the pacer just keeps running into the east or west wall, never turns
+            //broken // the pacer just keeps running into the east or west wall, never turns
             const turnForCondition = !!this.turnCondition && this.turnCondition(lastPosition, move, board);
             const isValid = move.isValidMove(board.map, player.location);
             console.log('move', move, !!this.turnCondition, turnForCondition, isValid)
