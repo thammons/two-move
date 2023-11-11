@@ -18,6 +18,7 @@ export class KeyboardInteractions implements IUIUserInteractions {
         ['f', () => this._events.triggerLight({ lightsOn: true, showWholeBoard: false })],
         ['e', () => this._events.triggerLight({ lightsOn: true, showWholeBoard: true })],
 
+        ['t', () => this._events.triggerReset({ newMap: true, resetPlayer: false })],
         ['r', () => this._events.triggerReset({ newMap: true, resetPlayer: false })],
         ['!', () => this._events.triggerSaveMap()],
     ]);
