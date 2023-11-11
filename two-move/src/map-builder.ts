@@ -5,9 +5,8 @@ import { TwoMoveGame, onload } from './two-move'
 import { getMover, MoverNames, MoverTypes } from "./player-movers";
 import { MapNames, MapType, getMap } from "./maps";
 
-import * as UITestPage from './ui/ui-test-page';
-import { ITestPageEventHandlers, SettingName } from "./ui/ui-test-page-events";
-import { IUIMover } from "./ui/types";
+import * as UITestPage from './ui/map-builder';
+import { IMapBuilderEvents, IMapSettingsData, MapSettingsData, SettingName } from "./ui/map-builder/types";
 
 
 
@@ -25,7 +24,7 @@ import { IUIMover } from "./ui/types";
 
 
 
-let TestOptions: UITestPage.ITestPageOptions = {
+let TestOptions: IMapSettingsData = {
     height: 50,
     width: 50,
     cellSize: 10,
@@ -38,12 +37,18 @@ let TestOptions: UITestPage.ITestPageOptions = {
 let game: TwoMoveGame;
 
 window.addEventListener('load', () => {
-    const loadedOptions = UITestPage.getStoredOptions();
+    const loadedOptions = UITestPage.getStoredMapSettings();
     TestOptions = loadedOptions ?? TestOptions;
     game = new TwoMoveGame(getGameOptionsFromTestOptions(TestOptions));
+
+    //To add click handlers, we need the board to be rendered
+    UITestPage.init(MapNames, MoverNames, TestOptions, testHandlers);
+
 });
 
-const getGameOptionsFromTestOptions = (testOptions: UITestPage.ITestPageOptions): IGameOptions => {
+//TODO: On board map change, the ui click handlers are lost. 
+//TODO: two-move is doing too much, needs refactoring 
+const getGameOptionsFromTestOptions = (testOptions: IMapSettingsData): IGameOptions => {
     let moverCreators: (() => IMover)[] = [];
     if (testOptions.moverType !== undefined && MoverNames.includes(testOptions.moverType)) {
         moverCreators.push(() => getMover(testOptions.moverType as MoverTypes, testOptions.moverSpeed ?? 150)!);
@@ -52,14 +57,16 @@ const getGameOptionsFromTestOptions = (testOptions: UITestPage.ITestPageOptions)
         //TODO: refactor to create GameOptions from TestOptions
         moverSpeed: testOptions.moverSpeed ?? 150,
         moverCreators: [getKeyboardMover, ...moverCreators],
-        getNextMap: (player?: IPlayer) => getMap(
-            testOptions.mapName as MapType, {
-            boardHeight: testOptions.height === undefined ? 10 : testOptions.height,
-            boardWidth: testOptions.width === undefined ? 10 : testOptions.width,
-            cellWidth: testOptions.cellSize === undefined ? 25 : testOptions.cellSize,
-            difficulty: testOptions.difficulty === undefined ? 50 : testOptions.difficulty / 100,
-            playerLocation: player?.getPlayerLocation() ?? 0,
-        })!,
+        getNextMap: (player?: IPlayer) => {
+            return getMap(
+                testOptions.mapName as MapType, {
+                boardHeight: testOptions.height === undefined ? 10 : testOptions.height,
+                boardWidth: testOptions.width === undefined ? 10 : testOptions.width,
+                cellWidth: testOptions.cellSize === undefined ? 25 : testOptions.cellSize,
+                difficulty: testOptions.difficulty === undefined ? 50 : testOptions.difficulty / 100,
+                playerLocation: player?.getPlayerLocation() ?? 0,
+            })!
+        },
         lightsout: false,
         preservePlayerDirection: true,
         fadeOnReset: false,
@@ -70,7 +77,7 @@ const getGameOptionsFromTestOptions = (testOptions: UITestPage.ITestPageOptions)
 let changeHandlerDelay: NodeJS.Timeout | undefined = undefined;
 const settingChangesQueue: { name: SettingName, value: string }[] = [];
 
-const testHandlers: ITestPageEventHandlers = {
+const testHandlers: IMapBuilderEvents = {
     //putting a lag on this, so it doesn't update on every change
     settingsChangeHanders: [
         updateSettingsOnChange
@@ -86,8 +93,7 @@ function updateSettingsOnChange(setting: { name: SettingName, value: string }) {
 
         TestOptions = updateSettingsFromQueue();
         game.reset(getGameOptionsFromTestOptions(TestOptions));
-        
-        //TODO: After board refresh, the handlers aren't working
+
         UITestPage.init(MapNames, MoverNames, TestOptions, testHandlers);
 
 
@@ -96,9 +102,9 @@ function updateSettingsOnChange(setting: { name: SettingName, value: string }) {
     }, 2000)
 };
 
-const updateSettingsFromQueue = (): UITestPage.ITestPageOptions => {
+const updateSettingsFromQueue = (): IMapSettingsData => {
 
-    const optionsToUpdate: UITestPage.ITestPageOptions = {};
+    const optionsToUpdate: IMapSettingsData = {};
 
     do {
         const setting = settingChangesQueue.shift();
@@ -130,14 +136,12 @@ const updateSettingsFromQueue = (): UITestPage.ITestPageOptions => {
         console.log("setting changed", setting);
     } while (settingChangesQueue.length > 0);
 
-    const options = UITestPage.TestPageOptions.updateValues(
-        UITestPage.TestPageOptions.init(TestOptions),
-        UITestPage.TestPageOptions.init(optionsToUpdate)
+    const options = MapSettingsData.updateValues(
+        MapSettingsData.init(TestOptions),
+        MapSettingsData.init(optionsToUpdate)
     )
 
     console.log('updated options', options);
     return options;
 };
 
-
-UITestPage.init(MapNames, MoverNames, TestOptions, testHandlers);

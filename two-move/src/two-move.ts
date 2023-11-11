@@ -171,6 +171,8 @@ export class TwoMoveGame {
             });
         });
 
+        this.movers = this.movers.filter(m => !!m);
+
         this.moverRunner = new MoverRunner();
 
         setTimeout(() => {
