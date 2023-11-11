@@ -6,23 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Two Move</title>
     <link rel="stylesheet" href="../_styles/site.css" />
-    
-    <style>
-        #header {
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            align-items: center;
-            margin: 0 0 1em 0;
-        }
-
-        .buttons {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            grid-gap: 1em;
-            text-align: center;
-        }
-    </style>
+    <link rel="stylesheet" href="../_styles/home.css" />
 
 </head>
 
@@ -42,12 +26,28 @@
                 <li>
                     <b>Move:</b> advance forward once squre in the direction of the indiciator.
                     <ul>
-                        <li>Press the up or down arrow keys, or 'W' or 'S'</li>
+                        <li>Press the up or down arrow keys, or '<b>W</b>' or '<b>S</b>'</li>
                     </ul>
                 </li>
                 <li><b>Turn:</b> turn right. Stay in the square you are in, but pivot right.
                     <ul>
-                        <li>Press the left or right arrow keys, or 'A' or 'D'</li>
+                        <li>Press the left or right arrow keys, or '<b>A</b>' or '<b>D</b>'</li>
+                    </ul>
+                </li>
+            </ul>
+
+            <p>...but you also have a few tools:</p>
+            <ul>
+                <li>
+                    <b>Teleport:</b> If you get stuck on an unsolveable map.
+                    <ul>
+                        <li>Press '<b>T</b>'</li>
+                    </ul>
+                </li>
+                <li>
+                    <b>Flashlight:</b> see the squares around you.
+                    <ul>
+                        <li>Press '<b>F</b>'</li>
                     </ul>
                 </li>
             </ul>
@@ -55,16 +55,16 @@
         </div>
         <div class="buttons">
             <a href="./game.html">
-                <div class="button" id="start-button">Lets Go!</div>
+                <div class="button" id="start-button" style="background-color:gold">Lets Go!</div>
             </a>
             <a href="./blockly-builder.html">
-                <div class="button" id="blockly-button" style="background-color:green">Blockly!</div>
+                <div class="button" id="blockly-button" style="background-color:#3A3">Blockly</div>
             </a>
-            <a href="./test-page.html">
-                <div class="button" id="test-button" style="background-color:blue">Test!</div>
+            <a href="./map-builder.html">
+                <div class="button" id="test-button" style="background-color:#521; color:#BBB">Map Builder</div>
             </a>
             <a href="./_lucas/highscore.html">
-                <div class="button" id="highscore-button">High Scores!</div>
+                <div class="button" id="highscore-button">HIGHSCORE</div>
             </a>
         </div>
     </div>
