@@ -64,8 +64,8 @@ export class Move implements IMove {
 
         const isValidMoveForPlayer = !playerLocation || playerLocation === startLocation;
 
-        console.log('IsValidMove', direction, startLocation, desiredLocation, map.width, map.height, map.walls);
-        console.log('IsValidMove', isValidMoveForPlayer, moveIsOffTheBoard, moveIsAtEdgeWest, moveIsAtEdgeEast, moveIsBlocked());
+        // console.log('IsValidMove', direction, startLocation, desiredLocation, map.width, map.height, map.walls);
+        // console.log('IsValidMove', isValidMoveForPlayer, moveIsOffTheBoard, moveIsAtEdgeWest, moveIsAtEdgeEast, moveIsBlocked());
 
         return isValidMoveForPlayer
             && !(moveIsOffTheBoard || moveIsAtEdgeWest || moveIsAtEdgeEast || moveIsBlocked());

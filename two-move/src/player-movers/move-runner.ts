@@ -14,7 +14,9 @@ export class MoverRunner {
 
     runMovers(movers: IMover[], player: IPlayer, board: IBoard) {
         movers.forEach(m => {
-            this.runQueue(m, player, board);
+            setInterval(() => {
+                this.runQueue(m, player, board);
+            }, m.speed);
         });
     }
 
@@ -34,11 +36,11 @@ export class MoverRunner {
                 mover.clear();
             }
 
-            const makeMoveTimeout = setTimeout(() => {
-                this.runQueue(mover, player, board);
-            }, mover.speed);
+            // const makeMoveTimeout = setInterval(() => {
+            //     this.runQueue(mover, player, board);
+            // }, mover.speed);
 
-            this.makeMoveTimeouts.push(makeMoveTimeout);
+            // this.makeMoveTimeouts.push(makeMoveTimeout);
         }
         catch (ex) {
             console.error('runQueue failed', ex);
