@@ -39,6 +39,15 @@ export class KeyboardInteractions implements IUIUserInteractions {
     }
 
     init() {
+        // Prevent arrow keys from scrolling the page.
+        window.addEventListener("keydown", function(e) {
+            // Check if the arrow key was pressed.
+            if (e.key === "ArrowUp" || e.key === "ArrowDown" || e.key === "ArrowLeft" || e.key === "ArrowRight") {
+              // Prevent the default action.
+              e.preventDefault();
+            }
+          });
+        
         document.addEventListener('keydown', (event) => {
             const keyName = event.key;
             if (this._keydownEvents.has(keyName)) {

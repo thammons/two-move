@@ -1,6 +1,9 @@
 #board {
-    width: 520px; /* 10x10 square */
-    min-width: 520px; /* prevent resizing */
+    /* 10x10 square */
+    width: 520px;
+    min-width: 520px;
+    max-width: 520px;
+    /* prevent resizing */
     border: #000 1px solid;
     margin: 5px;
     padding: 0;
