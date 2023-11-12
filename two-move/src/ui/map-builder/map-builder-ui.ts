@@ -40,7 +40,7 @@ const wireSaveBoardOnClickEvent = () => {
     const saveButton = document.getElementById("save-board");
     saveButton?.addEventListener("click", () => {
         const map = new MapBuilder().getMap();
-        const setting: ISetting = { name: "map", value: JSON.stringify(map) };
+        const setting: ISetting = { name: "map", value: JSON.stringify({map: map}) };
         testPageEventHandlers.triggerSettingsChange(setting)
     });
 };
@@ -48,7 +48,6 @@ const wireSaveBoardOnClickEvent = () => {
 const wireBoardCellOnClickEvents = () => {
     const board = document.getElementById("grid-container-items");
     const cells = board?.getElementsByClassName("grid-item") ?? [];
-    console.log("cells",board, cells)
     for (let i = 0; i < cells.length; i++) {
         cells[i].addEventListener("click", () => {
             setBoardCellClassesToCellTypeClasses(cells[i]);

@@ -41,9 +41,6 @@ window.addEventListener('load', () => {
     TestOptions = loadedOptions ?? TestOptions;
     game = new TwoMoveGame(getGameOptionsFromTestOptions(TestOptions));
 
-    //To add click handlers, we need the board to be rendered
-    UITestPage.init(MapNames, MoverNames, TestOptions, testHandlers);
-
 });
 
 //TODO: On board map change, the ui click handlers are lost. 
@@ -58,14 +55,21 @@ const getGameOptionsFromTestOptions = (testOptions: IMapSettingsData): IGameOpti
         moverSpeed: testOptions.moverSpeed ?? 150,
         moverCreators: [getKeyboardMover, ...moverCreators],
         getNextMap: (player?: IPlayer) => {
-            return getMap(
+            const nextMap = getMap(
                 testOptions.mapName as MapType, {
                 boardHeight: testOptions.height === undefined ? 10 : testOptions.height,
                 boardWidth: testOptions.width === undefined ? 10 : testOptions.width,
                 cellWidth: testOptions.cellSize === undefined ? 25 : testOptions.cellSize,
                 difficulty: testOptions.difficulty === undefined ? 50 : testOptions.difficulty / 100,
-                playerLocation: player?.getPlayerLocation() ?? 0,
+                playerLocation: testOptions.map?.player ?? player?.getPlayerLocation() ?? 0,
+                walls: testOptions.map?.walls ?? [],
+                goalLocation: testOptions.map?.goal ?? 1,
             })!
+            return nextMap;
+        },
+        postBoardSetup: () => {
+            console.log("PostReset")
+            UITestPage.init(MapNames, MoverNames, TestOptions, testHandlers);
         },
         lightsout: false,
         preservePlayerDirection: true,
@@ -131,6 +135,10 @@ const updateSettingsFromQueue = (): IMapSettingsData => {
                 break;
             case 'mover-speed':
                 optionsToUpdate.moverSpeed = parseInt(setting.value);
+                break;
+            case 'map':
+                const map = JSON.parse(setting.value) as IMapSettingsData;
+                optionsToUpdate.map = map.map;
                 break;
         }
         console.log("setting changed", setting);

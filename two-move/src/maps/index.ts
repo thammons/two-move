@@ -1,15 +1,18 @@
 import { IMap, ItemLocation } from "../types";
 import MapGenerated from "./generate-map1";
-import { MapBigSimple, MapSimple, MapWalledPlayerBox, MapWalledPlayerUnEvenBox } from "./simple-maps";
+import { CustomMap } from "./map";
+import { MapBigSimple, MapWalledPlayerBox, MapWalledPlayerUnEvenBox } from "./simple-maps";
 
-export const MapNames = ['from-saved', 'generated', 'simple', 'big-simple', 'walled-player-box', 'walled-player-uneven-box'];
-export type MapType = 'from-saved' | 'generated' | 'simple' | 'big-simple' | 'walled-player-box' | 'walled-player-uneven-box';
+export const MapNames = ['from-saved', 'generated', 'custom', 'simple', 'big-simple', 'walled-player-box', 'walled-player-uneven-box'];
+export type MapType = 'from-saved' | 'generated' | 'custom' | 'simple' | 'big-simple' | 'walled-player-box' | 'walled-player-uneven-box';
 
 export interface IMapParams {
     boardWidth: number;
     boardHeight: number;
     cellWidth: number;
+    walls?: ItemLocation[];
     playerLocation?: ItemLocation;
+    goalLocation?: ItemLocation;
     difficulty?: number;
 }
 
@@ -25,8 +28,27 @@ export function getMap(mapType: MapType, mapParams?: IMapParams): IMap | undefin
                 throw new Error("Generated map requires mapParams");
             map = new MapGenerated(mapParams.playerLocation, mapParams.boardWidth, mapParams.boardHeight, mapParams.cellWidth, mapParams.difficulty);
             break;
+        case 'custom':
+            if (!mapParams)
+                throw new Error("Custom map requires mapParams");
+            map = new CustomMap({
+                width: mapParams.boardWidth,
+                height: mapParams.boardHeight,
+                cellWidth: mapParams.cellWidth,
+                walls: mapParams.walls ?? [],
+                player: mapParams.playerLocation ?? 0,
+                goal: mapParams.goalLocation ?? 1,
+            });
+            break;
         case 'simple':
-            map = new MapSimple();
+            map = new CustomMap({
+                width: 10,
+                height: 10,
+                cellWidth: 50,
+                walls: [],
+                player: 44,
+                goal: 99,
+            });
             break;
         case 'big-simple':
             map = new MapBigSimple();

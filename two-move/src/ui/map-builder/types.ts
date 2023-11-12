@@ -37,6 +37,7 @@ export interface IMapSettingsData {
     mapName?: string;
     moverType?: string;
     moverSpeed?: number;
+    map?: IMap;
 };
 
 export class MapSettingsData implements IMapSettingsData {
@@ -47,6 +48,7 @@ export class MapSettingsData implements IMapSettingsData {
     mapName?: string;
     moverType?: string;
     moverSpeed?: number;
+    map?: IMap;
 
     [key: string]: number | string | IMap | undefined;
 
@@ -59,6 +61,7 @@ export class MapSettingsData implements IMapSettingsData {
         newOptions.mapName = options.mapName;
         newOptions.moverType = options.moverType;
         newOptions.moverSpeed = options.moverSpeed;
+        newOptions.map = options.map;
         return newOptions;
     }
 

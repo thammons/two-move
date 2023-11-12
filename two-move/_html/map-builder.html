@@ -27,7 +27,7 @@
             <h1 id="title-text">Two Move!</h1>
             <h2 id="title-subtitle"><em>It's A-MAZE-ING!</em></h2>
         </div>
-        <div id="scoreboard">
+        <!-- <div id="scoreboard">
             <div>Level: NaN</div>
             <div>Score: NaN</div>
             <div>Collisions: NaN</div>
@@ -35,6 +35,10 @@
         <div id="score-explainer">
             <em>Level: How many maps played</em>
             <em>Score: needs work...</em>
+        </div> -->
+        <div id="under-construction">
+            <b style="color:orange">Under Construction</b>
+            <em>This page may not work as expected</em>
         </div>
         <div id="status-container">
             <div id="error"></div>
@@ -65,7 +69,7 @@
                 <label for="mover-speed">Mover Speed: <span id="mover-speed-value"></span></label>
                 <input type="range" min="0" max="100" value="50" id="mover-speed" class=numeric />
             </div>
-
+            <!-- TODO: Flashlight and fog of war -->
             <div id="board-editor">
                 <h2>Board Editor</h2>
                 <div id="cell-types">
@@ -74,7 +78,10 @@
                     <div class="cell-type button-minstyle grid-item goal"></div>
                     <div class="cell-type button-minstyle grid-item player">&gt;</div>
                 </div>
+                <!-- TODO: Add Map Name -->
+                <!-- TODO: Add dropdown to load saved maps -->
                 <div id="save-board" class="button sm">Save Board</div>
+                <em>select 'custom' map to see your changes</em>
             </div>
         </div>
         <div id="board">

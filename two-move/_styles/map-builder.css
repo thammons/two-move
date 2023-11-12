@@ -72,14 +72,14 @@
     #test-container {
         flex-direction: row;
         justify-content: center;
-        align-items: center;
+        align-items: flex-start;
         width: 100vw;
     }
     #test-controls {
         flex-direction: row;
         justify-content: center;
-        align-items: center;
         height: 100%;
+        vertical-align: top;
     }
     #test-controls>div {
         margin: 1em;

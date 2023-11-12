@@ -40,6 +40,7 @@ export class TwoMoveGame {
     private moverSpeed: number;
     private map: IMap | undefined;
     private getNextMap: (player?: IPlayer) => IMap;
+    private postBoardSetup: (() => void) | undefined;
 
     //this isn't read as it uses eventhandlers
     private movers: IMover[] = [];
@@ -60,6 +61,7 @@ export class TwoMoveGame {
         this.moverSpeed = boardOptions.moverSpeed;
         this.moverCreators = boardOptions.moverCreators;
         this.getNextMap = boardOptions.getNextMap;
+        this.postBoardSetup = boardOptions.postBoardSetup;
         this.useLightesOut = boardOptions.lightsout ?? this.useLightesOut;
         this.preservePlayerDirection = boardOptions.preservePlayerDirection ?? this.preservePlayerDirection;
         this.score = new ScoreBoard(ScoreBoard.loadScore());
@@ -96,6 +98,7 @@ export class TwoMoveGame {
         const create = new InitializeMap<Board>(this.map);
         if (this.useLightesOut)
             this.lightsout = new LightsOut<Board>(2, ['goal', 'player'])
+        // this.lightsout = new LightsOut<Board>(6, ['goal', 'player'])
 
         this.board = create.init(this.board);
 
@@ -111,6 +114,10 @@ export class TwoMoveGame {
 
         if (!!this.score)
             printScoreboard(this.score);
+
+            
+        if (this.postBoardSetup !== undefined)
+            this.postBoardSetup();
     }
 
     private setupBoardHanders() {
@@ -175,6 +182,7 @@ export class TwoMoveGame {
 
         this.moverRunner = new MoverRunner();
 
+        //timeout to wait while the board fades into view
         setTimeout(() => {
             if (!!this.moverRunner)
                 this.moverRunner.runMovers(this.movers, this.player!, this.board!);
