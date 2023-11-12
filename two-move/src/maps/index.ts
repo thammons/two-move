@@ -1,6 +1,6 @@
 import { IMap, ItemLocation } from "../types";
 import MapGenerated from "./generate-map1";
-import { CustomMap } from "./map";
+import { CustomMap } from "./custom-map";
 import { MapBigSimple, MapWalledPlayerBox, MapWalledPlayerUnEvenBox } from "./simple-maps";
 
 export const MapNames = ['from-saved', 'generated', 'custom', 'simple', 'big-simple', 'walled-player-box', 'walled-player-uneven-box'];

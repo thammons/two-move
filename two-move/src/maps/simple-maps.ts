@@ -1,18 +1,5 @@
 import { IMap } from '../types.js';
 
-
-export class MapSimple implements IMap {
-    width = 10;
-    height = 10;
-    cellWidth = 50;
-    walls = [
-    ];
-    player = 44;
-    // player = 40;
-    goal = 99;
-}
-
-
 export class MapBigSimple implements IMap {
     width = 50;
     height = 50;
@@ -20,7 +7,6 @@ export class MapBigSimple implements IMap {
     walls = [
     ];
     player = (this.height * this.width / 2) + this.width / 2;
-    // player = 40;
     goal = this.height * this.width - 1;
 }
 
@@ -31,7 +17,6 @@ export class MapWalledPlayerBox implements IMap {
     walls: number[] = [
     ];
     player = (this.height * this.width / 2) + this.width / 2;
-    // player = 40;
     goal = this.height * this.width - 1;
 
     constructor() {
@@ -59,7 +44,6 @@ export class MapWalledPlayerUnEvenBox implements IMap {
     walls: number[] = [
     ];
     player = (this.height * this.width / 2) + this.width / 2;
-    // player = 40;
     goal = this.height * this.width - 1;
 
     constructor() {
