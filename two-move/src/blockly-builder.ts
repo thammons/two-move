@@ -5,10 +5,10 @@ import { javascriptGenerator } from 'blockly/javascript';
 import { save, load } from './blockly/serialization';
 import { toolbox } from './blockly/toolbox-small';
 import { forBlock } from './blockly/javascript-generator';
-import { IGameOptions, IPlayer } from './types';
+import { IGameOptions, IMap, IPlayer } from './types';
 import { getButtonMover, getKeyboardMover } from './ui/movers';
 import MapGenerated from './maps/generate-map1';
-import { onload } from './two-move';
+import { TwoMoveGame, onload } from './two-move';
 
 // import './index.css';
 const darktheme = Blockly.Theme.defineTheme('dark', {
@@ -30,17 +30,24 @@ const darktheme = Blockly.Theme.defineTheme('dark', {
   },
 });
 
-const BlocklyGameOptions: IGameOptions = {
-  moverSpeed: 150,
-  moverCreators: [getButtonMover, getKeyboardMover],
-  getNextMap: (player?: IPlayer) => new MapGenerated(player?.getPlayerLocation() ?? 0),
-  lightsout: false,
-  fadeOnReset: false,
-  preservePlayerDirection: false,
-}
+let game: TwoMoveGame;
+let map: IMap;
+let reloadMap = true;
 
-onload(BlocklyGameOptions);
-
+const getBlocklyGameOptions = (): IGameOptions => {
+  return {
+    moverSpeed: 150,
+    moverCreators: [getButtonMover, getKeyboardMover],
+    getNextMap: (player?: IPlayer) => {
+      if (reloadMap)
+        map = new MapGenerated(player?.getPlayerLocation() ?? 0);
+      return map;
+    },
+    lightsout: false,
+    fadeOnReset: false,
+    preservePlayerDirection: false,
+  }
+};
 
 // Register the blocks and generator with Blockly
 Blockly.common.defineBlocks(blocks);
@@ -70,7 +77,14 @@ const runBtn = document.getElementById('run-btn');
 if (runBtn) {
   runBtn.onclick = runCode;
 }
-const resetBtn = document.getElementById('restart-btn');
+const resetBtn = document.getElementById('reset-btn');
+if (resetBtn) {
+  resetBtn.onclick = () => {
+    reloadMap = false;
+    game.reset(getBlocklyGameOptions());
+    reloadMap = true;
+  };
+}
 // This function resets the code and output divs, shows the
 // generated code from the workspace, and evals the code.
 // In a real application, you probably shouldn't use `eval`.
@@ -79,6 +93,7 @@ const resetBtn = document.getElementById('restart-btn');
 if (ws) {
   // Load the initial state from storage and run the code.
   if (load(ws)) {
+    game = new TwoMoveGame(getBlocklyGameOptions());
     runCode();
   }
 
@@ -100,7 +115,7 @@ if (ws) {
       ws!.isDragging()) {
       return;
     }
-    runCode();
+    // runCode();
   });
 }
 // }

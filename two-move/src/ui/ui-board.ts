@@ -88,6 +88,10 @@ export function updateCell(cell: ICell, index: number, isTemporary: boolean = fa
     const element = utils.getElementById(`cell-${index}`);
     setCellAttributes(cell, index, element);
 
+    if (cell.classes.includes('player')) {
+        element.scrollIntoView({block: "center", inline: "center"});
+    }
+
     if (isTemporary) {
         // utils.fade(element, 500, () => updateCell(lastBoardVersion![index], index));
     }
@@ -143,7 +147,7 @@ function paintWholeBoard(board: IBoard, loadTimer: number = 0) {
         else {
             element.style.removeProperty('opacity');
         }
-
+        
     });
     // console.log('player location', playerLocation);
 }
