@@ -1,5 +1,5 @@
 import { ItemLocation, Direction, IBoard, ICell, IPlayer, IMap, IMapItem, CellType, IBoardEvents } from "../types.js";
-import { BoardValidation } from "./validation.js";
+import { MoveValidation } from "./move-validation.js";
 import { BoardEvents } from "./events.js";
 
 
@@ -7,7 +7,7 @@ class Board implements IBoard {
     width: number = 10;
     height: number = 10;
     cellWidth: number = 50;
-    size: number = this.width * this.width;
+    size: number = this.width * this.height;
     map: IMap;
     _board: ICell[] = [];
     _events: BoardEvents;
@@ -16,7 +16,7 @@ class Board implements IBoard {
         this.width = map.width;
         this.height = map.height;
         this.cellWidth = map.cellWidth;
-        this.size = this.width * this.width;
+        this.size = this.width * this.height;
         this.map = map;
         this._events = new BoardEvents();
     }
@@ -85,8 +85,10 @@ class Board implements IBoard {
 
         direction = this.getDirection(startLocation, desiredLocation);
 
-        if (desiredLocation < 0 || desiredLocation > this.size - 1) {
-            if (startLocation >= 0 && startLocation < this.size) {
+        const isNextMoveOffMap = desiredLocation < 0 || desiredLocation > this.size - 1;
+        const isCurrentLocationOnMap = startLocation >= 0 && startLocation < this.size;
+        if (isNextMoveOffMap) {
+            if (isCurrentLocationOnMap) {
                 this.indicateInvalidMove(startLocation, direction);
                 const player = this._board[startLocation].mapItems.find(mi => mi.cellType == 'player') as IPlayer;
                 this._events.triggerInvalidStep({
@@ -99,14 +101,12 @@ class Board implements IBoard {
             return false;
         }
 
-        else if (BoardValidation.isBlocked(startLocation, desiredLocation, this)) {
-            // console.log("board > isValidMove > desiredLocation blocked", desiredLocation);
+        else if (MoveValidation.isWall(desiredLocation, this.map)) {
             isValidMove = false;
         }
 
         else {
-            if (!BoardValidation.isNextMoveOnMap(startLocation, direction!, this.width, this.height)) {
-                // console.log("board > isValidMove > desiredLocation off map", desiredLocation);
+            if (!MoveValidation.isNextCellOnBoard(startLocation, direction!, this.width, this.height)) {
                 isValidMove = false;
             }
         }
@@ -126,6 +126,7 @@ class Board implements IBoard {
     }
 
     indicateInvalidMove(position: ItemLocation, direction: Direction) {
+        // console.trace('board > indicateInvalidMove', position, direction)
         const invalidClassName = `error-${direction}`;
         this._board[position].classes.push(invalidClassName);
         this._events.triggerCellUpdate({ cell: this._board[position], index: position, isTemporary: true });
@@ -163,7 +164,7 @@ class Board implements IBoard {
         this.updateItem(player);
 
         this._events.triggerMoved({ cell: this._board[startLocation], index: startLocation, isTemporary: false });
-        if (BoardValidation.isAtGoal(desiredLocation, this)) {
+        if (MoveValidation.isAtGoal(desiredLocation, this)) {
             this._events.triggerGoalReached();
         }
 
@@ -171,7 +172,7 @@ class Board implements IBoard {
     }
 
     isAtGoal(desiredLocation: number): boolean {
-        return BoardValidation.isAtGoal(desiredLocation, this);
+        return MoveValidation.isAtGoal(desiredLocation, this);
     }
 }
 

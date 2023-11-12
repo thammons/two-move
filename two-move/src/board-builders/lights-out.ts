@@ -1,5 +1,5 @@
 import { CellType, IBoard, IBoardBuilderOption, IMapItem, IPlayer, ItemLocation } from "../types.js";
-import { BoardValidation } from "../board/validation.js";
+import { MoveValidation } from "../board/move-validation.js";
 
 export class LightsOut<T extends IBoard> implements IBoardBuilderOption<T> {
     lightRadius: number;
@@ -79,7 +79,8 @@ export class LightsOut<T extends IBoard> implements IBoardBuilderOption<T> {
         const cells = board.getCells();
 
         const distanceToPlayer = override !== undefined ? override : (this.lightRadius);
-        const visibleLocations = BoardValidation.locationsVisibleToPlayer(targetLocation, distanceToPlayer, cells, board.width, board.height);
+        // const visibleLocations = MoveValidation.locationsVisibleToPlayer(targetLocation, distanceToPlayer, board.map);
+        const visibleLocations = MoveValidation.locationsVisibleToPlayer(targetLocation, distanceToPlayer, cells, board.width, board.height);
 
         //TODO optionally narrow down cells based on target location
         cells.forEach((cell, index, array) => {

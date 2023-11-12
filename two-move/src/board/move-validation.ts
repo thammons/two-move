@@ -1,25 +1,34 @@
-import { ItemLocation, Direction, IBoard, ICell } from '../types.js';
+import { ItemLocation, Direction, IBoard, ICell, IMove, IMap } from '../types.js';
 
 
-export class BoardValidation {
+export class MoveValidation {
 
-    static isNextMoveOnMap = (startPosition: ItemLocation, direction: Direction, boardWidth:number, boardHeight:number): boolean => {
+    static isNextMoveOnMap = (startPosition: ItemLocation, direction: Direction, boardWidth: number, boardHeight: number): boolean => {
         const width = boardWidth;
         const height = boardHeight;
         const size = width * height;
+
+        // console.log('isNextMoveOnMap', startPosition, direction, boardWidth, boardHeight);
+
+        const isValidEast = startPosition % width < width - 1;
+        const isValidWest = startPosition % width > 0;
+        const isValidNorth = startPosition >= 0;
+        const isValidSouth = startPosition < size;
+        // console.log('isNextMoveOnMap - validation', isValidEast, isValidWest, isValidNorth, isValidSouth);
+
         switch (direction) {
             case 'east':
-                return startPosition % width !== width - 1;
+                return isValidEast;
             case 'west':
-                return startPosition % width !== 0;
+                return isValidWest;
             case 'north':
-                return startPosition >= width;
+                return isValidNorth;
             case 'south':
-                return startPosition < size - width;
+                return isValidSouth;
         }
     };
 
-    static isBlocked = (currentPosition: ItemLocation, nextPosition: ItemLocation, board:IBoard): boolean => {
+    static isBlocked = (currentPosition: ItemLocation, nextPosition: ItemLocation, board: IBoard): boolean => {
         if (!this.isInBounds(nextPosition, board.width, board.height)
             || this.isMaxEast(nextPosition, 0, board.width)
             || this.isMaxWest(nextPosition, 0, board.width)) {
@@ -30,7 +39,7 @@ export class BoardValidation {
     };
 
 
-    static locationsVisibleToPlayer(playerLocation: ItemLocation, distanceToPlayer: number, cells: ICell[], boardWidth:number, boardHeight:number): ItemLocation[] {
+    static locationsVisibleToPlayer(playerLocation: ItemLocation, distanceToPlayer: number, cells: ICell[], boardWidth: number, boardHeight: number): ItemLocation[] {
         const visibleLocations: ItemLocation[] = [];
         visibleLocations.push(playerLocation);
 
@@ -107,19 +116,19 @@ export class BoardValidation {
         return [...new Set(visibleLocations)];
     }
 
-    static isInBounds(desiredLocation: ItemLocation, boardWidth:number, boardHeight:number): boolean {
+    static isInBounds(desiredLocation: ItemLocation, boardWidth: number, boardHeight: number): boolean {
         return desiredLocation >= 0 && desiredLocation < boardWidth * boardHeight;
     }
 
-    static isMaxEast(playerLocation: ItemLocation, distanceToPlayer: number, boardWidth:number): boolean {
+    static isMaxEast(playerLocation: ItemLocation, distanceToPlayer: number, boardWidth: number): boolean {
         return Math.floor(playerLocation / boardWidth) !== Math.floor((playerLocation + distanceToPlayer) / boardWidth);
     }
 
-    static isMaxWest(playerLocation: ItemLocation, distanceToPlayer: number, boardWidth:number): boolean {
+    static isMaxWest(playerLocation: ItemLocation, distanceToPlayer: number, boardWidth: number): boolean {
         return (playerLocation % boardWidth) - (distanceToPlayer % boardWidth) < 0;
     }
 
-    static isNextToPlayer(position: ItemLocation, playerLocation: ItemLocation, distanceToPlayer: number, boardWidth:number, boardHeight:number): boolean {
+    static isNextToPlayer(position: ItemLocation, playerLocation: ItemLocation, distanceToPlayer: number, boardWidth: number, boardHeight: number): boolean {
         let isNextToPlayer = false;
 
         //assume player at 50,50
@@ -160,8 +169,55 @@ export class BoardValidation {
         return isNextToPlayer;
     }
 
-    static isAtGoal(desiredLocation: ItemLocation, board:IBoard): boolean {
+    static isAtGoal(desiredLocation: ItemLocation, board: IBoard): boolean {
         return board.getCell(desiredLocation).classes.includes('goal');
     }
 
+
+    //newStuff
+
+    static isWall = (itemPosition: ItemLocation, map: IMap): boolean => {
+        return map.walls.includes(itemPosition);
+    };
+
+    static getStepIndex = (startPosition: ItemLocation, distance: number, direction: Direction, boardWidth: number): ItemLocation => {
+        const directionToStepMap: Map<Direction, ItemLocation> = new Map([
+            ['east', startPosition + distance],
+            ['west', startPosition - distance],
+            ['north', startPosition - (distance * boardWidth)],
+            ['south', startPosition + (distance * boardWidth)],
+        ]);
+        const nextIndex = directionToStepMap.get(direction);
+        if (nextIndex === undefined) {
+            throw new Error(`getNextStepIndex for ${startPosition}, direction ${direction} not found`);
+        }
+        return nextIndex;
+    };
+
+    static canAttemptStep = (move: IMove, map: IMap): boolean => {
+        const isOnBoard = this.isNextCellOnBoard(move.startLocation, move.direction, map.width, map.height);
+        const isWall = this.isWall(move.startLocation, map);
+        return isOnBoard && !isWall;
+    }
+
+    static isMoveDestinationOnBoard = (move: IMove, map: IMap): boolean => {
+        return this.isNextCellOnBoard(move.startLocation, move.direction, map.width, map.height);
+    };
+
+    static isNextCellOnBoard = (startPosition: ItemLocation, direction: Direction, boardWidth: number, boardHeight: number): boolean => {
+        const width = boardWidth;
+        const height = boardHeight;
+        const size = width * height;
+
+        const directionIsOnMap: Map<Direction, boolean> = new Map([
+            ['east', startPosition % width < width - 1],
+            ['west', startPosition % width > 0],
+            ['north', startPosition - width >= 0],
+            ['south', startPosition + width < size],
+        ]);
+
+        const isValidForDirection = directionIsOnMap.get(direction);
+        // console.log('isNextCellOnBoard', startPosition, direction, boardWidth, boardHeight, isValidForDirection)
+        return isValidForDirection ?? false;
+    };
 }
