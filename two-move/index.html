@@ -11,9 +11,9 @@
     <script type="module" src="./two-move/src/main.ts"></script>
     <script type="module">
         if(import.meta.env.MODE === "production")
-            window.location.href = "./home.html";
+            window.location.href = "./home.html"; //breaks in preview, works on hosted
         if(import.meta.env.MODE === "development")
-            window.location.href = "./two-move/_html/home.html";
+            window.location.href = "./_html/home.html";
     </script>
 </body>
 
