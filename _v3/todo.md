@@ -19,7 +19,7 @@
             - They do not require the whole board, just the map (h-w-walls)
                 - move `isgoal` logic to the mover?
 
-    - folder reogranization:
+    - folder reorganization:
         1. ui component *(blockly, mapsettings, mapbuilder, board, welcome, scoreboard)*
             - *components: anything with events to pass through: gameboard, scoreboard, map-attributes, map-creator, blockly*
             - html
@@ -35,7 +35,7 @@
                     - *pubsub connection handler, should be predictable across the site*
                     - events-manager.ts (index)
                         - wires triggers to handlers
-                            - when something happens, it is one half of the convesation
+                            - when something happens, it is one half of the conversation
                     - move-events-handlers.ts
                         - handle events related to turning? make this like a topic?
                     - settings-changed-events.ts
@@ -46,7 +46,7 @@
                     1. Moves
                         - rules as static functions, state passed in
                             - IsValidNextPosition - takes a move, a map (H, W, Walls)
-                                - if the player can ocupy the square 
+                                - if the player can occupy the square 
                                     - use the move's state to validate against the map
                             - isValidNextStep - takes a move, a map (H, W, Walls)
                                 - you can walk into the wall, but you cant go through it 
@@ -78,7 +78,7 @@
                         - IMapItem 
                             - location
                             - type (player, enemy, powerup, loot)
-                        - IColector
+                        - ICollector
                             - Items - the items the collector (player) has
                         - IMap
                             - height
@@ -87,14 +87,14 @@
                                 - items where start location is their location
                             - goal[]    
                                 - 
-                        - Board
+                        - IBoard
                             - ICell[]
                             - getIMap
                                 - returns the ICell[] as a map
-                        - Move
+                        - IMove
                             - direction
                             - currentLocation
-                            - desiredLocation
+                            - desiredLocation?
     
     - break up the `two-move.ts` file
         - lots of strange glue code
