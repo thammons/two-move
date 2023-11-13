@@ -1,0 +1,56 @@
+
+
+.cell {
+    border: 1px dashed #333;
+    background-color: #777;
+
+    text-align: center;
+    width: 100%;
+    height: 100%;
+
+    color: #000;
+    font-weight: bold;
+    font-family: "Lucida Console";
+
+
+}
+
+/* Tiles */
+
+.wall {
+    background-color: #333;
+}
+
+.goal {
+    background-color: rgb(247, 150, 77);
+}
+
+.fog {
+    /* background-color: rgba(0, 0, 0, 0.8); */
+}
+
+.unseen.fog {
+    background-color: rgba(0, 0, 0, 0.8);
+}
+
+.seen.fog {
+    opacity: .4;
+}
+
+/* Collisions */
+
+.error-north {
+    border-top: 1px solid #F00;
+}
+
+.error-east {
+    border-right: 1px solid #F00;
+}
+
+.error-south {
+    border-bottom: 1px solid #F00;
+}
+
+.error-west {
+    border-left: 1px solid #F00;
+}
