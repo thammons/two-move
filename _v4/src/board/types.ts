@@ -28,7 +28,7 @@ export interface IMap {
     width: number;
     height: number;
     cellWidth: number;
-    walls: ItemLocation[];
+    walls: Set<ItemLocation>;
     goal: ItemLocation;
     player: ItemLocation;
 }

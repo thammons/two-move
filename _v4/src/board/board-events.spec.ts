@@ -10,7 +10,7 @@ const board: IBoard = {
         width: 1,
         height: 1,
         cellWidth: 1,
-        walls: [],
+        walls: new Set(),
         goal: 0,
         player: 0
     }
