@@ -1,4 +1,4 @@
-import { UserEventHandler } from "./user-events";
+import { UserEventHandler } from "../../../../infrastructure/events/user-events";
 
 export class KeyboardHandlers {
     private firing: string[] = [];
