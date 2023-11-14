@@ -30,17 +30,20 @@ describe('board-factory', () => {
         test('places walls correctly', () => {
             const cells = BoardFactory.createCells(map);
             map.walls.forEach((wall) => {
+                expect(cells[wall].items.length).toBe(1);
                 expect(cells[wall].items[0].type).toBe('wall');
             });
         });
 
         test('places the player correctly', () => {
             const cells = BoardFactory.createCells(map);
+            expect(cells[map.player].items.length).toBe(1);
             expect(cells[map.player].items[0].type).toBe('player');
         });
 
         test('places goal correctly', () => {
             const cells = BoardFactory.createCells(map);
+            expect(cells[map.goal].items.length).toBe(1);
             expect(cells[map.goal].items[0].type).toBe('goal');
         });
 
