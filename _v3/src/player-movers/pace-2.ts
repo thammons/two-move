@@ -19,7 +19,7 @@ export class PaceMover implements IMover {
 
     static turnCondition(lastMove: IMove, nextMove:IMove, board: IBoard) {
         const nextNextMove = Move.init(nextMove).getNextMove(board.map.width);
-        return !Move.init(nextMove).isValidMove(board.map, lastMove.desitnationLocation);
+        return !Move.init(nextMove).isValidMove(board.map, lastMove.destinationLocation);
     }
 
     getNextMove(player: IPlayer, board: IBoard): IMove {

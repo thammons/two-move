@@ -80,7 +80,7 @@ export class WallFollowerMover implements IMover {
         newMoves.forEach(m => {
             if (m.isMove) {
                 this.stepCount++;
-                this.steps.push(m.desitnationLocation);
+                this.steps.push(m.destinationLocation);
             }
         });
 
@@ -239,7 +239,7 @@ export class WallFollowerMover implements IMover {
         for (let i = 0; i < count; i++) {
             const newIndex = (index + count) % 4;
             const newDirection = keys[newIndex];
-            moves.push(new Move(newDirection, lastMove.desitnationLocation, lastMove.desitnationLocation));
+            moves.push(new Move(newDirection, lastMove.destinationLocation, lastMove.destinationLocation));
             this.direction = newDirection;
         }
 

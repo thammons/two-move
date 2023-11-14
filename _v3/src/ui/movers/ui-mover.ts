@@ -74,7 +74,7 @@ export class UIMover implements IUIMover {
             const move = this.moves[i - 1];
             const nextMove = this.moves[i];
             if (move.startLocation === nextMove.startLocation
-                && move.desitnationLocation === nextMove.desitnationLocation
+                && move.destinationLocation === nextMove.destinationLocation
                 && move.direction === nextMove.direction) {
                 this.moves.splice(i, 1);
                 i--;

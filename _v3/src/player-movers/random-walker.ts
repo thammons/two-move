@@ -173,21 +173,21 @@ export class RandomWalkerMover implements IMover {
 
         if (this.moves.length > 0) {
             const lastMove = this.moves[this.moves.length - 1];
-            location = lastMove.desitnationLocation;
+            location = lastMove.destinationLocation;
             direction = lastMove.direction;
         }
 
         let moves = this.randomSteps(location, direction, board.map);
         if (moves.length > 0) {
             const lastMove = moves[moves.length - 1];
-            location = lastMove.desitnationLocation;
+            location = lastMove.destinationLocation;
             direction = lastMove.direction;
         }
 
         moves.push(...this.randomTurns(direction, location));
         if (moves.length > 0) {
             const lastMove = moves[moves.length - 1];
-            location = lastMove.desitnationLocation;
+            location = lastMove.destinationLocation;
             direction = lastMove.direction;
         }
 
@@ -196,7 +196,7 @@ export class RandomWalkerMover implements IMover {
         if (movesToGoal.length > 0) {
             //Take 1/4 of the steps toward the goal
             movesToGoal.slice(0, Math.floor(movesToGoal.length / 4) + 1).forEach(m => {
-                const isValidGoalStep = utils.isValidMove(m.direction, m.startLocation, m.desitnationLocation, board.map);
+                const isValidGoalStep = utils.isValidMove(m.direction, m.startLocation, m.destinationLocation, board.map);
                 if (isValidGoalStep)
                     moves.push(m);
                 else

@@ -9,18 +9,18 @@ export class Move implements IMove {
     ]);
     direction: Direction;
     startLocation: ItemLocation;
-    desitnationLocation: ItemLocation;
+    destinationLocation: ItemLocation;
     isMove: boolean;
 
     constructor(direction: Direction, startLocation: ItemLocation, desitnationLocation: ItemLocation) {
         this.direction = direction;
         this.startLocation = startLocation;
-        this.desitnationLocation = desitnationLocation;
+        this.destinationLocation = desitnationLocation;
         this.isMove = startLocation !== desitnationLocation;
     }
 
     static init(move: IMove) {
-        return new Move(move.direction, move.startLocation, move.desitnationLocation);
+        return new Move(move.direction, move.startLocation, move.destinationLocation);
     }
 
     getNextDirection(directionMap?: Map<Direction, Direction>): Move {
@@ -31,12 +31,12 @@ export class Move implements IMove {
         if (directionMap.has(direction)) {
             nextDirection = directionMap.get(direction)!;
         }
-        return new Move(nextDirection, this.desitnationLocation, this.desitnationLocation);
+        return new Move(nextDirection, this.destinationLocation, this.destinationLocation);
     }
 
     getNextMove(mapWidth: number): Move {
         const direction = this.direction;
-        const currentLocation = this.desitnationLocation;
+        const currentLocation = this.destinationLocation;
 
         let nextLocation = currentLocation;
         if (direction === 'east') {
@@ -49,13 +49,13 @@ export class Move implements IMove {
             nextLocation = currentLocation + mapWidth;
         }
 
-        return new Move(this.direction, this.desitnationLocation, nextLocation);
+        return new Move(this.direction, this.destinationLocation, nextLocation);
     }
 
     isValidMove(map: IMap, playerLocation?: ItemLocation): boolean {
         const direction = this.direction;
         const startLocation = this.startLocation;
-        const desiredLocation = this.desitnationLocation;
+        const desiredLocation = this.destinationLocation;
 
         const moveIsAtEdgeWest = isMaxWest(direction, startLocation, map.width);
         const moveIsAtEdgeEast = isMaxEast(direction, startLocation, map.width);

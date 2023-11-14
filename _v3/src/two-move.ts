@@ -49,7 +49,7 @@ export class TwoMoveGame {
 
     private board: Board | undefined = undefined;
     private fadeOnReset: boolean = false;
-    private useLightesOut: boolean = true;
+    private useLightsOut: boolean = true;
     private lightsout: LightsOut<Board> | undefined = undefined;
     private flashlightRadius: number = 10;
 
@@ -62,7 +62,7 @@ export class TwoMoveGame {
         this.moverCreators = boardOptions.moverCreators;
         this.getNextMap = boardOptions.getNextMap;
         this.postBoardSetup = boardOptions.postBoardSetup;
-        this.useLightesOut = boardOptions.lightsout ?? this.useLightesOut;
+        this.useLightsOut = boardOptions.lightsout ?? this.useLightsOut;
         this.preservePlayerDirection = boardOptions.preservePlayerDirection ?? this.preservePlayerDirection;
         this.score = new ScoreBoard(ScoreBoard.loadScore());
         this.setupBoard();
@@ -76,7 +76,7 @@ export class TwoMoveGame {
             this.moverSpeed = boardOptions.moverSpeed;
             this.moverCreators = boardOptions.moverCreators;
             this.getNextMap = boardOptions.getNextMap;
-            this.useLightesOut = boardOptions.lightsout ?? this.useLightesOut;
+            this.useLightsOut = boardOptions.lightsout ?? this.useLightsOut;
             this.preservePlayerDirection = boardOptions.preservePlayerDirection ?? this.preservePlayerDirection;
         }
         this.score = new ScoreBoard(ScoreBoard.loadScore());
@@ -96,7 +96,7 @@ export class TwoMoveGame {
 
         this.board = new Board(this.map);
         const create = new InitializeMap<Board>(this.map);
-        if (this.useLightesOut)
+        if (this.useLightsOut)
             this.lightsout = new LightsOut<Board>(2, ['goal', 'player'])
         // this.lightsout = new LightsOut<Board>(6, ['goal', 'player'])
 
@@ -106,7 +106,7 @@ export class TwoMoveGame {
         this.player = new Player(this.map.player, this.map.width, playerDirection);
         this.board.updateItem(this.player);
 
-        this.setupBoardHanders();
+        this.setupBoardHandlers();
 
         this.setupMovers();
 
@@ -120,7 +120,7 @@ export class TwoMoveGame {
             this.postBoardSetup();
     }
 
-    private setupBoardHanders() {
+    private setupBoardHandlers() {
         if (this.lightsout && this.board)
             this.lightsout.init(this.board);
 

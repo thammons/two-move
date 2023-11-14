@@ -17,7 +17,7 @@ export class MoveValidation {
     static isNextLocationVisibleToPlayer(playerLocation: ItemLocation, distanceToPlayer: number, direction: Direction, map: IMap): ItemLocation | undefined {
         const location = this.getStepIndex(playerLocation, distanceToPlayer, direction as Direction, map.width);
         const nextLocation = this.getStepIndex(location, 1, direction as Direction, map.width);
-        const canAttemptStep = this.canAttemptStep({ startLocation: location, desitnationLocation: nextLocation, direction: direction as Direction, isMove: true }, map);
+        const canAttemptStep = this.canAttemptStep({ startLocation: location, destinationLocation: nextLocation, direction: direction as Direction, isMove: true }, map);
         return canAttemptStep ? nextLocation : undefined;
     }
 

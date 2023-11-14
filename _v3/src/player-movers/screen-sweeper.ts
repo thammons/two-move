@@ -60,8 +60,8 @@ export class ScreenSweeperMover implements IMover {
         if (this.moves.length > 0) {
             const lastMove = this.moves[this.moves.length - 1];
             this.direction = lastMove.direction;
-            location = lastMove.desitnationLocation;
-            desiredLocation = lastMove.desitnationLocation;
+            location = lastMove.destinationLocation;
+            desiredLocation = lastMove.destinationLocation;
         }
 
         const startDirection = this.direction;
@@ -106,7 +106,7 @@ export class ScreenSweeperMover implements IMover {
         moves.forEach(m => {
             if (m.isMove) {
                 this.stepCount++;
-                this.steps.push(m.desitnationLocation);
+                this.steps.push(m.destinationLocation);
             }
         });
 

@@ -26,7 +26,7 @@ export class MoverRunner {
 
         try {
             const move = Move.init(mover.getNextMove(player, board));
-            const playerMoved = move.direction !== player.direction || move.desitnationLocation !== player.location;
+            const playerMoved = move.direction !== player.direction || move.destinationLocation !== player.location;
             const playerMoveIsValid = (player.location == move.startLocation);
 
             if (playerMoved && playerMoveIsValid) {
@@ -52,7 +52,7 @@ export class MoverRunner {
         player.indicator = player.getIndicator();
 
         if (move.isMove)
-            board.move(player, move.startLocation, move.desitnationLocation);
+            board.move(player, move.startLocation, move.destinationLocation);
         else
             board.updateCell(board.getItemLocations('player')[0]);
     }

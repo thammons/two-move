@@ -4,7 +4,7 @@ export function createMove(direction: Direction, startLocation: ItemLocation, de
     return {
         direction: direction,
         startLocation: startLocation,
-        desitnationLocation: desitnationLocation ?? startLocation,
+        destinationLocation: desitnationLocation ?? startLocation,
         isMove: startLocation != (desitnationLocation ?? startLocation)
     };
 }

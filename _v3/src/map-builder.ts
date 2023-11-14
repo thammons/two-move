@@ -83,7 +83,7 @@ const settingChangesQueue: { name: SettingName, value: string }[] = [];
 
 const testHandlers: IMapBuilderEvents = {
     //putting a lag on this, so it doesn't update on every change
-    settingsChangeHanders: [
+    settingsChangeHandlers: [
         updateSettingsOnChange
     ]
 };

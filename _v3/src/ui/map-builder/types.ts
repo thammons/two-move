@@ -8,22 +8,22 @@ export interface ISetting {
 }
 
 export interface IMapBuilderEvents {
-    settingsChangeHanders: ISimpleEventHandler<ISetting>[];
+    settingsChangeHandlers: ISimpleEventHandler<ISetting>[];
 }
 
 export class MapBuilderEvents implements IMapBuilderEvents {
-    settingsChangeHanders: ISimpleEventHandler<ISetting>[] = [];
+    settingsChangeHandlers: ISimpleEventHandler<ISetting>[] = [];
 
     constructor(handlers?: IMapBuilderEvents) {
         if (handlers)
-            this.settingsChangeHanders = handlers.settingsChangeHanders;
+            this.settingsChangeHandlers = handlers.settingsChangeHandlers;
     }
 
     subscribeToSettingsChange(handler: ISimpleEventHandler<ISetting>) {
-        this.settingsChangeHanders.push(handler);
+        this.settingsChangeHandlers.push(handler);
     }
     triggerSettingsChange(setting: ISetting) {
-        this.settingsChangeHanders.forEach(h => h(setting));
+        this.settingsChangeHandlers.forEach(h => h(setting));
     }
 };
 

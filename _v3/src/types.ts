@@ -138,7 +138,7 @@ export interface IPlayer extends IMapItem {
 export interface IMove {
     direction: Direction;
     startLocation: ItemLocation;
-    desitnationLocation: ItemLocation;
+    destinationLocation: ItemLocation;
     isMove: boolean;
 }
 
