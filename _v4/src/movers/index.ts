@@ -1,0 +1,1 @@
+//use a generator to get the next move

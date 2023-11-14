@@ -1,5 +1,6 @@
 import { IBoardCell } from "../../../board/types";
 import './cell';
+import { KeyboardHandlers } from "./events/keyboard-handlers";
 
 class BoardComponent extends HTMLElement {
     cells: IBoardCell[] = [];
@@ -16,6 +17,7 @@ class BoardComponent extends HTMLElement {
 
         //TODO: Add event listeners
         // this.addEventListener('keydown', this.handleKeydown);
+        // new KeyboardHandlers().setupHandlers();
     }
 
     disconnectedCallback() {
