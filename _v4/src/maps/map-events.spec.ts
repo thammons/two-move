@@ -1,30 +1,29 @@
 import { describe, test, expect } from 'vitest';
-import { BoardEventHandler } from './board-events';
-import { IBoard, IPlayer } from './types';
+import { BoardEventHandler } from './map-events';
+import { IMap, IPlayer } from './types';
 
-const board: IBoard = {
-    width: 1,
-    height: 1,
-    cellWidth: 1,
-    map: {
-        width: 1,
-        height: 1,
-        cellWidth: 1,
-        walls: new Set(),
-        goal: 0,
-        player: 0
-    }
+const mapState: IMap = {
+    width: 10,
+    height: 10,
+    mapItems: new Map([
+        ['empty', []],
+        ['player', [{ type: "player", location: 0, direction: 'east' }]],
+        ['goal', [{ type: "goal", location: 2 }]],
+        ['wall', [
+            { type: "wall", location: 10 },
+            { type: "wall", location: 11 },
+            { type: "wall", location: 12 },
+            { type: "wall", location: 13 }
+        ]],
+    ])
+
 };
 
 const player: IPlayer = {
     type: "player",
     location: 0,
-    direction: "north",
-    getPlayerLocation: () => 0,
-    setNextLocation: () => { },
-    getNextMove: () => 0,
-    getNextDirection: () => "north",
-    turnRight: () => { }
+    nextDirectionMap: new Map(),
+    direction: "east"
 };
 
 
@@ -33,17 +32,17 @@ describe('board-events', () => {
     describe('boardUpdate', () => {
         test('subscribes and triggers with arg', () => {
             let triggered = false;
-            let boardArg: IBoard | undefined = undefined;
+            let boardArg: IMap | undefined = undefined;
             const boardEventHandler = new BoardEventHandler();
-            boardEventHandler.subscribeToBoardUpdate(this, (args) => {
-                boardArg = args.board;
+            boardEventHandler.subscribeToMapStateUpdate(this, (args) => {
+                boardArg = args.mapState;
                 triggered = true;
             });
-            boardEventHandler.triggerBoardUpdate({ board });
+            boardEventHandler.triggerMapStateUpdate({ mapState: mapState });
 
             expect(triggered).toBe(true);
             expect(boardArg).toBeDefined();
-            expect(boardArg).toBe(board);
+            expect(boardArg).toBe(mapState);
 
         });
 
@@ -51,11 +50,11 @@ describe('board-events', () => {
             let triggered = false;
             const object = { id: Date.now() };
             const boardEventHandler = new BoardEventHandler();
-            boardEventHandler.subscribeToBoardUpdate(object, (args) => {
+            boardEventHandler.subscribeToMapStateUpdate(object, (args) => {
                 triggered = true;
             });
-            boardEventHandler.unsubscribe(object, "board-update");
-            boardEventHandler.triggerBoardUpdate({ board });
+            boardEventHandler.unsubscribe(object, "map-state-update");
+            boardEventHandler.triggerMapStateUpdate({ mapState: mapState });
 
             expect(triggered).toBe(false);
         });
@@ -70,7 +69,7 @@ describe('board-events', () => {
                 cellArg = args.index;
                 triggered = true;
             });
-            boardEventHandler.triggerCellUpdate({ cell: board.map[0], index: 0, isTemporary: false });
+            boardEventHandler.triggerCellUpdate({ cell: mapState.mapItems.get('player')!, index: 0, isTemporary: false });
 
             expect(triggered).toBe(true);
             expect(cellArg).toBeDefined();
@@ -85,7 +84,7 @@ describe('board-events', () => {
                 triggered = true;
             });
             boardEventHandler.unsubscribe(object, "cell-update");
-            boardEventHandler.triggerCellUpdate({ cell: board.map[0], index: 0, isTemporary: false });
+            boardEventHandler.triggerCellUpdate({ cell: mapState.mapItems.get('player')!, index: 0, isTemporary: false });
 
             expect(triggered).toBe(false);
         });
@@ -134,7 +133,7 @@ describe('board-events', () => {
                 playerArg = args.player;
                 triggered = true;
             });
-            boardEventHandler.triggerInvalidStep({ direction: "north", player, newLocation: board.map[0] });
+            boardEventHandler.triggerInvalidStep({ direction: "north", player, newLocation: mapState.mapItems.get('player')! });
 
             expect(triggered).toBe(true);
             expect(playerArg).toBeDefined();
@@ -149,7 +148,7 @@ describe('board-events', () => {
                 triggered = true;
             });
             boardEventHandler.unsubscribe(object, "invalid-step");
-            boardEventHandler.triggerInvalidStep({ direction: "north", player, newLocation: board.map[0] });
+            boardEventHandler.triggerInvalidStep({ direction: "north", player, newLocation: mapState.mapItems.get('player')! });
 
             expect(triggered).toBe(false);
         });
@@ -189,15 +188,15 @@ describe('board-events', () => {
             let triggeredCell = false;
             const object = { id: Date.now() };
             const boardEventHandler = new BoardEventHandler();
-            boardEventHandler.subscribeToBoardUpdate(object, (args) => {
+            boardEventHandler.subscribeToMapStateUpdate(object, (args) => {
                 triggeredBoard = true;
             });
             boardEventHandler.subscribeToCellUpdate(object, (args) => {
                 triggeredCell = true;
             });
-            boardEventHandler.unsubscribe(object, "board-update");
-            boardEventHandler.triggerBoardUpdate({ board });
-            boardEventHandler.triggerCellUpdate({ cell: board.map[0], index: 0, isTemporary: false });
+            boardEventHandler.unsubscribe(object, "map-state-update");
+            boardEventHandler.triggerMapStateUpdate({ mapState: mapState });
+            boardEventHandler.triggerCellUpdate({ cell: mapState.mapItems.get('player')!, index: 0, isTemporary: false });
 
             expect(triggeredBoard).toBe(false);
             expect(triggeredCell).toBe(true);
@@ -209,14 +208,14 @@ describe('board-events', () => {
             const object1 = { id: Date.now() };
             const object2 = { id: Date.now() };
             const boardEventHandler = new BoardEventHandler();
-            boardEventHandler.subscribeToBoardUpdate(object1, (args) => {
+            boardEventHandler.subscribeToMapStateUpdate(object1, (args) => {
                 triggeredBoard1 = true;
             });
-            boardEventHandler.subscribeToBoardUpdate(object2, (args) => {
+            boardEventHandler.subscribeToMapStateUpdate(object2, (args) => {
                 triggeredBoard2 = true;
             });
             boardEventHandler.unsubscribe(object1);
-            boardEventHandler.triggerBoardUpdate({ board });
+            boardEventHandler.triggerMapStateUpdate({ mapState: mapState });
 
             expect(triggeredBoard1).toBe(false);
             expect(triggeredBoard2).toBe(true);
@@ -228,14 +227,14 @@ describe('board-events', () => {
             const object1 = { id: Date.now() };
             const object2 = { id: Date.now() };
             const boardEventHandler = new BoardEventHandler();
-            boardEventHandler.subscribeToBoardUpdate(object1, (args) => {
+            boardEventHandler.subscribeToMapStateUpdate(object1, (args) => {
                 triggeredBoard1 = true;
             });
-            boardEventHandler.subscribeToBoardUpdate(object2, (args) => {
+            boardEventHandler.subscribeToMapStateUpdate(object2, (args) => {
                 triggeredBoard2 = true;
             });
             boardEventHandler.unsubscribe({ id: 0 });
-            boardEventHandler.triggerBoardUpdate({ board });
+            boardEventHandler.triggerMapStateUpdate({ mapState: mapState });
 
             expect(triggeredBoard1).toBe(true);
             expect(triggeredBoard2).toBe(true);

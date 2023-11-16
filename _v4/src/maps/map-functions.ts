@@ -1,5 +1,4 @@
-import { Direction } from "@/board/types";
-import { IMap } from "./types";
+import { IMap, Direction } from "./types";
 import * as Utils from "./map-utils";
 
 export function movePlayer(map: IMap): IMap {

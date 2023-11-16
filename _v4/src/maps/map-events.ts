@@ -1,17 +1,17 @@
 import { ISignalHandler, ISimpleEventHandler, SignalHandler, SimpleEventHandler } from "../infrastructure/events/index.ts";
-import { Direction, IBoard, IBoardCell, IPlayer } from "./types";
+import { Direction, IMap, IMapItem, IPlayer } from "./types.ts";
 
 export type BoardSignalTypes = "win-condition";
-export type BoardSimpleEventTypes = "board-update" | "cell-update" | "moved" | "invalid-step";
+export type BoardSimpleEventTypes = "map-state-update" | "cell-update" | "moved" | "invalid-step";
 export type BoardEmitEventType = BoardSignalTypes | BoardSimpleEventTypes;
 
 
-export interface IBoardUpdateEventArgs {
-    board: IBoard,
+export interface IMapStateUpdateEventArgs {
+    mapState: IMap,
 }
 
 export interface ICellUpdateEventArgs {
-    cell: IBoardCell,
+    cell: IMapItem[],
     index: number,
     isTemporary: boolean
 }
@@ -19,7 +19,7 @@ export interface ICellUpdateEventArgs {
 export interface IInvalidStepEventArgs {
     direction: Direction,
     player: IPlayer,
-    newLocation: IBoardCell
+    newLocation: IMapItem[]
 }
 
 export class BoardEventHandler {
@@ -39,13 +39,13 @@ export class BoardEventHandler {
         return this;
     }
 
-    subscribeToBoardUpdate(owner: any, handler: ISimpleEventHandler<IBoardUpdateEventArgs>) {
-        this.boardHandlers.subscribeSimpleEvent("board-update", owner, handler);
+    subscribeToMapStateUpdate(owner: any, handler: ISimpleEventHandler<IMapStateUpdateEventArgs>) {
+        this.boardHandlers.subscribeSimpleEvent("map-state-update", owner, handler);
         return this;
     }
 
-    triggerBoardUpdate(args: IBoardUpdateEventArgs) {
-        this.boardHandlers.trigger("board-update", args);
+    triggerMapStateUpdate(args: IMapStateUpdateEventArgs) {
+        this.boardHandlers.trigger("map-state-update", args);
     }
 
     subscribeToCellUpdate(owner: any, handler: ISimpleEventHandler<ICellUpdateEventArgs>) {

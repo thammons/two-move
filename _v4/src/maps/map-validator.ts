@@ -1,6 +1,5 @@
-import { IMapSettings } from "@/board/types";
 import { IMap } from "./types";
-import { cloneMap, getPlayer } from "./map-utils";
+import { cloneMap, getItemsByType, getGoal, getPlayer } from "./map-utils";
 import { PlayerMotionMap } from "./map-functions";
 
 export function checkPlayerCollision(map: IMap): { isCollision: boolean, map: IMap } {
@@ -64,26 +63,29 @@ export function isNextMoveWall(map: IMap, nextMove: number): boolean {
     return false;
 }
 
-export function validateMap(map: IMapSettings) {
+export function validateMap(map: IMap) {
     //not a deep copy
     const validMap = { ...map };
     let isValid = true;
     const mapSize = map.width * map.height;
 
+    const player = getPlayer(map);
+    const goal = getGoal(map);
+    const walls = getItemsByType(map, 'wall');
 
-    if (isOffMap(map.player, mapSize)
-        || isOffMap(map.goal, mapSize)) {
+    if (player === undefined || goal === undefined) {
         isValid = false;
     }
-    for (let wall of map.walls) {
-        if (isOffMap(wall, mapSize)) {
-            isValid = false;
-            break;
-        }
+    else if (isOffMap(player.location, mapSize)
+        || isOffMap(goal.location, mapSize)) {
+        isValid = false;
+    }
+    else if (walls.some(wall => wall.location === player.location)
+        || walls.some(wall => wall.location === goal.location)) {
+        isValid = false;
     }
 
-    if (map.walls.has(map.player)
-        || map.walls.has(map.goal)) {
+    if (walls.some(wall => isOffMap(wall.location, mapSize))) {
         isValid = false;
     }
 

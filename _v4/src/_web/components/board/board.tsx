@@ -1,6 +1,6 @@
 import { IMap } from "@/maps/types";
-import { IMapItemCollection } from "../../../board/types";
 import './cell';
+import { IMapItemCollection } from "./cell";
 
 //TODO this could be a lot more functional...
 export class BoardComponent extends HTMLElement {

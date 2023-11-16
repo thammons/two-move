@@ -38,16 +38,6 @@ const map: IMap = {
     ])
 };
 
-describe('get board', () => {
-
-    test.skip('Do I even need this? just return an IMap... - returns a board', () => {
-
-        // const result = getBoard(map);
-
-        // expect(result).toBeDefined();
-    });
-});
-
 describe('move player', () => {
     test('moves player to new location - east', () => {
         const expectedPlayer = { type: "player", location: 1, direction: 'east' };

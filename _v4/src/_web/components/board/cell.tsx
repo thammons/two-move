@@ -1,4 +1,9 @@
-import { IMapItem, IMapItemCollection } from "@/board/types";
+import { AttributeType, IMapItem } from "@/maps/types";
+
+export interface IMapItemCollection {
+    items: IMapItem[];
+    attributes: AttributeType[];
+}
 
 const directionIndicators = new Map([
     ['north', '^'],

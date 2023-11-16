@@ -3,16 +3,22 @@ import * as Validator from './map-validator';
 import * as Utils from './map-utils';
 
 import * as MapValidator from './map-validator';
-import { IMapSettings } from '../board/types';
 import { IMap } from './types';
 
-const mapSetting: IMapSettings = {
+const mapSetting: IMap = {
     width: 10,
     height: 10,
-    cellWidth: 50,
-    walls: new Set([10, 11, 12, 13]),
-    goal: 0,
-    player: 1
+    mapItems: new Map([
+        ['empty', []],
+        ['player', [{ type: "player", location: 0, direction: 'east' }]],
+        ['goal', [{ type: "goal", location: 2 }]],
+        ['wall', [
+            { type: "wall", location: 10 },
+            { type: "wall", location: 11 },
+            { type: "wall", location: 12 },
+            { type: "wall", location: 13 }
+        ]],
+    ])
 };
 
 describe('map-validator', () => {
@@ -24,35 +30,40 @@ describe('map-validator', () => {
     });
 
     test('returns undefined if player is out of bounds', () => {   
-        const invalidMap = { ...mapSetting, player: -1 };
+        const invalidMap = Utils.cloneMap(mapSetting);
+        invalidMap.mapItems.get('player')![0].location = -1;
 
         const result = MapValidator.validateMap(invalidMap);
         expect(result).toBeUndefined();
     });
     
-    test('returns undefined if goal is out of bounds', () => {
-        const invalidMap = { ...mapSetting, goal: -1 };
+    test('returns undefined if goal is out of bounds', () => {   
+        const invalidMap = Utils.cloneMap(mapSetting);
+        invalidMap.mapItems.get('goal')![0].location = -1;
 
         const result = MapValidator.validateMap(invalidMap);
         expect(result).toBeUndefined();
     });
 
     test('returns undefined if walls are out of bounds', () => {
-        const invalidMap = { ...mapSetting, walls: new Set([-1]) };
+        const invalidMap = Utils.cloneMap(mapSetting);
+        invalidMap.mapItems.get('wall')![0].location = -1;
 
         const result = MapValidator.validateMap(invalidMap);
         expect(result).toBeUndefined();
     });
 
     test('returns undefined if player overlaps any walls', () => {
-        const invalidMap = { ...mapSetting, player: mapSetting.walls.values().next().value };
+        const invalidMap = Utils.cloneMap(mapSetting);
+        invalidMap.mapItems.get('player')![0].location = invalidMap.mapItems.get('wall')![0].location;
 
         const result = MapValidator.validateMap(invalidMap);
         expect(result).toBeUndefined();
     });
 
     test('returns undefined if goal overlaps any walls', () => {
-        const invalidMap = { ...mapSetting, goal: mapSetting.walls.values().next().value };
+        const invalidMap = Utils.cloneMap(mapSetting);
+        invalidMap.mapItems.get('goal')![0].location = invalidMap.mapItems.get('wall')![0].location;
 
         const result = MapValidator.validateMap(invalidMap);
         expect(result).toBeUndefined();

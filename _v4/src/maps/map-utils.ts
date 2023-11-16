@@ -1,5 +1,4 @@
-import { BoardItemType } from "@/board/types";
-import { IMap, IMapItem } from "./types";
+import { IMap, IMapItem, MapItemType } from "./types";
 
 export function cloneMap(map: IMap) {
 
@@ -12,7 +11,7 @@ export function cloneMap(map: IMap) {
     return newMap;
 }
 
-export function getByItemsType(map: IMap, itemType: BoardItemType): IMapItem[] {
+export function getItemsByType(map: IMap, itemType: MapItemType): IMapItem[] {
     const items = map.mapItems.get(itemType);
     if (items !== undefined) {
         return items;
@@ -20,7 +19,7 @@ export function getByItemsType(map: IMap, itemType: BoardItemType): IMapItem[] {
     return [];
 }
 
-export function getByItemType(map: IMap, itemType: BoardItemType): IMapItem | undefined {
+export function getItemByType(map: IMap, itemType: MapItemType): IMapItem | undefined {
     const items = map.mapItems.get(itemType);
     if (items !== undefined && items.length === 1) {
         return items[0];
@@ -29,9 +28,9 @@ export function getByItemType(map: IMap, itemType: BoardItemType): IMapItem | un
 }
 
 export function getPlayer(map: IMap): IMapItem | undefined {
-    return getByItemType(map, 'player');
+    return getItemByType(map, 'player');
 }
 
 export function getGoal(map: IMap): IMapItem | undefined {
-    return getByItemType(map, 'goal');
+    return getItemByType(map, 'goal');
 }

@@ -1,13 +1,13 @@
-import { BoardEventHandler } from "board/board-events";
-import { IBoard, IPlayer } from "board/types";
-import { UserEventHandler } from "infrastructure/events/user-events";
+import { UserEventHandler } from "@/infrastructure/events/user-events";
+import { IMap, IPlayer } from "@/maps/types";
+
 
 export class UserMover {
-    board: IBoard;
+    map: IMap;
     player: IPlayer;
 
-    constructor(board: IBoard, player: IPlayer) {
-        this.board = board;
+    constructor(map: IMap, player: IPlayer) {
+        this.map = map;
         this.player = player;
     }
 
