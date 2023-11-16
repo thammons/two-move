@@ -1,5 +1,5 @@
 import { defineConfig, BuildOptions } from 'vite';
-const { resolve } = require('path');
+import path from 'path';
 
 export default defineConfig({
   base: '/',
@@ -37,8 +37,7 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      '/@': resolve(__dirname, './src')
+      '@': path.resolve(__dirname, './src')
     }
   }
-
 });

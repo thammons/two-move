@@ -4,23 +4,18 @@ export type Direction = 'north' | 'south' | 'east' | 'west';
 
 export type ItemLocation = number;
 
-export interface IBoardItem {
+export interface IMapItem {
     type: BoardItemType;
     location: ItemLocation;
     direction?: Direction;
 }
 
-export interface IPlayer extends IBoardItem {
-    direction: Direction;
-    getPlayerLocation(): ItemLocation;
-    setNextLocation(): void;
-    getNextMove(): ItemLocation;
-    getNextDirection(): Direction;
-    turnRight(): void;
+export interface IPlayer extends IMapItem {
+    nextDirectionMap: Map<Direction, Direction>;
 }
 
-export interface IBoardCell {
-    items: IBoardItem[];
+export interface IMapItemCollection {
+    items: IMapItem[];
     attributes: AttributeType[];
 }
 
@@ -29,13 +24,13 @@ export interface IMap {
     height: number;
     cellWidth: number;
     walls: Set<ItemLocation>;
+}
+
+export interface IMapSettings extends IMap {
     goal: ItemLocation;
     player: ItemLocation;
 }
 
-export interface IBoard {
-    width: number;
-    height: number;
-    cellWidth: number;
-    map: IMap;
+export interface IMapState extends IMap {
+    mapItems: Map<BoardItemType, IMapItemCollection>;
 }

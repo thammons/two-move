@@ -1,11 +1,11 @@
-import { ISignalHandler, ISimpleEventHandler, SignalHandler, SimpleEventHandler } from "infrastructure/events";
+import { ISignalHandler, ISimpleEventHandler, SignalHandler, SimpleEventHandler } from './index';
 
 export type UserActionTypes = 'move-forward' | 'turn' | 'flash-light' | 'reset';
 
 export interface IFlashlightEventArgs {
     // direction: Direction;
     isOn: boolean;
-    powerLevel?:number;
+    powerLevel?: number;
 }
 
 export interface IResetEventArgs {
@@ -29,6 +29,7 @@ export class UserEventHandler {
     }
 
     triggerMoveForward() {
+        // console.log('move forward trigger');
         this.userEventHandlers.trigger('move-forward');
     }
 

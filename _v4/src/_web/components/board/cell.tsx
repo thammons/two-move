@@ -1,7 +1,14 @@
-import { IBoardCell } from "board/types";
+import { IMapItem, IMapItemCollection } from "@/board/types";
+
+const directionIndicators = new Map([
+    ['north', '^'],
+    ['south', 'v'],
+    ['east', '>'],
+    ['west', '<']
+]);
 
 export class CellComponent extends HTMLElement {
-    private _cell: IBoardCell = {
+    private _cell: IMapItemCollection = {
         items: [],
         attributes: []
     };
@@ -12,7 +19,7 @@ export class CellComponent extends HTMLElement {
         this.attachShadow({ mode: 'open' });
     }
 
-    set cellData(data: IBoardCell) {
+    set cellData(data: IMapItemCollection) {
         this._cell = data;
         if (this.shadowRoot) {
             this.render();
@@ -35,20 +42,26 @@ export class CellComponent extends HTMLElement {
         cellElement.classList.add('board-cell');
         cellElement.classList.add('cell-' + this._cell.items[0].location);
         cellElement.classList.add('cell');
-        let isPlayer = false;
+        let playerItem: IMapItem | undefined = undefined;
         this._cell.items.forEach((item) => {
             cellElement.classList.add(item.type);
             if (item.type === 'player') {
-                isPlayer = true;
+                playerItem = item;
             }
         });
-        if (isPlayer) {
-            cellElement.innerHTML = ">";
+        if (playerItem !== undefined) {
+            console.log(playerItem)
+            let indicator = '';
+            const player = playerItem as IMapItem;
+                indicator = directionIndicators.get(player.direction ?? 'north') ?? '';
+            cellElement.innerHTML = indicator;
         }
+
         this._cell.attributes.forEach((attribute: string) => {
             cellElement.classList.add(attribute);
         });
-        console.log(cellElement.outerHTML)
+        
+        // console.log(cellElement.outerHTML)
         return cellElement.outerHTML;
     }
 
@@ -56,7 +69,7 @@ export class CellComponent extends HTMLElement {
         const renderThis = `
         <link rel="stylesheet" href="/src/_web/components/board/cell.css">
         ${this.buildCell()}`;
-        console.log(renderThis)
+        // console.log(renderThis)
         this.shadowRoot!.innerHTML = renderThis;
     }
 

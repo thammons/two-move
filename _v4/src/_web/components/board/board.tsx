@@ -1,9 +1,10 @@
-import { IBoardCell } from "../../../board/types";
+import { IMap } from "@/maps/types";
+import { IMapItemCollection } from "../../../board/types";
 import './cell';
-import { KeyboardHandlers } from "./events/keyboard-handlers";
 
-class BoardComponent extends HTMLElement {
-    cells: IBoardCell[] = [];
+//TODO this could be a lot more functional...
+export class BoardComponent extends HTMLElement {
+    cells: IMapItemCollection[] = [];
 
     connectedCallback() {
         this.attachShadow({ mode: 'open' });
@@ -25,16 +26,29 @@ class BoardComponent extends HTMLElement {
         // this.removeEventListener('keydown', this.handleKeydown);
     }
 
-    populateCells() {
+    populateCells(map?: IMap) {
         //TODO: This needs to be replaced.. probably wire to a board event?
+        this.cells = [];
         [...Array(100).keys()].forEach((i) => {
             this.cells.push({
                 items: [{ type: 'empty', location: i }],
                 attributes: ['unseen']
             });
         });
-        this.cells[0].items.push({ type: 'player', location: 0 });
-        this.cells[99].items.push({ type: 'goal', location: 99 });
+        // this.cells[0].items.push({ type: 'player', location: 0 });
+        // this.cells[99].items.push({ type: 'goal', location: 99 });
+        
+        if (!map) return;
+        console.log('populateCells', map);
+
+        for (let [key, value] of map.mapItems) {
+            for (let item of value) {
+                this.cells[item.location].items = this.cells[item.location].items.filter((i) => i.type !== 'empty');
+                this.cells[item.location].items.push({ type: key, location: item.location, direction: item.direction });
+                this.cells[item.location].attributes = [...new Set([...(item.attributes || [])])];
+            }
+        }
+        
     }
 
 
@@ -60,7 +74,6 @@ class BoardComponent extends HTMLElement {
         `).join('')}
         </div>
     `;
-        console.log('board', renderThis)
         this.shadowRoot!.innerHTML = renderThis;
 
         this.cells.forEach((cell, index) => {
