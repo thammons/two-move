@@ -1,29 +1,23 @@
-import { UserEventHandler } from "@/infrastructure/events/user-events";
-import { IMap, IPlayer } from "@/maps/types";
+import { IMap } from "@/maps/types";
+import * as MapFunctions from "@/maps/map-functions";
+import * as Validator from "@/maps/map-validator";
 
 
 export class UserMover {
-    map: IMap;
-    player: IPlayer;
 
-    constructor(map: IMap, player: IPlayer) {
-        this.map = map;
-        this.player = player;
+    move(map: IMap): IMap {
+        let c = Validator.checkPlayerCollision(map);
+        let newMap: IMap = c.map;
+        if (!c.isCollision) {
+            newMap = MapFunctions.movePlayer(newMap);
+        }
+        return newMap;
     }
 
-    setupEvents(handlers: UserEventHandler) {
-        handlers.subscribeMoveForward(this, this.moveForward)
-            .subscribeTurn(this, this.turn);
+    turn(map: IMap): IMap {
+        return MapFunctions.turnPlayer(map);
     }
 
-    clearEvents(handlers: UserEventHandler) {
-        handlers.unsubscribe(this);
-    }
-
-    moveForward() {
-    }
-
-    turn() {
-
-    }
 }
+
+

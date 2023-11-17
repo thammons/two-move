@@ -1,3 +1,4 @@
+import { HandlerPriorityType } from './generic-handler';
 import { ISignalHandler, ISimpleEventHandler, SignalHandler, SimpleEventHandler } from './index';
 
 export type UserActionTypes = 'move-forward' | 'turn' | 'flash-light' | 'reset';
@@ -23,8 +24,8 @@ export class UserEventHandler {
         this.userEventHandlers.unsubscribe(owner, actionType);
     }
 
-    subscribeMoveForward(owner: any, handler: ISignalHandler) {
-        this.userEventHandlers.subscribeSignal('move-forward', owner, handler);
+    subscribeMoveForward(owner: any, handler: ISignalHandler, priority?: HandlerPriorityType) {
+        this.userEventHandlers.subscribeSignal('move-forward', owner, handler, priority);
         return this;
     }
 
@@ -33,8 +34,8 @@ export class UserEventHandler {
         this.userEventHandlers.trigger('move-forward');
     }
 
-    subscribeTurn(owner: any, handler: ISignalHandler) {
-        this.userEventHandlers.subscribeSignal('turn', owner, handler);
+    subscribeTurn(owner: any, handler: ISignalHandler, priority?: HandlerPriorityType) {
+        this.userEventHandlers.subscribeSignal('turn', owner, handler, priority);
         return this;
     }
 
@@ -42,8 +43,8 @@ export class UserEventHandler {
         this.userEventHandlers.trigger('turn');
     }
 
-    subscribeFlashlight(owner: any, handler: ISimpleEventHandler<IFlashlightEventArgs>) {
-        this.userEventHandlers.subscribeSimple('flash-light', owner, handler);
+    subscribeFlashlight(owner: any, handler: ISimpleEventHandler<IFlashlightEventArgs>, priority?: HandlerPriorityType) {
+        this.userEventHandlers.subscribeSimple('flash-light', owner, handler, priority);
         return this;
     }
 
@@ -51,8 +52,8 @@ export class UserEventHandler {
         this.userEventHandlers.trigger('flash-light', args);
     }
 
-    subscribeReset(owner: any, handler: ISimpleEventHandler<IResetEventArgs>) {
-        this.userEventHandlers.subscribeSimple('reset', owner, handler);
+    subscribeReset(owner: any, handler: ISimpleEventHandler<IResetEventArgs>, priority?: HandlerPriorityType) {
+        this.userEventHandlers.subscribeSimple('reset', owner, handler, priority);
         return this;
     }
 
@@ -71,13 +72,13 @@ class GenericUserEventHandlers {
         this.simpleEventHandlers = new SimpleEventHandler();
     }
 
-    subscribeSignal(actionType: UserActionTypes, owner: any, handler: ISignalHandler) {
-        this.signalHandlers.subscribe(actionType, owner, handler);
+    subscribeSignal(actionType: UserActionTypes, owner: any, handler: ISignalHandler, priority?: HandlerPriorityType) {
+        this.signalHandlers.subscribe(actionType, owner, handler, priority);
         return this;
     }
 
-    subscribeSimple(actionType: UserActionTypes, owner: any, handler: (args: any) => void) {
-        this.simpleEventHandlers.subscribe(actionType, owner, handler);
+    subscribeSimple(actionType: UserActionTypes, owner: any, handler: (args: any) => void, priority?: HandlerPriorityType) {
+        this.simpleEventHandlers.subscribe(actionType, owner, handler, priority);
         return this;
     }
 
