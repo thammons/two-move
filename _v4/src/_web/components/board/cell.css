@@ -1,4 +1,15 @@
 
+.board {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
+    grid-auto-rows: 50px;
+    gap: 0px;
+
+    width: 520px;
+    min-width: 520px;
+    font-size: 45px;
+
+}
 
 .cell {
     border: 1px dashed #333;
