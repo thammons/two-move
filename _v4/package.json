@@ -6,9 +6,8 @@
   "scripts": {
     "build": "vite build",
     "start:preview": "vite preview",
-    "test": "vitest --silent=false",
-    "test:ui": "vitest --silent=false --ui",
-    "test:watch": "vitest --watch"
+    "test": "vitest --silent=false --coverage",
+    "test:ui": "vitest --silent=false --ui --coverage"
   },
   "author": "TJ and Lucas Hammons",
   "license": "ISC",
@@ -20,6 +19,7 @@
   },
   "devDependencies": {
     "@types/node": "^20.8.10",
+    "@vitest/coverage-v8": "^0.34.6",
     "@vitest/ui": "^0.34.6"
   }
 }
