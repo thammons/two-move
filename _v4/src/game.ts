@@ -45,12 +45,12 @@ class MapInstance {
 function addUIUserHandlers(boardComponent: BoardComponent, obj: any, userHandler: UserEventHandler, getMap: () => IMap) {
     userHandler.subscribeMoveForward(obj, () => {
         boardComponent.populateCells(getMap());
-        boardComponent.render();
+        boardComponent.updateCells();
     }, 'last');
 
     userHandler.subscribeTurn(obj, () => {
         boardComponent.populateCells(getMap());
-        boardComponent.render();
+        boardComponent.updateCells();
     }, 'last');
 }
 
