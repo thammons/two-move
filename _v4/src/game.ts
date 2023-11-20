@@ -15,6 +15,7 @@ window.addEventListener("load", () => {
     const playerActions = new KeyboardHandlers();
 
     setInterval(() => {
+        //TODO: Figure out handling win condition
         boardComponent.updateCells(
             mapInstance.setMap(
                 // torch.UpdateMap(playerActions.getTorchArgs(),

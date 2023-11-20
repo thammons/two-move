@@ -1,12 +1,16 @@
-import { IMap, Direction } from "./types";
+import { IMap } from "./types";
 import * as Utils from "./map-utils";
+import { PlayerMotionMap } from "./map-player-motions";
 
 export function movePlayer(map: IMap): IMap {
     const newMap = Utils.cloneMap(map);
 
     const player = Utils.getPlayer(newMap);
     if (player !== undefined && player.direction !== undefined) {
-        player.location = PlayerMotionMap.get(player.direction)!.nextMove(player.location, newMap.width);
+        player.location = PlayerMotionMap.get(player.direction)!.nextMove(
+            player.location,
+            newMap.width
+        );
     }
 
     return newMap;
@@ -42,35 +46,19 @@ export function getMap(): IMap {
         width: 10,
         height: 10,
         mapItems: new Map([
-            ['empty', []],
-            ['player', [{ type: "player", location: 0, direction: 'east' }]],
-            ['goal', [{ type: "goal", location: 2 }]],
-            ['wall', [
-                { type: "wall", location: 10 },
-                { type: "wall", location: 11 },
-                { type: "wall", location: 12 },
-                { type: "wall", location: 13 }
-            ]],
-        ])
+            ["empty", []],
+            ["player", [{ type: "player", location: 0, direction: "east" }]],
+            ["goal", [{ type: "goal", location: 2 }]],
+            [
+                "wall",
+                [
+                    { type: "wall", location: 10 },
+                    { type: "wall", location: 11 },
+                    { type: "wall", location: 12 },
+                    { type: "wall", location: 13 },
+                ],
+            ],
+        ]),
     };
     return map;
-}
-
-interface IPlayerMotionMapItem {
-    nextDirection: Direction;
-    nextMove: (location: number, width: number) => number;
-}
-
-export class PlayerMotionMap {
-    private static map: Map<Direction, IPlayerMotionMapItem> =
-        new Map<Direction, { nextDirection: Direction, nextMove: (location: number, width: number) => number }>([
-            ['north', { nextDirection: 'east', nextMove: (location: number, width: number) => location - width }],
-            ['east', { nextDirection: 'south', nextMove: (location: number, _: number) => location + 1 }],
-            ['south', { nextDirection: 'west', nextMove: (location: number, width: number) => location + width }],
-            ['west', { nextDirection: 'north', nextMove: (location: number, _: number) => location - 1 }],
-        ]);
-
-    static get(direction: Direction): { nextDirection: Direction, nextMove: (location: number, width: number) => number } {
-        return this.map.get(direction)!;
-    }
 }
