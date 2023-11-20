@@ -136,7 +136,8 @@ export class BoardComponent extends HTMLElement {
         this._cellUpdate(cellDisplayItems);
     }
 
-    updateCells() {
+    updateCells(map: IMap) {
+        this.populateCells(map);
         let cellDisplayItems = this._getCellDisplayItems(this.cells);
         this._cellUpdate(cellDisplayItems);
     }
@@ -145,7 +146,7 @@ export class BoardComponent extends HTMLElement {
         let cellDisplayItems = [];
         for (let [_, value] of cells) {
             // if (value.some(v => v.isUpdated))
-                cellDisplayItems.push(value);
+            cellDisplayItems.push(value);
         }
         return cellDisplayItems;
     }
