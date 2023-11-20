@@ -1,4 +1,4 @@
-import { AttributeType, IMapItem } from "@/maps/types";
+import { IMapItem } from "@/maps";
 
 
 const directionIndicators = new Map([

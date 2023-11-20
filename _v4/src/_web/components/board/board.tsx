@@ -1,4 +1,4 @@
-import { IMap, IMapItem } from "@/maps/types";
+import { IMap, IMapItem } from "@/maps";
 import './cell';
 
 interface IUpdateMapItem extends IMapItem {

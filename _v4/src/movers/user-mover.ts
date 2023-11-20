@@ -1,6 +1,5 @@
-import { IMap } from "@/maps/types";
-import * as MapFunctions from "@/maps/map-functions";
-import * as Validator from "@/maps/map-validator";
+import { IMap } from "@/maps";
+import * as MapFunctions from "@/maps";
 import { MoveTypes } from "./types";
 
 
@@ -21,7 +20,7 @@ export class UserMover {
     }
 
     move(map: IMap): IMap {
-        let c = Validator.checkPlayerCollision(map);
+        let c = MapFunctions.checkPlayerCollision(map);
         let newMap: IMap = c.map;
         if (!c.isCollision) {
             newMap = MapFunctions.movePlayer(newMap);

@@ -1,7 +1,7 @@
 import { BoardComponent } from "./_web/components/board/board";
 import { KeyboardHandlers } from "./_web/components/board/events/keyboard-handlers";
-import * as Map from "./maps/map-functions";
-import { IMap } from "./maps/types";
+import * as Map from "./maps";
+import { IMap } from "./maps";
 import { UserMover } from "./movers/user-mover";
 
 window.addEventListener("load", () => {
