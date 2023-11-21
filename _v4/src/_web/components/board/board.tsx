@@ -1,23 +1,44 @@
-import { IMap, IMapItem } from "@/maps";
+import { IMap, IMapItem, MapItemType } from "@/maps";
 import './cell';
+import { BoardLogic, IBoardDisplay, IUpdateMapItem } from "./board-logic";
 
-interface IUpdateMapItem extends IMapItem {
-    isUpdated: boolean;
+export class BoardDisplay implements IBoardDisplay {
+
+    get BoardElement(): BoardComponent {
+        return document.querySelector(
+            "two-move-board"
+        ) as BoardComponent;
+    }
+
+    constructor(map: IMap) {
+        BoardComponent.init();
+        this.BoardElement.initCells(map);
+    }
+
+    updateCells(map: IMap) {
+        this.BoardElement.updateCells(map);
+    }
 }
+
 
 //TODO this could be a lot more functional...
 export class BoardComponent extends HTMLElement {
-    cells: Map<number, IUpdateMapItem[]> = new Map();
-    height: number = 10;
-    width: number = 10;
+
+    boardLogic: BoardLogic = new BoardLogic({
+        height: 10,
+        width: 10,
+        mapItems: new Map<MapItemType, IMapItem[]>(),
+    });
+
+    static init() {
+        // Define the custom element
+        customElements.define('two-move-board', BoardComponent);
+    }
 
     connectedCallback() {
         this.attachShadow({ mode: 'open' });
 
-
-        //TODO This should be handled some other way
-        this.populateCells();
-
+        this.boardLogic.updateCells();
 
         this.render();
 
@@ -31,132 +52,71 @@ export class BoardComponent extends HTMLElement {
         // this.removeEventListener('keydown', this.handleKeydown);
     }
 
-    populateCells(map?: IMap) {
-
-        //TODO: partial updates
-        if (!map) return;
-        if (!this.cells.size) {
-            this.cells = this._createCells(map);
-        }
-        else {
-            this.cells = this._getUpdatedCells(map, this.cells);
-        }
-
-    }
-
-    private _createCells(map: IMap) {
-        const cells = new Map<number, IUpdateMapItem[]>();
-        //TODO: This needs to be replaced.. probably wire to a board event?
-        [...Array(100).keys()].forEach((i) => {
-            cells.set(i, [{
-                type: 'empty',
-                location: i,
-                attributes: ['unseen'],
-                isUpdated: true
-            }]);
-        });
-        // this.cells[0].items.push({ type: 'player', location: 0 });
-        // this.cells[99].items.push({ type: 'goal', location: 99 });
-
-
-        for (let [key, value] of map.mapItems) {
-            for (let item of value) {
-                const cell = cells.get(item.location);
-                const existingAttributes = cell?.flatMap(c => c.attributes) || [];
-                const existingItems = cell?.filter(c => c.type !== 'empty') || [];
-                cells.set(item.location, [...existingItems, {
-                    id: item.id,
-                    type: key,
-                    location: item.location,
-                    direction: item.direction,
-                    attributes: [...new Set([...existingAttributes, ...(item.attributes || [])])],
-                    isUpdated: true
-                } as IUpdateMapItem
-                ]);
-            }
-        }
-        return cells;
-    }
-
-    private _getUpdatedCells(newMap: IMap, oldMap: Map<number, IUpdateMapItem[]>) {
-        const newCells = this._createCells(newMap);
-        const updatedCells = new Map<number, IUpdateMapItem[]>();
-
-        for (let [key, value] of newCells) {
-            const oldCell = oldMap.get(key);
-            const newCell = value;
-            if (!oldCell) {
-                updatedCells.set(key, newCell);
-                continue;
-            }
-            const oldCellItems = oldCell.filter(c => c.type !== 'empty');
-            const newCellItems = newCell.filter(c => c.type !== 'empty');
-            if (oldCellItems.length !== newCellItems.length) {
-                updatedCells.set(key, newCell);
-                continue;
-            }
-            newCell.forEach((item, index) => {
-                const oldItem = oldCellItems[index];
-                if (!oldItem) {
-                    updatedCells.set(key, newCell);
-                }
-                else if (oldItem.location !== item.location) {
-                    updatedCells.set(key, newCell);
-                }
-                else if (oldItem.direction !== item.direction) {
-                    updatedCells.set(key, newCell);
-                }
-                else if (oldItem.attributes?.length !== item.attributes?.length) {
-                    updatedCells.set(key, newCell);
-                }
-                else if (oldItem.attributes?.some(a => !item.attributes?.includes(a))) {
-                    updatedCells.set(key, newCell);
-                }
-                else {
-                    updatedCells.set(key, oldCell);
-                }
-            });
-        }
-        return updatedCells;
-    }
-
     render() {
-        let cellDisplayItems = this._getCellDisplayItems(this.cells);
+        let cellDisplayItems = BoardLogic.getCellUpdateDisplayItems(this.boardLogic.Cells);
 
-        //TODO: set style based on board options (cell size, min-width, gridOptions etc)
+        const boardWidthPx = BoardLogic.getBoardDisplayWidth(this.boardLogic.Width);
+        const cellWidthPx = 50;
+
         const renderThis = `
         <link rel="stylesheet" href="/src/_web/components/board/cell.css">
-        <div class="board">
-        ${cellDisplayItems.map((_, index) => `
-        <two-move-cell id="cell-comp-${index}"></two-move-cell>
-        `).join('')}
+        <style>
+            .board-wrapper {
+                overflow: hidden;
+                max-height: 90vh;
+                max-width: 50vw;
+            }
+
+            .board {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(${cellWidthPx}px, 1fr));
+                grid-auto-rows: ${cellWidthPx}px;
+                gap: 0px;
+
+                width: ${boardWidthPx}px;
+                min-width: ${boardWidthPx}px;
+                font-size: 45px;
+            }
+        </style>
+        <div class="board-wrapper">
+            <div class="board">
+            ${cellDisplayItems.map((_, index) => `
+            <two-move-cell id="cell-comp-${index}"></two-move-cell>
+            `).join('')}
+            </div>
         </div>
     `;
         this.shadowRoot!.innerHTML = renderThis;
         this._cellUpdate(cellDisplayItems);
     }
 
+    initCells(map:IMap){
+        this.boardLogic.updateCells(map, true);
+        this.render();
+    }
+
     updateCells(map: IMap) {
-        this.populateCells(map);
-        let cellDisplayItems = this._getCellDisplayItems(this.cells);
+        this.boardLogic.updateCells(map);
+        let cellDisplayItems = BoardLogic.getCellUpdateDisplayItems(this.boardLogic.Cells);
         this._cellUpdate(cellDisplayItems);
     }
 
-    private _getCellDisplayItems(cells: Map<number, IUpdateMapItem[]>) {
-        let cellDisplayItems = [];
-        for (let [_, value] of cells) {
-            // if (value.some(v => v.isUpdated))
-            cellDisplayItems.push(value);
-        }
-        return cellDisplayItems;
-    }
 
     private _cellUpdate(cells: IUpdateMapItem[][]) {
-        cells.forEach((cell, index) => {
-            const cellElement = this.shadowRoot!.getElementById(`cell-comp-${index}`) as any;
+        cells.forEach((cell) => {
+            const cellLocation = cell[0].location;
+            const cellElement = this.shadowRoot!.getElementById(`cell-comp-${cellLocation}`) as any;
+            if (!cellElement) return;
             cellElement.cellData = cell;
+
+            //TODO: do nearest based on unfogged cells instead...?
+            if (cell.some(c => c.type === 'player')) {
+                cellElement.scrollIntoView({ block: "center", inline: "center" });
+                // cellElement.scrollIntoView({ block: "nearest", inline: "nearest" });
+                console.log('scrolling to player')
+            }
+
+
         });
     }
 }
-// Define the custom element
-customElements.define('two-move-board', BoardComponent);

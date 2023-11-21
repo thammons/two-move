@@ -43,8 +43,8 @@ export function checkPlayerGoal(map: IMap): boolean {
 
 export function getMap(): IMap {
     const map: IMap = {
-        width: 10,
-        height: 10,
+        width: 20,
+        height: 20,
         mapItems: new Map([
             ["empty", []],
             ["player", [{ type: "player", location: 0, direction: "east" }]],
@@ -52,10 +52,10 @@ export function getMap(): IMap {
             [
                 "wall",
                 [
-                    { type: "wall", location: 10 },
-                    { type: "wall", location: 11 },
-                    { type: "wall", location: 12 },
-                    { type: "wall", location: 13 },
+                    { type: "wall", location: 20 },
+                    { type: "wall", location: 21 },
+                    { type: "wall", location: 22 },
+                    { type: "wall", location: 23 },
                 ],
             ],
         ]),
