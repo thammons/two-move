@@ -4,15 +4,23 @@ import * as Map from "./maps";
 import { IMap } from "./maps";
 import { UserMover } from "./movers/user-mover";
 
-window.addEventListener("load", () => {
+const mapSettings: Map.IMapGeneratorSettings = {
+    height: 20,
+    width: 20,
+    playerStartLocation: 0,
+    playerStartDirection: "east",
+};
 
-    let mapInstance = new MapInstance(Map.getMap());
+window.addEventListener("load", () => {
+    let mapInstance = new MapInstance(Map.getNextMap(mapSettings));
     let boardDisplay = new BoardDisplay(mapInstance.map);
 
     const playerMover = new UserMover();
     const playerActions = new KeyboardHandlers();
 
     setInterval(() => {
+        const resetArgs = playerActions.ResetArgs;
+        if (resetArgs !== undefined) console.log("resetargs", resetArgs);
         //TODO: Figure out handling win condition
         boardDisplay.updateCells(
             mapInstance.setMap(
@@ -20,8 +28,8 @@ window.addEventListener("load", () => {
                 playerMover.getNextMove(
                     playerActions.NextMove,
                     mapInstance.getMap(
-                        playerActions.ResetArgs ? true : false,
-                        playerActions.ResetArgs?.newMap ?? false
+                        resetArgs ? true : false,
+                        resetArgs?.newMap ?? false
                     )
                 )
             )
@@ -43,22 +51,31 @@ class MapInstance {
     get map() {
         return this._map;
     }
-    
+
     set map(newMap: IMap) {
         this._updateNumber++;
         this._map = newMap;
     }
 
     getMap(restart: boolean, newMap: boolean) {
-        if (restart) {
+        if (newMap) {
+            this._map = Map.getNextMap(mapSettings);
+        } else if (restart) {
             this._map = Map.cloneMap(this._originalMap);
-        } else if (newMap) {
-            //this._map = Map.getNextMap();
         }
         return this.map;
     }
 
     setMap(newMap: IMap) {
-        return (this.map = newMap);
+        let nextMap = newMap;
+
+        if (Map.checkPlayerGoal(newMap)) {
+            const player = newMap.mapItems.get("player")![0];
+            mapSettings.playerStartLocation = player.location;
+            mapSettings.playerStartDirection = player.direction;
+            nextMap = Map.getNextMap(mapSettings);
+        }
+
+        return (this.map = nextMap);
     }
 }
