@@ -26,3 +26,11 @@ export interface IMapItem {
 // export interface IPlayer extends IMapItem {
 //     nextDirectionMap: Map<Direction, Direction>;
 // }
+
+export interface IMapGeneratorSettings {
+    height: number;
+    width: number;
+    playerStartLocation?: number;
+    playerStartDirection?: Direction;
+    wallCount?: number;
+}
