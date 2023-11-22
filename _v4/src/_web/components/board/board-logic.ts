@@ -35,6 +35,26 @@ export class BoardLogic {
     }
 
     updateCells(map?: IMap, force?: boolean) {
+        const newPlayer = map?.mapItems?.get("player")?.[0];
+        const oldPlayer = this._map?.mapItems?.get("player")?.[0];
+
+        //TODO: Refactor to "ItemChanged" function
+        if (
+            !force &&
+            !!map &&
+            !!newPlayer &&
+            !!oldPlayer &&
+            newPlayer.location === oldPlayer.location &&
+            newPlayer.direction === oldPlayer.direction &&
+            newPlayer.attributes?.length === oldPlayer.attributes?.length &&
+            newPlayer.attributes?.every((a) =>
+                oldPlayer.attributes?.includes(a)
+            )
+        ) {
+            return;
+        }
+
+        console.log('updating cells')
         if (
             force ||
             !this._cells.size ||
@@ -51,6 +71,7 @@ export class BoardLogic {
                 this._cells
             );
         }
+        this._map = map ?? this._map;
     }
 
     static getCellUpdateDisplayItems(cells: Map<number, IUpdateMapItem[]>) {
@@ -119,6 +140,8 @@ export class BoardLogic {
                 .get(key)
                 ?.map((c) => ({ ...c, isUpdated: false }));
             const newCell = value;
+
+            //if oldcell doesn't exist, get it from the new cell
             if (!oldCell) {
                 updatedCells.set(key, newCell);
                 continue;
@@ -127,7 +150,12 @@ export class BoardLogic {
             //TODO: MAKE A COMPARE FUNCTION
             const oldCellItems = oldCell.filter((c) => c.type !== "empty");
             const newCellItems = newCell.filter((c) => c.type !== "empty");
-            if (oldCellItems.length !== newCellItems.length) {
+            const itemLengthsMatch =
+                oldCellItems.length === newCellItems.length;
+            const itemTypesMatch = oldCellItems.every((item) =>
+                newCellItems.some((i) => i.type === item.type)
+            );
+            if (!itemLengthsMatch || !itemTypesMatch) {
                 updatedCells.set(key, newCell);
                 continue;
             }
@@ -152,12 +180,6 @@ export class BoardLogic {
                         !attributesMatch
                     ) {
                         updatedCells.set(key, newCell);
-                        console.log(
-                            "unmatched",
-                            locationsMatch,
-                            directionsMatch,
-                            attributesMatch
-                        );
                     } else {
                         updatedCells.set(key, oldCell);
                     }

@@ -113,7 +113,6 @@ export class BoardComponent extends HTMLElement {
             if (cell.some(c => c.type === 'player')) {
                 cellElement.scrollIntoView({ block: "center", inline: "center" });
                 // cellElement.scrollIntoView({ block: "nearest", inline: "nearest" });
-                console.log('scrolling to player')
             }
 
 
