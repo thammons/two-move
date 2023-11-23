@@ -2,6 +2,9 @@ import { describe, test, expect } from "vitest";
 import { IMap } from "./types";
 import {
     checkPlayerGoal,
+    compareMapItems,
+    compareMapItemsArray,
+    compareMaps,
     getMap,
     movePlayer,
     turnPlayer,
@@ -205,5 +208,159 @@ describe("get map", () => {
         expect(result.mapItems).toBeDefined();
         expect(result.mapItems.get("player")).toBeDefined();
         expect(result.mapItems.get("goal")).toBeDefined();
+    });
+});
+
+describe("compare maps", () => {
+    test("returns true if maps are equal", () => {
+        const newMap = cloneMap(map);
+        const result = compareMaps(map, newMap);
+
+        expect(result).toBe(true);
+    });
+
+    test("returns false if maps are not equal - height changed", () => {
+        const newMap = cloneMap(map);
+        newMap.height = 2;
+        const result = compareMaps(map, newMap);
+
+        expect(result).toBe(false);
+    });
+
+    test("returns false if maps are not equal - width changed", () => {
+        const newMap = cloneMap(map);
+        newMap.width = 2;
+        const result = compareMaps(map, newMap);
+
+        expect(result).toBe(false);
+    });
+
+    test("returns false if maps are not equal - player moved", () => {
+        const newMap = cloneMap(map);
+        newMap.mapItems.get("player")![0].location = 2;
+        const result = compareMaps(map, newMap);
+
+        expect(result).toBe(false);
+    });
+
+    test("returns false if maps are not equal - player turned", () => {
+        const newMap = cloneMap(map);
+        newMap.mapItems.get("player")![0].direction = "south";
+        const result = compareMaps(map, newMap);
+
+        expect(result).toBe(false);
+    });
+
+    test("returns false if maps are not equal - player attribute added", () => {
+        const newMap = cloneMap(map);
+        newMap.mapItems.get("player")![0].attributes = ["test"];
+        const result = compareMaps(map, newMap);
+
+        expect(result).toBe(false);
+    });
+
+    test("returns false if maps are not equal - player attribute changed", () => {
+        const newMap1 = cloneMap(map);
+        newMap1.mapItems.get("player")![0].attributes = ["test"];
+        const newMap2 = cloneMap(map);
+        newMap2.mapItems.get("player")![0].attributes = ["test2"];
+
+        const result = compareMaps(newMap2, newMap1);
+
+        expect(result).toBe(false);
+    });
+
+    test("returns false if maps are not equal - type changed", () => {
+        const newMap1 = cloneMap(map);
+        newMap1.mapItems.get("player")![0].type = "test";
+        const newMap2 = cloneMap(map);
+        newMap2.mapItems.get("player")![0].type = "test2";
+
+        const result = compareMaps(newMap2, newMap1);
+
+        expect(result).toBe(false);
+    });
+
+    test("returns false if maps are not equal - goal moved", () => {
+        const newMap = cloneMap(map);
+        newMap.mapItems.get("goal")![0].location = 3;
+        const result = compareMaps(map, newMap);
+
+        expect(result).toBe(false);
+    });
+
+    test("returns false if maps are not equal - walls removed from one", () => {
+        const newMap = cloneMap(map);
+        newMap.mapItems.get("wall")!.pop();
+        const result = compareMaps(map, newMap);
+
+        expect(result).toBe(false);
+    });
+
+    test("returns true if maps are equal - walls empty in both", () => {
+        const newMap = cloneMap(map);
+        newMap.mapItems.get("wall", []);
+        const newMap2 = cloneMap(map);
+        newMap2.mapItems.set("wall", []);
+        const result = compareMaps(newMap, newMap2);
+
+        expect(result).toBe(false);
+    });
+
+    test("returns true if maps are equal - different attribute references", () => {
+        const newMap = cloneMap(map);
+        newMap.mapItems.get("player")![0].attributes = ["test"];
+        const newMap2 = cloneMap(map);
+        newMap2.mapItems.get("player")![0].attributes = ["test"];
+
+        const result = compareMaps(newMap, newMap2);
+
+        expect(result).toBe(true);
+    });
+});
+
+describe("compareMapItemsArray", () => {
+    test("returns true if arrays are equal", () => {
+        const result = compareMapItemsArray(
+            map.mapItems!.get("wall"),
+            map.mapItems!.get("wall")
+        );
+
+        expect(result).toBe(true);
+    });
+
+    test("returns true if arrays are undefined", () => {
+        const result = compareMapItemsArray(undefined, undefined);
+
+        expect(result).toBe(true);
+    });
+    
+    test("returns false if one array is undefined", () => {
+        const result = compareMapItemsArray([], undefined);
+
+        expect(result).toBe(false);
+    });
+});
+
+describe("compareMapItems", () => {
+    test("returns true if items are equal", () => {
+        const result = compareMapItems(
+            map.mapItems!.get("wall")![0],
+            map.mapItems!.get("wall")![0]
+        );
+
+        expect(result).toBe(true);
+    });
+
+    test("returns true if items are undefined", () => {
+        const result = compareMapItems(undefined, undefined);
+
+        expect(result).toBe(true);
+    });
+
+    test("returns false if one item is undefined", () => {
+        const result = compareMapItems(map.mapItems!.get("wall")![0], undefined);
+
+        expect(result).toBe(false);
     });
 });

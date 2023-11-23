@@ -1,4 +1,4 @@
-import { IMap } from "./types";
+import { IMap, IMapItem } from "./types";
 import * as Utils from "./map-utils";
 import { PlayerMotionMap } from "./map-player-motions";
 
@@ -61,4 +61,76 @@ export function getMap(): IMap {
         ]),
     };
     return map;
+}
+
+function compareMapItemAttributes(attrs1?: string[], attrs2?: string[]) {
+    if (attrs1 === undefined && attrs2 === undefined) return true;
+    if (attrs1 === undefined || attrs2 === undefined) return false;
+
+    if (
+        attrs1.length !== attrs2.length ||
+        !attrs1?.every((a) => attrs2?.includes(a))
+    )
+        return false;
+
+    return attrs1.every((a) => attrs2.includes(a));
+}
+
+export function compareMapItems(mapItem1?: IMapItem, mapItem2?: IMapItem) {
+    if (mapItem1 === undefined && mapItem2 === undefined) return true;
+    if (mapItem1 === undefined || mapItem2 === undefined) return false;
+
+    if (
+        mapItem1.type !== mapItem2.type ||
+        mapItem1.location !== mapItem2.location ||
+        mapItem1.direction !== mapItem2.direction
+    ) {
+        return false;
+    }
+
+    if (!compareMapItemAttributes(mapItem1.attributes, mapItem2.attributes)) {
+        return false;
+    }
+
+    return true;
+}
+
+export function compareMapItemsArray(
+    mapItems1?: IMapItem[],
+    mapItems2?: IMapItem[]
+) {
+    let mapItemsMatch = true;
+    console.log("mapItems1", mapItems1);
+    console.log("mapItems2", mapItems2);
+    if (mapItems1 === undefined && mapItems2 === undefined) return true;
+    if (mapItems1 === undefined || mapItems2 === undefined) return false;
+
+    if (mapItems1.length !== mapItems2.length) {
+        return false;
+    } else {
+        mapItems1.forEach((mapItem1) => {
+            const mapItems2Match = mapItems2.some((mapItem2) =>
+                compareMapItems(mapItem1, mapItem2)
+            );
+            mapItemsMatch = mapItemsMatch && mapItems2Match;
+        });
+    }
+
+    return mapItemsMatch;
+}
+
+export function compareMaps(map1: IMap, map2: IMap): boolean {
+    let mapsMatch = true;
+
+    if (map1.width !== map2.width || map1.height !== map2.height) {
+        mapsMatch = false;
+    }
+
+    map1.mapItems.forEach((mapItems1, key) => {
+        const mapItems2 = map2.mapItems.get(key);
+        const mapItemsMatch = compareMapItemsArray(mapItems1, mapItems2);
+        mapsMatch = mapsMatch && mapItemsMatch;
+    });
+
+    return mapsMatch;
 }
