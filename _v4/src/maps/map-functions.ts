@@ -100,8 +100,6 @@ export function compareMapItemsArray(
     mapItems2?: IMapItem[]
 ) {
     let mapItemsMatch = true;
-    console.log("mapItems1", mapItems1);
-    console.log("mapItems2", mapItems2);
     if (mapItems1 === undefined && mapItems2 === undefined) return true;
     if (mapItems1 === undefined || mapItems2 === undefined) return false;
 

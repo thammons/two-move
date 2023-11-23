@@ -1,4 +1,4 @@
-import { IMap, IMapItem } from "@/maps";
+import { IMap, IMapItem, compareMaps } from "@/maps";
 
 export interface IUpdateMapItem extends IMapItem {
     isUpdated: boolean;
@@ -35,26 +35,14 @@ export class BoardLogic {
     }
 
     updateCells(map?: IMap, force?: boolean) {
-        const newPlayer = map?.mapItems?.get("player")?.[0];
-        const oldPlayer = this._map?.mapItems?.get("player")?.[0];
-
-        //TODO: Refactor to "ItemChanged" function
         if (
             !force &&
             !!map &&
-            !!newPlayer &&
-            !!oldPlayer &&
-            newPlayer.location === oldPlayer.location &&
-            newPlayer.direction === oldPlayer.direction &&
-            newPlayer.attributes?.length === oldPlayer.attributes?.length &&
-            newPlayer.attributes?.every((a) =>
-                oldPlayer.attributes?.includes(a)
-            )
+            !!compareMaps(map, this._map) 
         ) {
             return;
         }
 
-        console.log('updating cells')
         if (
             force ||
             !this._cells.size ||
